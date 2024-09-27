@@ -1,0 +1,1251 @@
+openapi: 3.0.0
+info:
+  title: Looms POS API
+  version: 1.0.0
+paths:
+  /orders:
+    post:
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                merchantId:
+                  type: string
+                  format: uuid
+                customerId:
+                  type: string
+                  format: uuid
+                orderItems:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OrderItem'
+      responses:
+        '201':
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid input
+    get:
+      summary: List orders
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [open, closed, canceled, refunded]
+          description: Filter orders by status
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date
+          description: Filter orders created on or after this date
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date
+          description: Filter orders created on or before this date
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  total:
+                    type: integer
+                    description: Total number of orders matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+        '400':
+          description: Invalid input
+        '401':
+          description: Cannot access list of orders
+  /orders/{orderId}:
+    put:
+      summary: Update an existing order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchantId:
+                  type: string
+                  format: uuid
+                orderItems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      item:
+                        $ref: '#/components/schemas/OrderItem'
+                      action:
+                        type: string
+                        enum: [add, remove, update]
+                      quantity:
+                        type: integer
+                        minimum: 1
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '403':
+          description: Forbidden (cannot modify completed, refunded, or canceled order)
+        '404':
+          description: Order not found
+        '400':
+          description: Invalid input
+    get:
+      summary: Get order details
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+  /orders/{orderId}/cancel:
+    patch:
+      summary: Cancel an order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchantId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Order canceled successfully
+        '403':
+          description: Cannot cancel closed order
+        '404':
+          description: Order not found
+  /orders/{orderId}/transactions:
+    post:
+      summary: Add a transaction to an order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Transaction'
+      responses:
+        '200':
+          description: Transaction added successfully
+        '404':
+          description: Order not found
+        '422':
+          description: Order cannot accept more transactions
+  /orders/{orderId}/tip:
+    patch:
+      summary: Add or update tip for an order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchantId:
+                  type: string
+                  format: uuid
+                tipAmount:
+                  type: number
+                  format: float
+      responses:
+        '200':
+          description: Tip added or updated successfully
+        '403':
+          description: Tip cannot be added to completed order
+        '404':
+          description: Order not found
+  /orders/{orderId}/transactions/{transactionId}/status:
+    patch:
+      summary: Refund a transaction
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merchantId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Refund completed successfully
+        '403':
+          description: Refund cannot be completed, order is not closed
+        '404':
+          description: Order or transaction not found
+  /orders/{orderId}/receipt:
+    get:
+      summary: Get order receipt
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: verbose
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Receipt retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '403':
+          description: Order is not yet closed
+        '404':
+          description: Order not found
+  /reservations:
+    post:
+      summary: Create a new reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '201':
+          description: Reservation created successfully
+        '403':
+          description: Time and date are already reserved
+        '400':
+          description: Invalid input
+  /reservations/{reservationId}:
+    put:
+      summary: Update or cancel a reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '200':
+          description: Reservation updated or canceled successfully
+        '403':
+          description: Completed reservation cannot be modified
+        '404':
+          description: Reservation not found
+  /orders/{orderId}/discounts:
+    post:
+      summary: Apply a discount to an order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discountId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Discount applied successfully
+        '404':
+          description: Order or discount not found
+        '400':
+          description: Invalid input
+  /inventory:
+    get:
+      summary: Get inventory list
+      parameters:
+        - name: merchantId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: quantity
+          schema:
+            type: number
+          description: Filter inventory items by their quantity
+        - in: query
+          name: dateUpdated
+          schema:
+            type: string
+            format: date
+          description: Filter inventory items by when they were last updated
+      responses:
+        '200':
+          description: Inventory list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryItem'
+                  total:
+                    type: integer
+                    description: Total number of inventory items matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+
+    post:
+      summary: Add inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+      responses:
+        '201':
+          description: Inventory item added successfully
+  /inventory/{inventoryId}:
+    put:
+      summary: Update inventory item
+      parameters:
+        - name: inventoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryItem'
+      responses:
+        '200':
+          description: Inventory item updated successfully
+  /taxes:
+    get:
+      summary: Get tax list
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter tax by the name
+      responses:
+        '400':
+          description: Invalid input
+        '401':
+          description: Cannot access list of taxes
+        '200':
+          description: Tax list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tax'
+                  total:
+                    type: integer
+                    description: Total number of taxes matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+    post:
+      summary: Create new tax
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tax'
+      responses:
+        '201':
+          description: Tax created successfully
+  /taxes/{taxId}:
+    put:
+      summary: Update tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tax'
+      responses:
+        '200':
+          description: Tax updated successfully
+    delete:
+      summary: Delete tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Tax deleted successfully
+  /service-charges:
+    get:
+      summary: Get service charge list
+      responses:
+        '200':
+          description: Service charge list retrieved successfully
+    post:
+      summary: Create new service charge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCharge'
+      responses:
+        '201':
+          description: Service charge created successfully
+  /service-charges/{serviceChargeId}:
+    put:
+      summary: Update service charge
+      parameters:
+        - name: serviceChargeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCharge'
+      responses:
+        '200':
+          description: Service charge updated successfully
+  /products:
+    get:
+      summary: Get product list
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter products by name
+        - in: query
+          name: price
+          schema:
+            type: number
+            format: float
+          description: Filter prroducst by price
+      responses:
+        '200':
+          description: Product list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  total:
+                    type: integer
+                    description: Total number of products matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+        '400':
+          description: Invalid input
+        '401':
+          description: Cannot access list of products
+    post:
+      summary: Create new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created successfully
+  /products/{productId}:
+    put:
+      summary: Update product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated successfully
+    delete:
+      summary: Delete product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Product deleted successfully
+  /products/{productId}/variations:
+    post:
+      summary: Add product variation
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVariation'
+      responses:
+        '201':
+          description: Product variation added successfully
+  /products/{productId}/variations/{variationId}:
+    put:
+      summary: Update product variation
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: variationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductVariation'
+      responses:
+        '200':
+          description: Product variation updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Product or variation not found
+    delete:
+      summary: Delete product variation
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: variationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Product variation deleted successfully
+        '404':
+          description: Product or variation not found
+  /services:
+    get:
+      summary: Get service list
+      responses:
+        '200':
+          description: Service list retrieved successfully
+    post:
+      summary: Create new service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Service created successfully
+  /services/{serviceId}:
+    put:
+      summary: Update service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Service updated successfully
+  /discounts:
+    get:
+      summary: Get discount list
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: value
+          schema:
+            type: number
+            format: float
+          description: Filter discount value
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date
+          description: Filter discount which are valid from
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date
+          description: Filter discount which are valid to
+      responses:
+        '200':
+          description: Discount list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Discount'
+                  total:
+                    type: integer
+                    description: Total number of discounts matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+        '400':
+          description: Invalid input
+        '401':
+          description: Cannot access list of discounts
+    post:
+      summary: Create new discount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discount'
+      responses:
+        '201':
+          description: Discount created successfully
+  /discounts/{discountId}:
+    put:
+      summary: Update discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Discount'
+      responses:
+        '200':
+          description: Discount updated successfully
+    delete:
+      summary: Delete discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Discount deleted successfully
+  /users:
+    get:
+      summary: Get user list
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [owner, employee, admin]
+          description: Filter user by their role
+        - in: query
+          name: firstname
+          schema:
+            type: string
+          description: Filter user by their first name 
+        - in: query
+          name: lastname
+          schema:
+            type: string
+          description: Filter user by their last name 
+      responses:
+        '200':
+          description: User list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  total:
+                    type: integer
+                    description: Total number of orders matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+        '400':
+          description: Invalid input
+        '401':
+          description: Cannot access list of users
+    post:
+      summary: Create new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created successfully
+  /users/{userId}:
+    put:
+      summary: Update user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully
+    delete:
+      summary: Delete user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted successfully
+  /merchants/{merchantId}:
+    put:
+      summary: Update merchant
+      parameters:
+        - name: merchantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Merchant'
+      responses:
+        '200':
+          description: Merchant updated successfully
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [open, closed, canceled, refunded]
+        serviceCharge:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        orderItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        externalRef:
+          type: string
+        paymentMethodType:
+          type: string
+          enum: [cash, debit, credit, giftcard]
+        status:
+          type: string
+          enum: [pending, completed, declined, refunded, disputed, abondoned]
+        amount:
+          type: number
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Receipt:
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        subtotal:
+          type: number
+        taxes:
+          type: number
+        serviceCharge:
+          type: number
+        tip:
+          type: number
+        discounts:
+          type: number
+        total:
+          type: number
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        orderId:
+          type: string
+          format: uuid
+        dateTime:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [booked, canceled, completed]
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+    Tax:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        percent:
+          type: number
+        productGroupId:
+          type: string
+          format: uuid
+    ServiceCharge:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        rate:
+          type: number
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type: 
+          type: string
+          enum: [product, service]
+        description:
+          nullable: true
+          type: string
+        basePrice:
+          type: number
+        variations:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ProductVariation'
+    ProductVariation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price:
+          type: number
+    Discount:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [percentage, fixed]
+        value:
+          type: number
+        productId:
+          type: string
+          format: uuid
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [owner, employee, admin]
+        merchantId:
+          type: string
+          format: uuid
+    Merchant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        currency:
+          type: string 
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - BearerAuth: []
