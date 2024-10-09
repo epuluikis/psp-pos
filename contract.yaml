@@ -256,7 +256,157 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderItem'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error 
+          
+  /orders/{orderId}/charges:
+    post:
+      summary: Add an order charge
+      security:
+        - IdempotencyKey: []
+      tags:
+        - Order charge
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCharge'
+      responses:
+        '201':
+          description: Order charge created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCharge'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error 
+    get:
+      summary: Retrieve all order charges
+      tags:
+        - Order charge
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderCharge'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error 
+          
+  /orders/{orderId}/charges/{chargeId}:
+    put:
+      summary: Update an order charge
+      security:
+        - IdempotencyKey: []
+      tags:
+        - Order charge
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: chargeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCharge'
+      responses:
+        '200':
+          description: Order charge updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCharge'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '404':
+          description: Order not found
+        '500':
+          description: Internal server error 
+    delete:
+      summary: Delete an order charge
+      security:
+        - IdempotencyKey: []
+      tags:
+        - Order charge
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: chargeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Order charge deleted successfully
         '400':
           description: Invalid input
         '401':
@@ -351,6 +501,9 @@ paths:
           description: Order not found
         '500':
           description: Internal server error 
+          
+          
+          
   /orders/{orderId}/transactions:
     post:
       summary: Add a transaction to an order
@@ -370,11 +523,9 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Transaction'
+              $ref: '#/components/schemas/Transaction'
       responses:
-        '200':
+        '201':
           description: Transaction added successfully
           content:
             application/json:
@@ -392,11 +543,8 @@ paths:
           description: Order cannot accept more transactions
         '500':
           description: Internal server error 
-  /orders/{orderId}/tip:
-    patch:
-      summary: Add or update tip for an order
-      security:
-        - IdempotencyKey: []
+    get:
+      summary: Get transactions for order
       tags:
         - Transaction
       parameters:
@@ -406,19 +554,18 @@ paths:
           schema:
             type: string
             format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tipAmount:
-                  type: number
-                  format: currency
       responses:
         '200':
-          description: Tip added or updated successfully
+          description: Transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
         '400':
           description: Invalid input
         '401':
@@ -427,13 +574,14 @@ paths:
           description: User does not have sufficient access to perform this action
         '404':
           description: Order not found
+        '422':
+          description: Order cannot accept more transactions
         '500':
           description: Internal server error 
-  /orders/{orderId}/transactions/{transactionId}/refund:
-    patch:
-      summary: Refund a transaction
-      security:
-        - IdempotencyKey: []
+          
+  /orders/{orderId}/transactions/{transactionId}:
+    get:
+      summary: Get order transaction details
       tags:
         - Transaction
       parameters:
@@ -451,7 +599,89 @@ paths:
             format: uuid
       responses:
         '200':
+          description: Transaction retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '404':
+          description: Order not found
+        '422':
+          description: Order cannot accept more transactions
+        '500':
+          description: Internal server error 
+          
+  /orders/{orderId}/transactions/{transactionId}/refund:
+    patch:
+      summary: Refund a transaction (full or partial)
+      security:
+        - IdempotencyKey: []
+      tags:
+        - Transaction
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refundItems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      orderItemId:
+                        type: string
+                        format: uuid
+                      amount:
+                        type: number
+                  description: List of order items to refund. If empty, assumes full refund.
+      responses:
+        '200':
           description: Refund completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refundId:
+                    type: string
+                    format: uuid
+                  refundedAmount:
+                    type: number
+                  orderStatus:
+                    type: string
+                    enum: [open, closed, refunded]
+                  refundedItems:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orderItemId:
+                          type: string
+                          format: uuid
+                        status:
+                          type: string
+                          enum: [open, closed, refunded]
         '400':
           description: Invalid input
         '401':
@@ -461,7 +691,7 @@ paths:
         '404':
           description: Order or transaction not found
         '500':
-          description: Internal server error 
+          description: Internal server error
           
   /orders/{orderId}/receipt:
     get:
@@ -546,7 +776,7 @@ paths:
               $ref: '#/components/schemas/Reservation'
       responses:
         '200':
-          description: Reservation updated or canceled successfully
+          description: Reservation updated successfully
           content:
             application/json:
               schema:
@@ -900,7 +1130,7 @@ paths:
             schema:
               $ref: '#/components/schemas/InventoryLog'
       responses:
-        '200':
+        '201':
           description: Inventory log entry created successfully
         '400':
           description: Invalid input
@@ -1515,7 +1745,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        '204':
           description: Product variation deleted successfully
         '400':
           description: Invalid input
@@ -1946,7 +2176,7 @@ paths:
             schema:
               $ref: '#/components/schemas/Merchant'
       responses:
-        '200':
+        '201':
           description: Merchant created successfully
           content:
             application/json:
@@ -2038,7 +2268,7 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        '204':
           description: Merchant deleted successfully
         '400':
           description: Invalid input
