@@ -2689,6 +2689,94 @@ paths:
           description: Merchant not found
         '500':
           description: Internal server error 
+
+  /login:
+    post:
+      summary: User login
+      description: Authenticate user and return access and refresh tokens
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '400':
+          description: Invalid input
+        '403':
+          description: User does not have sufficient access to perform this action
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error 
+          
+  /register:
+    post:
+      summary: Register new user and merchant
+      description: Create a new user (owner) and associated merchant
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  $ref: '#/components/schemas/User-request'
+                merchant:
+                  $ref: '#/components/schemas/Merchant-request'
+              required:
+                - user
+                - merchant
+      responses:
+        '201':
+          description: Successful registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  merchant:
+                    $ref: '#/components/schemas/Merchant'
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '409':
+          description: Conflicting information
+        '500':
+          description: Internal server error 
           
 components:
   schemas:
