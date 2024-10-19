@@ -2,6 +2,9 @@ openapi: 3.0.0
 info:
   title: Looms POS API
   version: 1.0.0
+  description: "Clarifications on some endpoints:\n
+  - All GET endpoints, which return an array of objects have query parameters, however only [Orders, Transactions, Charges, Services] have pagination\n
+  - POST, PATCH and PUT have [object name]-request components created"
 paths:
   /orders:
     post:
@@ -727,19 +730,41 @@ paths:
         - Reservation
       parameters:
         - in: query
-          name: service
+          name: limit
           schema:
-            type: object
-            items:
-              $ref: '#/components/schemas/Service'
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: service-name
+          schema:
+            type: string
           description: Filter reservations by service
         - in: query
-          name: customer
+          name: customer-name
           schema:
-            type: object
-            items:
-              $ref: '#/components/schemas/Customer'
-          description: Filter reservations by customer
+            type: string
+          description: Filter reservations by customer name
+        - in: query
+          name: customer-email
+          schema:
+            type: string
+            format: email
+          description: Filter reservations by customer email
+        - in: query
+          name: customer-phone
+          schema:
+            type: string
+          description: Filter reservations by customer phone number
         - in: query
           name: appointedAt
           schema:
@@ -752,9 +777,19 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Reservation'
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Total number of reservations matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+                  items:
+                    $ref: '#/components/schemas/Reservation'
         '400':
           description: Invalid input
         '401':
@@ -952,10 +987,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Inventory'
                   total:
                     type: integer
                     description: Total number of inventory items matching the filter criteria
@@ -965,6 +996,10 @@ paths:
                   limit:
                     type: integer
                     description: The limit used in the request
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Inventory'
         '400':
           description: Invalid input
         '401':
@@ -982,7 +1017,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Inventory'
+              $ref: '#/components/schemas/Inventory-request'
       responses:
         '201':
           description: Inventory item added successfully
@@ -1044,7 +1079,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Inventory'
+              $ref: '#/components/schemas/Inventory-request'
       responses:
         '200':
           description: Inventory item updated successfully
@@ -1087,6 +1122,46 @@ paths:
         '500':
           description: Internal server error 
           
+  /inventory/{inventoryId}/adjust:
+    patch:
+      summary: Adjust quantity of inventory item
+      tags:
+        - Inventory
+      security:
+        - IdempotencyKey: []
+      parameters:
+        - name: inventoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  minimum: 0
+                  type: number
+      responses:
+        '201':
+          description: Inventory item quantity adjusted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '500':
+          description: Internal server error 
+          
   /inventoryLog:
     post:
       summary: Create a new inventory log entry
@@ -1122,21 +1197,6 @@ paths:
           schema:
             type: string
             format: uuid
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-          description: The number of items to return
-        - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: The number of items to skip before starting to collect the result set
         - in: query
           name: productId
           schema:
@@ -1211,30 +1271,6 @@ paths:
           description: Inventory item not found
         '500':
           description: Internal server error 
-    delete:
-      summary: Delete inventory log entry
-      tags:
-        - Inventory log
-      parameters:
-        - name: logId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: Inventory log entry deleted successfully
-        '400':
-          description: Invalid input
-        '401':
-          description: Authorization Required
-        '403':
-          description: User does not have sufficient access to perform this action
-        '404':
-          description: Discount not found
-        '500':
-          description: Internal server error 
           
   /charges:
     get:
@@ -1247,7 +1283,7 @@ paths:
           schema:
             type: integer
             minimum: 1
-            maximum: 20
+            maximum: 50
             default: 10
           description: The number of items to return
         - in: query
@@ -1271,10 +1307,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Charge'
                   total:
                     type: integer
                     description: Total number of charges matching the filter criteria
@@ -1284,6 +1316,10 @@ paths:
                   limit:
                     type: integer
                     description: The limit used in the request
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Charge'
         '400':
           description: Invalid input
         '401':
@@ -1436,7 +1472,7 @@ paths:
           name: price
           schema:
             type: number
-            format: float
+            format: currency
           description: Filter prroducst by price
       responses:
         '200':
@@ -1446,10 +1482,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Product'
                   total:
                     type: integer
                     description: Total number of products matching the filter criteria
@@ -1459,6 +1491,10 @@ paths:
                   limit:
                     type: integer
                     description: The limit used in the request
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
         '400':
           description: Invalid input
         '401':
@@ -1551,6 +1587,33 @@ paths:
           description: Product not found
         '500':
           description: Internal server error 
+    get:
+      summary: Retrieve product
+      tags:
+        - Product 
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '500':
+          description: Internal server error 
+          
   /products/{productId}/variations:
     post:
       summary: Add product variation
@@ -1590,6 +1653,35 @@ paths:
           description: User does not have sufficient access to perform this action
         '500':
           description: Internal server error 
+    get:
+      summary: Get product variation list
+      tags:
+        - Product variation
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product variation list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductVariation'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
+        '500':
+          description: Internal server error 
+          
   /products/{productId}/variations/{variationId}:
     put:
       summary: Update product variation
@@ -1665,6 +1757,38 @@ paths:
           description: User does not have sufficient access to perform this action
         '404':
           description: Product or variation not found
+        '500':
+          description: Internal server error 
+    get:
+      summary: Retrieve product variation
+      tags:
+        - Product variation
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: variationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product variation retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductVariation'
+        '400':
+          description: Invalid input
+        '401':
+          description: Authorization Required
+        '403':
+          description: User does not have sufficient access to perform this action
         '500':
           description: Internal server error 
           
@@ -1807,15 +1931,59 @@ paths:
       summary: Get service list
       tags:
         - Service
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          description: The number of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: The number of items to skip before starting to collect the result set
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter services by name
+        - in: query
+          name: price
+          schema:
+            type: number
+            format: currency
+          description: Filter services by price
+        - in: query
+          name: duration
+          schema:
+            type: number
+          description: Filter services by duration
       responses:
         '200':
           description: Service list retrieved successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Service'
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Total number of products matching the filter criteria
+                  offset:
+                    type: integer
+                    description: The offset used in the request
+                  limit:
+                    type: integer
+                    description: The limit used in the request
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
         '400':
           description: Invalid input
         '401':
@@ -1944,25 +2112,15 @@ paths:
         - Discount
       parameters:
         - in: query
-          name: limit
+          name: percent
           schema:
-            type: integer
-            minimum: 1
-            maximum: 20
-            default: 10
-          description: The number of items to return
-        - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          description: The number of items to skip before starting to collect the result set
+            type: number
+          description: Filter discount percent
         - in: query
           name: value
           schema:
             type: number
-            format: float
+            format: currency
           description: Filter discount value
         - in: query
           name: dateFrom
@@ -1982,21 +2140,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Discount'
-                  total:
-                    type: integer
-                    description: Total number of discounts matching the filter criteria
-                  offset:
-                    type: integer
-                    description: The offset used in the request
-                  limit:
-                    type: integer
-                    description: The limit used in the request
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
         '400':
           description: Invalid input
         '401':
@@ -2124,6 +2270,11 @@ paths:
       tags:
         - Customer   
       parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Filter customers by name
         - in: query
           name: phone
           schema:
@@ -2282,6 +2433,12 @@ paths:
           schema:
             type: string
           description: Filter user by their last name 
+        - in: query
+          name: email 
+          schema:
+            type: string
+            format: email
+          description: Filter user by their email
       responses:
         '200':
           description: User list retrieved successfully
@@ -2542,11 +2699,10 @@ components:
           type: string
           format: uuid
         customer:
-          type: object
           nullable: true
           default: null
-          items:
-            $ref: '#/components/schemas/Customer'
+          type: string
+          format: uuid
         merchantId:
           type: string
           format: uuid
@@ -2557,17 +2713,20 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/OrderItem'
+            type: string
+            format: uuid
         charges:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/OrderCharge'
+            type: string
+            format: uuid
         transactions:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Transaction'
+            type: string
+            format: uuid
             
     Order-request:
       type: object
@@ -2584,8 +2743,10 @@ components:
           format: uuid
         orderItems:
           type: array
+          nullable: true
           items:
-            $ref: '#/components/schemas/OrderItem'
+            type: string
+            format: uuid
             
     OrderCharge-request:
       type: object
@@ -2604,6 +2765,7 @@ components:
           nullable: true
         amount:
           type: number
+          format: currency
           nullable: true
             
     OrderCharge:
@@ -2622,6 +2784,7 @@ components:
           nullable: true
         amount:
           type: number
+          format: currency
           nullable: true
         createdAt:
           type: string
@@ -2652,12 +2815,14 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/ProductVariation'
+            type: string
+            format: uuid
         charges:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/OrderCharge'
+            type: string
+            format: uuid
             
     OrderItem:
       type: object
@@ -2685,12 +2850,14 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/ProductVariation'
+            type: string
+            format: uuid
         charges:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/OrderCharge'
+            type: string
+            format: uuid
           
     Transaction:
       type: object
@@ -2742,13 +2909,11 @@ components:
       required: [service, customer, appointedAt]
       properties:
         service:
-          type: object
-          items:
-            $ref: '#/components/schemas/Service'
+          type: string
+          format: uuid
         customer:
-          type: object
-          items:
-            $ref: '#/components/schemas/Customer'
+          type: string
+          format: uuid
         appointedAt:
           type: string
           format: date-time
@@ -2760,13 +2925,11 @@ components:
           type: string
           format: uuid
         service:
-          type: object
-          items:
-            $ref: '#/components/schemas/Service'
+          type: string
+          format: uuid
         customer:
-          type: object
-          items:
-            $ref: '#/components/schemas/Customer'
+          type: string
+          format: uuid
         appointedAt:
           type: string
           format: date-time
@@ -2814,12 +2977,28 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Order'
+            type: string
+            format: uuid
         reservations:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Reservation'
+            type: string
+            format: uuid
+            
+    Inventory-request:
+      type: object
+      required: [product, quantity]
+      properties:
+        product:
+          type: string
+          format: uuid
+        productVariations:
+          nullable: true
+          type: string
+          format: uuid
+        quantity:
+          type: integer
             
     Inventory:
       type: object
@@ -2828,15 +3007,13 @@ components:
           type: string
           format: uuid
         product:
-          type: object
           nullable: true
-          items:
-            $ref: '#/components/schemas/Product'
+          type: string
+          format: uuid
         productVariations:
-          type: object
           nullable: true
-          items:
-            $ref: '#/components/schemas/ProductVariation'
+          type: string
+          format: uuid
         quantity:
           type: integer
         merchantId:
@@ -2856,25 +3033,21 @@ components:
           type: string
           format: uuid
         product:
-          type: object
           nullable: true
-          items:
-            $ref: '#/components/schemas/Product'
+          type: string
+          format: uuid
         productVariations:
-          type: object
           nullable: true
-          items:
-            $ref: '#/components/schemas/ProductVariation'
+          type: string
+          format: uuid
         order:
-          type: object
           nullable: true
-          items:
-            $ref: '#/components/schemas/Order'
+          type: string
+          format: uuid
         user:
-          type: object
           nullable: true
-          items:
-            $ref: '#/components/schemas/User'
+          type: string
+          format: uuid
         adjustment:
           type: integer
         merchantId:
@@ -2904,19 +3077,20 @@ components:
         price:
           type: number
         category:
-          type: object
-          items:
-            $ref: '#/components/schemas/ProductCategory'
+          type: string
+          format: uuid
         charges:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Charge'
+            type: string
+            format: uuid
         variations:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/ProductVariation'
+            type: string
+            format: uuid
           
     Product:
       type: object
@@ -2937,9 +3111,8 @@ components:
         price:
           type: number
         category:
-          type: object
-          items:
-            $ref: '#/components/schemas/ProductCategory'
+          type: string
+          format: uuid
         merchantId:
           type: string
           format: uuid
@@ -2950,12 +3123,14 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Charge'
+            type: string
+            format: uuid
         variations:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/ProductVariation'
+            type: string
+            format: uuid
             
     ProductCategory-request:
       type: object
@@ -2967,7 +3142,8 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Product'
+            type: string
+            format: uuid
             
     ProductCategory:
       type: object
@@ -2987,7 +3163,8 @@ components:
           type: array
           nullable: true
           items:
-            $ref: '#/components/schemas/Product'
+            type: string
+            format: uuid
             
     ProductVariation:
       type: object
@@ -3017,15 +3194,18 @@ components:
           nullable: true
         amount:
           type: number
+          format: currency
           nullable: true
         products:
           type: array
           items:
-            $ref: '#/components/schemas/Product'
+            type: string
+            format: uuid
         services:
           type: array
           items:
-            $ref: '#/components/schemas/Service'
+            type: string
+            format: uuid
           
     Charge:
       type: object
@@ -3059,15 +3239,17 @@ components:
         products:
           type: array
           items:
-            $ref: '#/components/schemas/Product'
+            type: string
+            format: uuid
         services:
           type: array
           items:
-            $ref: '#/components/schemas/Service'
+            type: string
+            format: uuid
             
     Service-request:
       type: object
-      required: [name, price, duration, charges]
+      required: [name, price, duration, user, charges]
       properties:
         name:
           type: string
@@ -3076,6 +3258,9 @@ components:
           format: currency
         duration:
           type: number
+        user:
+          type: string
+          format: uuid
         charges:
           type: array
           items:
@@ -3099,6 +3284,9 @@ components:
         merchantId:
           type: string
           format: uuid
+        user:
+          type: string
+          format: uuid
         createdAt:
           type: string
           format: date-time
@@ -3107,8 +3295,7 @@ components:
           items:
             type: string
             format: uuid
-          description: Array of charge IDs associated with this service
-            
+
     Discount-request:
       type: object
       oneOf:
@@ -3209,11 +3396,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-        services:
-          type: array
-          nullable: true
-          items:
-            $ref: '#/components/schemas/Service'
           
     Merchant-request:
       type: object
