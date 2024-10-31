@@ -18,7 +18,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddApplicationLayer();
-        builder.Services.AddPersistanceLayer();
+        builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder.Build();
 
