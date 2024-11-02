@@ -1,0 +1,43 @@
+﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
+using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Looms.PoS.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+public class BusinessesController : ControllerBase
+{
+    private readonly IMediator _mediator;
+    private readonly IHttpContextAccessor _contextAccessor;
+
+    private const string EntityName = "businesses";
+
+    public BusinessesController(IMediator mediator, IHttpContextAccessor contextAccessor)
+    {
+        _mediator = mediator;
+        _contextAccessor = contextAccessor;
+    }
+
+    [HttpPost($"/{EntityName}")]
+    public async Task<IActionResult> CreateBusiness()
+    {
+        var comnand = new CreateBusinessCommand(GetRequest());
+
+        return await _mediator.Send(comnand);
+    }
+
+    [HttpGet($"/{EntityName}")]
+    public async Task<IActionResult> GetBusinesses()
+    {
+        var query = new GetBusinessesQuery();
+
+        return await _mediator.Send(query);
+    }
+
+    private HttpRequest GetRequest()
+    {
+        return _contextAccessor.HttpContext!.Request;
+    }
+}

@@ -14,17 +14,17 @@ public class BusinessesRepository : IBusinessesRepository
 
     public async Task<BusinessDao> CreateAsync(BusinessDao businessDao)
     {
-        await _context.AddAsync(businessDao);
+        var entityEntry = await _context.AddAsync(businessDao);
         await _context.SaveChangesAsync();
-        return businessDao;
+        return entityEntry.Entity;
     }
 
-    Task<IEnumerable<BusinessDao>> IBusinessesRepository.GetAllAsync()
+    public IEnumerable<BusinessDao> GetAll()
     {
-        throw new NotImplementedException();
+        return _context.Businesses;
     }
 
-    Task<BusinessDao> IBusinessesRepository.GetAsync(string id)
+    public Task<BusinessDao> GetAsync(string id)
     {
         throw new NotImplementedException();
     }
