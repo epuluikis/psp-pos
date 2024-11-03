@@ -30,7 +30,7 @@ public class Program
         }
 
         app.UseAuthorization();
-
+        app.UseExceptionHandler();
 
         app.MapControllers();
 
