@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Exceptions.Handlers;
 using Looms.PoS.Application.Interfaces;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Mappings.ModelsResolvers;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Application.Utilities.Behaviours;
 using MediatR;
@@ -20,8 +22,10 @@ public static class ServiceExtensions
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
         services.AddValidatorsFromAssembly(typeof(ServiceExtensions).Assembly);
+        services.AddAutoMapper(typeof(ServiceExtensions).Assembly);
 
         services.RegisterExceptionHandling();
+        services.RegisterMappers();
     }
 
     private static void RegisterExceptionHandling(this IServiceCollection services)
@@ -29,5 +33,10 @@ public static class ServiceExtensions
         services.AddExceptionHandler<BadRequestExceptionHandler>();
 
         services.AddProblemDetails();
+    }
+
+    private static void RegisterMappers(this IServiceCollection services)
+    {
+        services.AddSingleton<IBusinessModelsResolver, BusinessModelsResolver>();
     }
 }

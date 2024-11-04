@@ -1,6 +1,6 @@
 ﻿using Looms.PoS.Application.Interfaces;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,19 +11,27 @@ public class CreateBusinessCommandHandler : IRequestHandler<CreateBusinessComman
 {
     private readonly IBusinessesRepository _businessesRepository;
     private readonly IHttpContentResolver _httpContentResolver;
+    private readonly IBusinessModelsResolver _modelsResolver;
 
-    public CreateBusinessCommandHandler(IBusinessesRepository businessesRepository, IHttpContentResolver httpContentResolver)
+    public CreateBusinessCommandHandler(
+        IBusinessesRepository businessesRepository,
+        IHttpContentResolver httpContentResolver,
+        IBusinessModelsResolver modelsResolver)
     {
         _businessesRepository = businessesRepository;
         _httpContentResolver = httpContentResolver;
+        _modelsResolver = modelsResolver;
     }
 
     public async Task<IActionResult> Handle(CreateBusinessCommand command, CancellationToken cancellationToken)
     {
         var businessRequest = await _httpContentResolver.GetPayloadAsync<CreateBusinessRequest>(command.Request);
 
-        var businessDao = await _businessesRepository.CreateAsync(new BusinessDao());
+        var businessDao = _modelsResolver.GetDaoFromRequest(businessRequest);
+        var createdBusinessDao = await _businessesRepository.CreateAsync(businessDao);
 
-        return new CreatedAtRouteResult("test", businessDao);
+        var response = _modelsResolver.GetResponseFromDao(createdBusinessDao);
+
+        return new CreatedAtRouteResult($"/businesses{businessDao.Id}", response);
     }
 }
