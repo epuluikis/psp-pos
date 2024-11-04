@@ -13,5 +13,6 @@ public static class ServiceExtensions
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
         services.AddScoped<IBusinessesRepository, BusinessesRepository>();
+        services.AddScoped<IDiscountsRepository, DiscountsRepository>();
     }
 }
