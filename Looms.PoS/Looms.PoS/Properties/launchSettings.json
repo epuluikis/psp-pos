@@ -6,7 +6,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CUSTOMCONNSTR_DefaultConnection": "Server=localhost;Port=5432;Database=default;Username=user;Password=password"
+        "CUSTOMCONNSTR_DefaultConnection": "Host=localhost;Port=5432;Database=default;Username=user;Password=password"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5069"
@@ -17,7 +17,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CUSTOMCONNSTR_DefaultConnection": "Server=host.docker.internal;Port=5432;Database=default;Username=user;Password=password"
+        "CUSTOMCONNSTR_DefaultConnection": "Host=host.docker.internal;Port=5432;Database=default;Username=user;Password=password"
       }
     },
     "Container (Dockerfile)": {
@@ -27,7 +27,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HTTP_PORTS": "8080",
-        "CUSTOMCONNSTR_DefaultConnection": "Server=host.docker.internal;Port=5432;Database=default;Username=user;Password=password"
+        "CUSTOMCONNSTR_DefaultConnection": "Host=host.docker.internal;Port=5432;Database=default;Username=user;Password=password"
       },
       "publishAllPorts": true,
       "useSSL": false
