@@ -1,4 +1,4 @@
-﻿using Looms.PoS.Application.Exceptions.Exceptions;
+﻿using Looms.PoS.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

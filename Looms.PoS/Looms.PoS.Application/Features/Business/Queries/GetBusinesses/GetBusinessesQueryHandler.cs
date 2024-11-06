@@ -16,12 +16,12 @@ public class GetBusinessesQueryHandler : IRequestHandler<GetBusinessesQuery, IAc
         _modelsResolver = modelsResolver;
     }
 
-    public Task<IActionResult> Handle(GetBusinessesQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetBusinessesQuery request, CancellationToken cancellationToken)
     {
-        var businessDaos = _businessesRepository.GetAll();
+        var businessDaos = await _businessesRepository.GetAllAsync();
 
         var response = _modelsResolver.GetResponseFromDao(businessDaos);
 
-        return Task.FromResult<IActionResult>(new OkObjectResult(response));
+        return new OkObjectResult(response);
     }
 }

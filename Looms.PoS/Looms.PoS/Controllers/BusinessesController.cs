@@ -1,4 +1,5 @@
 ﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
+using Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,15 @@ public class BusinessesController : ControllerBase
     [HttpGet($"/{EntityName}")]
     public async Task<IActionResult> GetBusinesses()
     {
-        var query = new GetBusinessesQuery();
+        var query = new GetBusinessesQuery(GetRequest());
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpGet($"/{EntityName}/{{businessId}}")]
+    public async Task<IActionResult> GetBusiness(string businessId)
+    {
+        var query = new GetBusinessQuery(GetRequest(), businessId);
 
         return await _mediator.Send(query);
     }
