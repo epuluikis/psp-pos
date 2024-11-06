@@ -1,5 +1,7 @@
 ﻿using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Looms.PoS.Persistance.Repositories;
 
@@ -19,17 +21,18 @@ public class BusinessesRepository : IBusinessesRepository
         return entityEntry.Entity;
     }
 
-    public IEnumerable<BusinessDao> GetAll()
+    public async Task<IEnumerable<BusinessDao>> GetAllAsync()
     {
-        return _context.Businesses;
+        return await _context.Businesses.ToListAsync();
     }
 
-    public Task<BusinessDao> GetAsync(string id)
+    public async Task<BusinessDao> GetAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _context.Businesses.FindAsync(id)
+            ?? throw new LoomsNotFoundException("Business not found");
     }
 
-    public void DeleteAsync(string id)
+    public void DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
     }

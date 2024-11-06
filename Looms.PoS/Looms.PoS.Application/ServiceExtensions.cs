@@ -31,6 +31,8 @@ public static class ServiceExtensions
     private static void RegisterExceptionHandling(this IServiceCollection services)
     {
         services.AddExceptionHandler<BadRequestExceptionHandler>();
+        services.AddExceptionHandler<NotFoundExceptionHandler>();
+        services.AddExceptionHandler<GlobalExceptionHandler>();
 
         services.AddProblemDetails();
     }

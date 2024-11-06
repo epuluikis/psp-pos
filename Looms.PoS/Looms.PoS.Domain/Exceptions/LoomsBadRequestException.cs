@@ -1,4 +1,4 @@
-﻿namespace Looms.PoS.Application.Exceptions.Exceptions;
+﻿namespace Looms.PoS.Domain.Exceptions;
 
 public class LoomsBadRequestException : LoomsException
 {

@@ -5,7 +5,7 @@ namespace Looms.PoS.Domain.Interfaces;
 public interface IBusinessesRepository
 {
     Task<BusinessDao> CreateAsync(BusinessDao businessDao);
-    IEnumerable<BusinessDao> GetAll();
-    Task<BusinessDao> GetAsync(string id);
-    void DeleteAsync(string id);
+    Task<IEnumerable<BusinessDao>> GetAllAsync();
+    Task<BusinessDao> GetAsync(Guid id);
+    void DeleteAsync(Guid id);
 }
