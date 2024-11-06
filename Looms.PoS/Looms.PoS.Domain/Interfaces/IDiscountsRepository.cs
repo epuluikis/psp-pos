@@ -3,8 +3,9 @@
 namespace Looms.PoS.Domain.Interfaces;
 public interface IDiscountsRepository
 {
-    Task<BusinessDao> CreateAsync(DiscountDao discountDao);
+    Task<DiscountDao> CreateAsync(DiscountDao discountDao);
     IEnumerable<DiscountDao> GetAll();
     Task<DiscountDao> GetAsync(string id);
     void DeleteAsync(string id);
+    Task<DiscountDao> DeleteAsync(Guid id);
 }

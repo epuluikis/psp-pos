@@ -1,5 +1,8 @@
 ﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
+using Looms.PoS.Application.Features.Discount.Commands;
+using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +21,15 @@ public class DiscountsController : ControllerBase
     {
         _mediator = mediator;
         _contextAccessor = contextAccessor;
+    }
+
+    [HttpPost($"/{EntityName}")]
+    [ProducesResponseType<BusinessResponse>(201)]
+    public async Task<IActionResult> CreateDiscount()
+    {
+        var command = new CreateDiscountsCommand(GetRequest());
+
+        return await _mediator.Send(command);
     }
 
     [HttpGet($"/{EntityName}")]

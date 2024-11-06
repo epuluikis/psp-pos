@@ -1,19 +1,7 @@
-﻿namespace Looms.PoS.Domain.Daos;
+﻿using Looms.PoS.Domain.Daos;
 
-public enum DiscountType
-{
-    Percentage,
-    FixedAmount
-}
-
-public enum DiscountTarget
-{
-    Order, 
-    OrderItem,
-    Both
-}
-
-public record DiscountDao
+namespace Looms.PoS.Application.Models.Responses;
+public class DiscountResponse
 {
     public Guid Id { get; init; }
     public string? Name { get; set; } = string.Empty;

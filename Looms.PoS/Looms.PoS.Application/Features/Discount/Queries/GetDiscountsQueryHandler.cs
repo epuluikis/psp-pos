@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Domain.Interfaces;
+﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,16 +7,17 @@ namespace Looms.PoS.Application.Features.Discount.Queries;
 public class GetDiscountsQueryHandler : IRequestHandler<GetDiscountsQuery, IActionResult>
 {
     private readonly IDiscountsRepository _discountsRepository;
-    public GetDiscountsQueryHandler(IDiscountsRepository discountsRepository)
+    private readonly IDiscountModelsResolver _modelsResolver;
+    public GetDiscountsQueryHandler(IDiscountsRepository discountsRepository, IDiscountModelsResolver modelsResolver)
     {
         _discountsRepository = discountsRepository;
+        _modelsResolver = modelsResolver;
     }
-    public async Task<IActionResult> Handle(GetDiscountsQuery request, CancellationToken cancellationToken)
+    public Task<IActionResult> Handle(GetDiscountsQuery request, CancellationToken cancellationToken)
     {
-        await Task.Delay(10, cancellationToken);
+        var discountDaos = _discountsRepository.GetAll().ToList();
+        var response = _modelsResolver.GetResponseFromDao(discountDaos);
 
-        var businessDaos = _discountsRepository.GetAll();
-
-        return new OkObjectResult(businessDaos);
+        return Task.FromResult<IActionResult>(new OkObjectResult(response));
     }
 }
