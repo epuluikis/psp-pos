@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Discount.Commands;
+namespace Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
 public record DeleteDiscountCommand : LoomsHttpRequest, IRequest<IActionResult>
 {
-    public DeleteDiscountCommand(HttpRequest request) : base(request)
+    public string Id { get; init; }
+    public DeleteDiscountCommand(HttpRequest request, string id) : base(request)
     {
+        Id = id;
     }
 }

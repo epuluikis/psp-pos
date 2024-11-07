@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests;
 
-namespace Looms.PoS.Application.Features.Discount.Commands;
+namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 public class CreateDiscountsRequestValidator : AbstractValidator<CreateDiscountRequest>
 {
     public CreateDiscountsRequestValidator()

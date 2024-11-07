@@ -1,12 +1,12 @@
-﻿using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Discount.Commands;
+namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 public class CreateDiscountsCommandHandler : IRequestHandler<CreateDiscountsCommand, IActionResult>
 {
     private readonly IDiscountsRepository _discountsRepository;
@@ -33,6 +33,6 @@ public class CreateDiscountsCommandHandler : IRequestHandler<CreateDiscountsComm
         
         var response = _modelsResolver.GetResponseFromDao(createdDiscountDao);
 
-        return new CreatedAtRouteResult($"/discounts{discountDao.Id}", response);
+        return new CreatedAtRouteResult($"/discounts/{discountDao.Id}", response);
     }
 }

@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Discount.Commands;
+namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 public record CreateDiscountsCommand : LoomsHttpRequest, IRequest<IActionResult>
 {
     public CreateDiscountsCommand(HttpRequest request) : base(request)

@@ -20,5 +20,13 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<BusinessDao>().HasKey(b => b.Id);
         modelBuilder.Entity<DiscountDao>().HasKey(x => x.Id);
         modelBuilder.Entity<RefundDao>().HasKey(x => x.Id);
+        // modelBuilder.Entity<RefundDao>()
+        //     .HasOne(x => x.Order)
+        //     .HasForeignKey(x => x.OrderId)
+        //     .HasOne(x => x.Payment)
+        //     .HasForeignKey(x => x.PaymentId)
+        //     .HasOne(x => x.User)
+        //     .HasForeignKey(x => x.UserId)
+        //     .HasKey(x => x.Id);
     }
 }

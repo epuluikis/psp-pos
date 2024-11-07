@@ -1,5 +1,7 @@
 ﻿using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 namespace Looms.PoS.Persistance.Repositories;
 
 public class DiscountsRepository : IDiscountsRepository
@@ -18,28 +20,23 @@ public class DiscountsRepository : IDiscountsRepository
         return entityEntry.Entity;
     }
 
-    public IEnumerable<DiscountDao> GetAll()
+    public async Task<DiscountDao> GetAsync(Guid id)
     {
-        return _context.Discounts;
+        return await _context.Discounts.FindAsync(id)
+            ?? throw new LoomsNotFoundException("Discount not found");
     }
 
-    public Task<DiscountDao> GetAsync(string id)
+    public async Task<IEnumerable<DiscountDao>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Discounts.ToListAsync();
     }
 
-    public void DeleteAsync(string id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var discount = await _context.Discounts.FindAsync(id)
+            ?? throw new LoomsNotFoundException("No valid discount provided");
+        _context.Discounts.Remove(discount);
+        await _context.SaveChangesAsync();
     }
 
-    Task<BusinessDao> IDiscountsRepository.CreateAsync(DiscountDao discountDao)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<DiscountDao>> GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
 }

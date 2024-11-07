@@ -1,5 +1,7 @@
 ﻿using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Looms.PoS.Persistance.Repositories;
 public class RefundsRepository : IRefundsRepository
@@ -18,18 +20,15 @@ public class RefundsRepository : IRefundsRepository
         return entityEntry.Entity;
     }
 
-    public IEnumerable<RefundDao> GetAll()
+
+    public async Task<IEnumerable<RefundDao>> GetAllAsync()
     {
-        return _context.Refunds;
+        return await _context.Refunds.ToListAsync();
     }
 
-    public void DeleteAsync(string id)
+    public async Task<RefundDao> GetAsync(Guid id)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<RefundDao> GetAsync(string id)
-    {
-        throw new NotImplementedException();
+        return await _context.Refunds.FindAsync(id)
+            ?? throw new LoomsNotFoundException("Refund not found");
     }
 }

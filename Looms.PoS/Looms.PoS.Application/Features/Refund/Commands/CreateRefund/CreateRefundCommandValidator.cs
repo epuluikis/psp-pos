@@ -1,16 +1,17 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests;
 
-namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
-public class CreateDiscountsCommandValidator : AbstractValidator<CreateDiscountsCommand>
+namespace Looms.PoS.Application.Features.Refund.Commands.CreateRefund;
+
+public class CreateRefundCommandValidator : AbstractValidator<CreateRefundCommand>
 {
-    public CreateDiscountsCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateDiscountRequest>> validators)
+    public CreateRefundCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateRefundRequest>> validators)
     {
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<CreateDiscountRequest>(request);
+                var body = await httpContentResolver.GetPayloadAsync<CreateRefundRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);

@@ -1,6 +1,9 @@
 ﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
 using Looms.PoS.Application.Features.Discount.Commands;
+using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+using Looms.PoS.Application.Features.Discount.Queries;
+using Looms.PoS.Application.Features.Discount.Queries.GetDiscount;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
 using MediatR;
@@ -35,7 +38,15 @@ public class DiscountsController : ControllerBase
     [HttpGet($"/{EntityName}")]
     public async Task<IActionResult> GetDiscounts()
     {
-        var query = new GetBusinessesQuery();
+        var query = new GetDiscountsQuery();
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpGet($"/{EntityName}/{{discountId}}")]
+    public async Task<IActionResult> GetDiscount(string discountId)
+    {
+        var query = new GetDiscountQuery(GetRequest(), discountId);
 
         return await _mediator.Send(query);
     }

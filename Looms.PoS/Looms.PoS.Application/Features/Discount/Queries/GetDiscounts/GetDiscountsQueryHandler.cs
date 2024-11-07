@@ -13,11 +13,11 @@ public class GetDiscountsQueryHandler : IRequestHandler<GetDiscountsQuery, IActi
         _discountsRepository = discountsRepository;
         _modelsResolver = modelsResolver;
     }
-    public Task<IActionResult> Handle(GetDiscountsQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetDiscountsQuery request, CancellationToken cancellationToken)
     {
-        var discountDaos = _discountsRepository.GetAll().ToList();
+        var discountDaos = await _discountsRepository.GetAllAsync();
         var response = _modelsResolver.GetResponseFromDao(discountDaos);
 
-        return Task.FromResult<IActionResult>(new OkObjectResult(response));
+        return new OkObjectResult(response);
     }
 }
