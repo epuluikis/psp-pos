@@ -1,11 +1,11 @@
-﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
-using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
-using Looms.PoS.Application.Features.Discount.Commands;
-using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+﻿using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+using Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
+using Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
 using Looms.PoS.Application.Features.Discount.Queries;
 using Looms.PoS.Application.Features.Discount.Queries.GetDiscount;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Domain.Daos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +27,7 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpPost($"/{EntityName}")]
-    [ProducesResponseType<BusinessResponse>(201)]
+    [ProducesResponseType<DiscountResponse>(201)]
     public async Task<IActionResult> CreateDiscount()
     {
         var command = new CreateDiscountsCommand(GetRequest());
@@ -36,6 +36,7 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [ProducesResponseType<DiscountResponse>(200)]
     public async Task<IActionResult> GetDiscounts()
     {
         var query = new GetDiscountsQuery();
@@ -44,10 +45,28 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{discountId}}")]
+    [ProducesResponseType<DiscountResponse>(200)]
     public async Task<IActionResult> GetDiscount(string discountId)
     {
         var query = new GetDiscountQuery(GetRequest(), discountId);
 
+        return await _mediator.Send(query);
+    }
+
+    [HttpPut($"/{EntityName}/{{discountId}}")]
+    [ProducesResponseType<DiscountResponse>(200)]
+    public async Task<IActionResult> UpdateDiscount(string discountId)
+    {
+        var command = new UpdateDiscountCommand(GetRequest(), discountId);
+
+        return await _mediator.Send(command);
+    }
+
+    [HttpDelete($"/{EntityName}/{{discountId}}")]
+    [ProducesResponseType(204)]
+    public async Task<IActionResult> DeleteDiscount(string discountId)
+    {
+        var query = new DeleteDiscountCommand(GetRequest(), discountId);
         return await _mediator.Send(query);
     }
 

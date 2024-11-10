@@ -28,7 +28,7 @@ public class DiscountsRepository : IDiscountsRepository
 
     public async Task<IEnumerable<DiscountDao>> GetAllAsync()
     {
-        return await _context.Discounts.ToListAsync();
+        return await _context.Discounts.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task DeleteAsync(Guid id)
@@ -39,4 +39,27 @@ public class DiscountsRepository : IDiscountsRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task ArchiveDiscountAsync(Guid id)
+    {
+        var discount = await _context.Discounts.FindAsync(id)
+            ?? throw new LoomsNotFoundException("No valid discount provided");
+        discount.IsDeleted = true;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<DiscountDao> UpdateAsync(DiscountDao discountDao)
+    {
+        var discount = await _context.Discounts.FindAsync(discountDao.Id)
+            ?? throw new LoomsNotFoundException("No valid discount provided");
+
+        discount.Name = discountDao.Name;
+        discount.DiscountType = discountDao.DiscountType;
+        discount.Value = discountDao.Value;
+        discount.Target = discountDao.Target;
+        discount.StartDate = discountDao.StartDate;
+        discount.EndDate = discountDao.EndDate;
+
+        await _context.SaveChangesAsync();
+        return discount;
+    }
 }

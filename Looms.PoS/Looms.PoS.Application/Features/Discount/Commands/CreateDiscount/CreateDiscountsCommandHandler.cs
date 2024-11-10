@@ -1,5 +1,4 @@
-﻿using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
-using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Domain.Interfaces;

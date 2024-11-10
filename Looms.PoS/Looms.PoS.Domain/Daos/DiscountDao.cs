@@ -1,4 +1,6 @@
-﻿namespace Looms.PoS.Domain.Daos;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Looms.PoS.Domain.Daos;
 
 public enum DiscountType
 {
@@ -18,6 +20,8 @@ public record DiscountDao
     public Guid Id { get; init; }
     public string? Name { get; set; } = string.Empty;
     public DiscountType DiscountType { get; set; }
+    
+    [Column(TypeName = "decimal(10,2)")]
     public decimal Value { get; set; }
     public DiscountTarget Target { get; set; }
     public DateTime StartDate { get; set; }

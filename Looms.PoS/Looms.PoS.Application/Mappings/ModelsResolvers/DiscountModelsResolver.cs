@@ -16,9 +16,11 @@ public class DiscountModelsResolver : IDiscountModelsResolver
     public DiscountDao GetDaoFromRequest(CreateDiscountRequest createDiscountRequest)
         => _mapper.Map<DiscountDao>(createDiscountRequest);
 
+    public DiscountDao GetDaoFromRequest(UpdateDiscountRequest updateDiscountRequest)
+        => _mapper.Map<DiscountDao>(updateDiscountRequest);
+
     public DiscountResponse GetResponseFromDao(DiscountDao discountDao)
         => _mapper.Map<DiscountResponse>(discountDao);
-
 
     public IEnumerable<DiscountResponse> GetResponseFromDao(IEnumerable<DiscountDao> discountDao)
         => _mapper.Map<IEnumerable<DiscountResponse>>(discountDao);

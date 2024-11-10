@@ -10,7 +10,7 @@ public class DiscountProfile : Profile
     public DiscountProfile()
     {
         CreateMap<CreateDiscountRequest, DiscountDao>(MemberList.Source);
-
+        CreateMap<UpdateDiscountRequest, DiscountDao>(MemberList.Source);
         CreateMap<DiscountDao, DiscountResponse>();
     }
 }
