@@ -14,11 +14,6 @@ public class PaymentHandlerFactory : IPaymentHandlerFactory
 
     public IPaymentHandler GetHandler(PaymentMethod paymentMethod)
     {
-        if (!_handlers.TryGetValue(paymentMethod, out var handler))
-        {
-            throw new Exception($"Unknown payment method type: {paymentMethod}");
-        }
-
-        return handler;
+        return _handlers[paymentMethod];
     }
 }
