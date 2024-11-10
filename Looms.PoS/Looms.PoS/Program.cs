@@ -1,6 +1,7 @@
 
 using Looms.PoS.Application;
 using Looms.PoS.Persistance;
+using Looms.PoS.Swagger.Filters;
 
 namespace Looms.PoS;
 
@@ -15,7 +16,10 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.OperationFilter<SwaggerRequestTypeOperationFilter>();
+        });
 
         builder.Services.AddApplicationLayer();
         builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -30,7 +34,7 @@ public class Program
         }
 
         app.UseAuthorization();
-
+        app.UseExceptionHandler();
 
         app.MapControllers();
 

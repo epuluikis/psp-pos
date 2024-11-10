@@ -6,6 +6,6 @@ public interface IBusinessesRepository
 {
     Task<BusinessDao> CreateAsync(BusinessDao businessDao);
     Task<IEnumerable<BusinessDao>> GetAllAsync();
-    Task<BusinessDao> GetAsync(string id);
-    void DeleteAsync(string id);
+    Task<BusinessDao> GetAsync(Guid id);
+    void DeleteAsync(Guid id);
 }
