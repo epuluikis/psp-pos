@@ -2,4 +2,11 @@
 
 public class LoomsBadRequestException : LoomsException
 {
+    public LoomsBadRequestException()
+    {
+    }
+
+    public LoomsBadRequestException(string message) : base(message)
+    {
+    }
 }

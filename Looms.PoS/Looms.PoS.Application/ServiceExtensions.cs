@@ -40,5 +40,6 @@ public static class ServiceExtensions
     private static void RegisterMappers(this IServiceCollection services)
     {
         services.AddSingleton<IBusinessModelsResolver, BusinessModelsResolver>();
+        services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
     }
 }
