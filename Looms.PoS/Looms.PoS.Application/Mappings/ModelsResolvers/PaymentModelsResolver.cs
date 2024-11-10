@@ -16,11 +16,17 @@ public class PaymentModelsResolver : IPaymentModelsResolver
     }
 
     public PaymentDao GetDaoFromRequest(CreatePaymentRequest createPaymentRequest)
-        => _mapper.Map<PaymentDao>(createPaymentRequest);
+    {
+        return _mapper.Map<PaymentDao>(createPaymentRequest);
+    }
 
     public PaymentResponse GetResponseFromDao(PaymentDao paymentDao)
-        => _mapper.Map<PaymentResponse>(paymentDao);
+    {
+        return _mapper.Map<PaymentResponse>(paymentDao);
+    }
 
     public IEnumerable<PaymentResponse> GetResponseFromDao(IEnumerable<PaymentDao> paymentDao)
-        => _mapper.Map<IEnumerable<PaymentResponse>>(paymentDao);
+    {
+        return _mapper.Map<IEnumerable<PaymentResponse>>(paymentDao);
+    }
 }

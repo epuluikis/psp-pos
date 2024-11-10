@@ -9,9 +9,9 @@ public class SwaggerRequestTypeOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        SwaggerRequestTypeAttribute? attribute = context.MethodInfo.GetCustomAttribute<SwaggerRequestTypeAttribute>();
+        var attribute = context.MethodInfo.GetCustomAttribute<SwaggerRequestTypeAttribute>();
 
-        if (attribute == null)
+        if (attribute is null)
         {
             return;
         }

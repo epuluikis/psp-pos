@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Exceptions.Handlers;
+using Looms.PoS.Application.Features.Payment.Handlers;
 using Looms.PoS.Application.Interfaces;
+using Looms.PoS.Application.Interfaces.Factories;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Mappings.ModelsResolvers;
 using Looms.PoS.Application.Utilities;
@@ -26,6 +28,7 @@ public static class ServiceExtensions
 
         services.RegisterExceptionHandling();
         services.RegisterMappers();
+        services.RegisterFactories();
     }
 
     private static void RegisterExceptionHandling(this IServiceCollection services)
@@ -41,5 +44,14 @@ public static class ServiceExtensions
     {
         services.AddSingleton<IBusinessModelsResolver, BusinessModelsResolver>();
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
+    }
+
+    private static void RegisterFactories(this IServiceCollection services)
+    {
+        services.AddScoped<IPaymentHandler, CashPaymentHandler>();
+        services.AddScoped<IPaymentHandler, CreditCardPaymentHandler>();
+        services.AddScoped<IPaymentHandler, GiftCardPaymentHandler>();
+
+        services.AddScoped<IPaymentHandlerFactory, PaymentHandlerFactory>();
     }
 }

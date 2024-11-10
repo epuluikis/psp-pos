@@ -31,9 +31,4 @@ public class PaymentsRepository : IPaymentsRepository
         return await _context.Payments.FindAsync(id)
             ?? throw new LoomsNotFoundException("Payment not found");
     }
-
-    public void DeleteAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
 }
