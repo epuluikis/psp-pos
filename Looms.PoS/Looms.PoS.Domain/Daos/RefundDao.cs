@@ -18,7 +18,7 @@ public class RefundDao
     [Column(TypeName = "decimal(10,2)")]
     public decimal Amount { get; init; }
     public string RefundReason { get; set; } = string.Empty;
-    public RefundStatus RefundStatus { get; set; } 
+    public RefundStatus RefundStatus { get; set; } = RefundStatus.Pending;
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime? ProcessedAt { get; set; } = null;
     public Guid UserId { get; init; }

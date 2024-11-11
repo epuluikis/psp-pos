@@ -9,8 +9,11 @@ public class DiscountProfile : Profile
 {
     public DiscountProfile()
     {
-        CreateMap<CreateDiscountRequest, DiscountDao>(MemberList.Source);
-        CreateMap<UpdateDiscountRequest, DiscountDao>(MemberList.Source);
-        CreateMap<DiscountDao, DiscountResponse>();
+        CreateMap<CreateDiscountRequest, DiscountDao>(MemberList.Source)
+            .ForMember(dest => dest.Target, opt => opt.MapFrom(src => src.DiscountTarget));
+        CreateMap<UpdateDiscountRequest, DiscountDao>(MemberList.Source)
+            .ForMember(dest => dest.Target, opt => opt.MapFrom(src => src.DiscountTarget));
+        CreateMap<DiscountDao, DiscountResponse>()
+            .ForMember(dest => dest.DiscountTarget, opt => opt.MapFrom(src => src.Target));
     }
 }

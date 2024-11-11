@@ -56,6 +56,7 @@ public class DiscountsRepository : IDiscountsRepository
         discount.DiscountType = discountDao.DiscountType;
         discount.Value = discountDao.Value;
         discount.Target = discountDao.Target;
+        discount.ProductId = discountDao.ProductId;
         discount.StartDate = discountDao.StartDate;
         discount.EndDate = discountDao.EndDate;
 

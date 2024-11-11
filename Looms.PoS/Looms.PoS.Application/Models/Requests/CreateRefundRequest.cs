@@ -7,5 +7,4 @@ public record CreateRefundRequest
     public string PaymentId { get; init; } = string.Empty;
     public decimal Amount { get; init; }
     public string RefundReason { get; set; } = string.Empty;
-    public string UserId { get; init; } = string.Empty;
 }

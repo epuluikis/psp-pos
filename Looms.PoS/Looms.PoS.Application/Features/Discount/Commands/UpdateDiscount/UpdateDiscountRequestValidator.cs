@@ -1,5 +1,6 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
 public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRequest>
@@ -10,6 +11,12 @@ public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRe
 
         RuleFor(x => x.DiscountTarget)
             .IsInEnum();
+        RuleFor(x => x.ProductId)
+            .NotEmpty()
+            .When(x => x.DiscountTarget == DiscountTarget.Product);
+        RuleFor(x => x.ProductId)
+            .Empty()
+            .When(x => x.DiscountTarget == DiscountTarget.Order);
         RuleFor(x => x.DiscountType)
             .IsInEnum();
         RuleFor(x => x.Value)

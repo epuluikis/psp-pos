@@ -1,19 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Looms.PoS.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Looms.PoS.Domain.Daos;
-
-public enum DiscountType
-{
-    Percentage,
-    FixedAmount
-}
-
-public enum DiscountTarget
-{
-    Order, 
-    OrderItem,
-    Both
-}
 
 public record DiscountDao
 {
@@ -23,7 +11,8 @@ public record DiscountDao
     
     [Column(TypeName = "decimal(10,2)")]
     public decimal Value { get; set; }
-    public DiscountTarget Target { get; set; }
+    public DiscountTarget Target { get; set; } = DiscountTarget.Order;
+    public Guid? ProductId { get; set; } = Guid.Empty;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public bool IsDeleted { get; set; } = false;
