@@ -3,6 +3,7 @@ using System;
 using Looms.PoS.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Looms.PoS.Persistance.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241109214507_AddPayments")]
+    partial class AddPayments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,44 +55,6 @@ namespace Looms.PoS.Persistance.Migrations
                     b.ToTable("Businesses");
                 });
 
-            modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BusinessId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("CurrentBalance")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<decimal>("InitialBalance")
-                        .HasColumnType("numeric");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("IssuedBy")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BusinessId");
-
-                    b.ToTable("GiftCards");
-                });
-
             modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentDao", b =>
                 {
                     b.Property<Guid>("Id")
@@ -97,10 +62,10 @@ namespace Looms.PoS.Persistance.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(10,2)");
 
-                    b.Property<Guid?>("GiftCardId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("GiftCardId")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -112,33 +77,11 @@ namespace Looms.PoS.Persistance.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<decimal>("Tip")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GiftCardId");
-
                     b.ToTable("Payments");
-                });
-
-            modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
-                {
-                    b.HasOne("Looms.PoS.Domain.Daos.BusinessDao", "Business")
-                        .WithMany()
-                        .HasForeignKey("BusinessId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Business");
-                });
-
-            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentDao", b =>
-                {
-                    b.HasOne("Looms.PoS.Domain.Daos.GiftCardDao", "GiftCard")
-                        .WithMany()
-                        .HasForeignKey("GiftCardId");
-
-                    b.Navigation("GiftCard");
                 });
 #pragma warning restore 612, 618
         }
