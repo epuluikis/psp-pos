@@ -1,6 +1,7 @@
 ﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
+using Looms.PoS.Application.Models.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
