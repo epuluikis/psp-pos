@@ -24,11 +24,11 @@ public class UpdateBusinessCommandHandler : IRequestHandler<UpdateBusinessComman
 
     public async Task<IActionResult> Handle(UpdateBusinessCommand command, CancellationToken cancellationToken)
     {
-        var businessRequest = await _httpContentResolver.GetPayloadAsync<UpdateBusinessRequest>(command.Request);
+        var updateBusinessRequest = await _httpContentResolver.GetPayloadAsync<UpdateBusinessRequest>(command.Request);
 
         var originalDao = await _businessesRepository.GetAsync(Guid.Parse(command.Id));
 
-        var businessDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, businessRequest);
+        var businessDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, updateBusinessRequest);
         var updatedBusinessDao = await _businessesRepository.UpdateAsync(businessDao);
 
         var response = _modelsResolver.GetResponseFromDao(updatedBusinessDao);
