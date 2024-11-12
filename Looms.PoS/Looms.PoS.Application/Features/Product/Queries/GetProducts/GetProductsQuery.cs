@@ -3,11 +3,11 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Payment.Queries.GetPayments;
+namespace Looms.PoS.Application.Features.Product.Queries.GetProducts;
 
-public record GetPaymentsQuery : LoomsHttpRequest, IRequest<IActionResult>
+public record GetProductsQuery : LoomsHttpRequest, IRequest<IActionResult>
 {
-    public GetPaymentsQuery(HttpRequest request) : base(request)
+    public GetProductsQuery(HttpRequest request) : base(request)
     {
     }
 }
