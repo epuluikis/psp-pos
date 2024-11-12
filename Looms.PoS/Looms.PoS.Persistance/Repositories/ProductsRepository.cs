@@ -23,12 +23,31 @@ public class ProductsRepository : IProductsRepository
 
     public async Task<IEnumerable<ProductDao>> GetAllAsync()
     {
-        return await _context.Products.ToListAsync();
+        return await _context.Products.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<ProductDao> GetAsync(Guid id)
     {
-        return await _context.Products.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Product not found");
+        var productDao = await _context.Products.FindAsync(id);
+
+        if (productDao is null || productDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Product not found");
+        }
+        return productDao;
+    }
+
+    public async Task<ProductDao> UpdateAsync(ProductDao productDao)
+    {
+        await RemoveAsync(productDao.Id);
+        _context.Products.Update(productDao);
+        await _context.SaveChangesAsync();
+        return productDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var productDao = await _context.Products.FindAsync(id);
+        _context.Products.Remove(productDao!);
     }
 }

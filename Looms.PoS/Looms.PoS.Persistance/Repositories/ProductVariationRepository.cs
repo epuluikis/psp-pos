@@ -23,12 +23,31 @@ public class ProductVariationRepository : IProductVariationRepository
 
     public async Task<IEnumerable<ProductVariationDao>> GetAllAsync()
     {
-        return await _context.ProductVariations.ToListAsync();
+        return await _context.ProductVariations.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<ProductVariationDao> GetAsync(Guid id)
     {
-        return await _context.ProductVariations.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Product Variation entry not found");
+        var productVariationDao = await _context.ProductVariations.FindAsync(id);
+
+        if (productVariationDao is null || productVariationDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Product variation entry not found");
+        }
+        return productVariationDao;
+    }
+
+    public async Task<ProductVariationDao> UpdateAsync(ProductVariationDao productVariationDao)
+    {
+        await RemoveAsync(productVariationDao.Id);
+        _context.ProductVariations.Update(productVariationDao);
+        await _context.SaveChangesAsync();
+        return productVariationDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var productVariationDao = await _context.ProductVariations.FindAsync(id);
+        _context.ProductVariations.Remove(productVariationDao!);
     }
 }

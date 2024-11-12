@@ -23,12 +23,31 @@ public class ProductStockRepository : IProductStockRepository
 
     public async Task<IEnumerable<ProductStockDao>> GetAllAsync()
     {
-        return await _context.ProductStock.ToListAsync();
+        return await _context.ProductStock.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<ProductStockDao> GetAsync(Guid id)
     {
-        return await _context.ProductStock.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Product Stock entry not found");
+        var productStockDao = await _context.ProductStock.FindAsync(id);
+
+        if (productStockDao is null || productStockDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Product stock entry not found");
+        }
+        return productStockDao;
+    }
+
+    public async Task<ProductStockDao> UpdateAsync(ProductStockDao productStockDao)
+    {
+        await RemoveAsync(productStockDao.Id);
+        _context.ProductStock.Update(productStockDao);
+        await _context.SaveChangesAsync();
+        return productStockDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var productStockDao = await _context.ProductStock.FindAsync(id);
+        _context.ProductStock.Remove(productStockDao!);
     }
 }
