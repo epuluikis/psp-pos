@@ -3,6 +3,7 @@ using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 namespace Looms.PoS.Persistance.Repositories;
 
 public class DiscountsRepository : IDiscountsRepository
@@ -32,16 +33,6 @@ public class DiscountsRepository : IDiscountsRepository
         return await _context.Discounts.Where(x => !x.IsDeleted).ToListAsync();
     }
 
-    public async Task<IEnumerable<DiscountDao>> GetAllOrderDiscountsAsync()
-    {
-        return await _context.Discounts.Where(x => !x.IsDeleted && x.Target == DiscountTarget.Order).ToListAsync();
-    }
-
-    public async Task<IEnumerable<DiscountDao>> GetAllProductsDiscountsAsync()
-    {
-        return await _context.Discounts.Where(x => !x.IsDeleted && x.Target == DiscountTarget.Product).ToListAsync();
-    }
-
     public async Task DeleteAsync(Guid id)
     {
         var discount = await _context.Discounts.FindAsync(id)
@@ -60,18 +51,15 @@ public class DiscountsRepository : IDiscountsRepository
 
     public async Task<DiscountDao> UpdateAsync(DiscountDao discountDao)
     {
-        var discount = await _context.Discounts.FindAsync(discountDao.Id)
-            ?? throw new LoomsNotFoundException("No valid discount provided");
-
-        discount.Name = discountDao.Name;
-        discount.DiscountType = discountDao.DiscountType;
-        discount.Value = discountDao.Value;
-        discount.Target = discountDao.Target;
-        discount.ProductId = discountDao.ProductId;
-        discount.StartDate = discountDao.StartDate;
-        discount.EndDate = discountDao.EndDate;
+        await RemoveAsync(discountDao.Id);
+        _context.Discounts.Update(discountDao);
 
         await _context.SaveChangesAsync();
-        return discount;
+        return discountDao;
+    }
+
+    private async Task RemoveAsync(Guid id){
+        var discount = await _context.Discounts.FindAsync(id);
+        _context.Discounts.Remove(discount!);
     }
 }

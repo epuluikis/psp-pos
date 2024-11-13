@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+
 public class CreateDiscountsCommandHandler : IRequestHandler<CreateDiscountsCommand, IActionResult>
 {
     private readonly IDiscountsRepository _discountsRepository;

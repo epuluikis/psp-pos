@@ -1,7 +1,7 @@
-using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Models.Requests;
+
 public record UpdateDiscountRequest
 {
     public string? Name { get; init; } = string.Empty;

@@ -3,9 +3,7 @@ using Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
 using Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
 using Looms.PoS.Application.Features.Discount.Queries;
 using Looms.PoS.Application.Features.Discount.Queries.GetDiscount;
-using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
-using Looms.PoS.Domain.Daos;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

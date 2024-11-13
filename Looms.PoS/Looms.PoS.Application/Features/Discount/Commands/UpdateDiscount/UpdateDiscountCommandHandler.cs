@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
+
 public class UpdateDiscountCommandHandler : IRequestHandler<UpdateDiscountCommand, IActionResult>
 {
     private readonly IDiscountsRepository _discountsRepository;

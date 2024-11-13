@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Refund.Queries.GetRefunds;
+
 public class GetRefundsQueryHandler : IRequestHandler<GetRefundsQuery, IActionResult>
 {
     private readonly IRefundsRepository _refundsRepository;

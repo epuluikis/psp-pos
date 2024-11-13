@@ -5,6 +5,7 @@ using Looms.PoS.Domain.Enums;
 using System.Globalization;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+
 public class CreateDiscountsRequestValidator : AbstractValidator<CreateDiscountRequest>
 {
     public CreateDiscountsRequestValidator()

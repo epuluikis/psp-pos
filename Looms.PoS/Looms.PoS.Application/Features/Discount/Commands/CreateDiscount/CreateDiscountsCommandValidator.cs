@@ -3,6 +3,7 @@ using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+
 public class CreateDiscountsCommandValidator : AbstractValidator<CreateDiscountsCommand>
 {
     public CreateDiscountsCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateDiscountRequest>> validators)

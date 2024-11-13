@@ -4,6 +4,7 @@ using Looms.PoS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Looms.PoS.Persistance.Repositories;
+
 public class RefundsRepository : IRefundsRepository
 {
     private readonly AppDbContext _context;

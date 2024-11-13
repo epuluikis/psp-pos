@@ -1,7 +1,7 @@
-using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Models.Responses;
+
 public class RefundResponse
 {
     public Guid Id { get; init; }

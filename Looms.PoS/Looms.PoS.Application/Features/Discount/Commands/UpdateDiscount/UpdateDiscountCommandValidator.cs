@@ -5,6 +5,7 @@ using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
+
 public class UpdateDiscountCommandValidator : AbstractValidator<UpdateDiscountCommand>
 {
     public UpdateDiscountCommandValidator(

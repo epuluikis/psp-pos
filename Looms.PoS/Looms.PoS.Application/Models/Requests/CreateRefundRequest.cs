@@ -1,6 +1,5 @@
-using Looms.PoS.Domain.Daos;
-
 namespace Looms.PoS.Application.Models.Requests;
+
 public record CreateRefundRequest
 {
     public string OrderId { get; init; } = string.Empty;

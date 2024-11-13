@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
+
 public record DeleteDiscountCommand : LoomsHttpRequest, IRequest<IActionResult>
 {
     public string Id { get; init; }
