@@ -1,4 +1,6 @@
 ﻿using Looms.PoS.Application.Features.Product.Commands.CreateProduct;
+using Looms.PoS.Application.Features.Product.Commands.DeleteProduct;
+using Looms.PoS.Application.Features.Product.Commands.UpdateProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProducts;
 using Looms.PoS.Application.Models.Responses;
@@ -42,6 +44,22 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetProducts(string productId)
     {
         var query = new GetProductQuery(GetRequest(), productId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpPut($"/{EntityName}/{{productId}}")]
+    public async Task<IActionResult> UpdateProduct(string productId)
+    {
+        var query = new UpdateProductCommand(GetRequest(), productId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpDelete($"/{EntityName}/{{productId}}")]
+    public async Task<IActionResult> DeleteProduct(string productId)
+    {
+        var query = new DeleteProductCommand(GetRequest(), productId);
 
         return await _mediator.Send(query);
     }
