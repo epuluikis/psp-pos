@@ -4,9 +4,9 @@ using Looms.PoS.Application.Utilities.Validators;
 
 namespace Looms.PoS.Application.Features.Refund.Queries.GetRefunds;
 
-public class GetRefundsQueryValidator : AbstractValidator<GetRefundQuery>
+public class GetRefundQueryValidator : AbstractValidator<GetRefundQuery>
 {
-    public GetRefundsQueryValidator()
+    public GetRefundQueryValidator()
     {
         RuleFor(x => x.Id).MustBeValidGuid();
     }

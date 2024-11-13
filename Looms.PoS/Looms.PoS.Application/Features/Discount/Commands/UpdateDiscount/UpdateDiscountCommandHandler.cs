@@ -27,15 +27,11 @@ public class UpdateDiscountCommandHandler : IRequestHandler<UpdateDiscountComman
     {
         var discountRequest = await _httpContentResolver.GetPayloadAsync<UpdateDiscountRequest>(command.Request);
         
-        var discountDao = _modelsResolver.GetDaoFromRequest(discountRequest);
-        Console.WriteLine(discountDao.Id);
-        Console.WriteLine(command.Id);
-        if(discountDao.Id.ToString() != command.Id)
-        {
-            return new BadRequestResult();
-        }
+        var original = await _discountsRepository.GetAsync(Guid.Parse(command.Id));
 
+        var discountDao = _modelsResolver.GetDaoFromDaoAndRequest(original, discountRequest);
         var updateDiscountDao = await _discountsRepository.UpdateAsync(discountDao);
+        
         var response = _modelsResolver.GetResponseFromDao(updateDiscountDao);
 
         return new OkObjectResult(response);

@@ -10,7 +10,7 @@ public class DiscountResponse
     public decimal Value { get; set; }
     public DiscountTarget DiscountTarget { get; set; }
     public Guid? ProductId { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public string StartDate { get; set; }
+    public string EndDate { get; set; }
     public bool IsDeleted { get; set; } = false;
 }

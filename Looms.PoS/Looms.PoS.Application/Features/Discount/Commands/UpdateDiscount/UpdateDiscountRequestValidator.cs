@@ -1,5 +1,6 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Utilities;
 using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
@@ -25,14 +26,29 @@ public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRe
             .WithMessage("Value must be greater than 0");
         RuleFor(x => x.StartDate)
             .NotEmpty()
-            .Must(x => x != default(DateTime) && x >= DateTime.Now)
-            .WithMessage("Start date must be in the future");
+            .Must(dateString =>
+            {
+                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
+                return parsedDate >= DateTime.UtcNow;
+            })
+            .WithMessage("Start date must be a valid future date.");
+
         RuleFor(x => x.EndDate)
             .NotEmpty()
-            .Must(x => x != default(DateTime) && x > DateTime.Now)
-            .WithMessage("End date must be in the future");
+            .Must(dateString =>
+            {
+                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
+                return parsedDate >= DateTime.UtcNow;
+            })
+            .WithMessage("End date must be a valid future date.");
+
         RuleFor(x => x)
-            .Must(x => x.EndDate > x.StartDate)
-            .WithMessage("End date must be after the start date");
+            .Must(x =>
+            {
+                var startDate = DateTimeHelper.ConvertToUtc(x.StartDate);
+                var endDate = DateTimeHelper.ConvertToUtc(x.EndDate);
+                return endDate > startDate;
+            })
+            .WithMessage("End date must be after the start date.");
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,16 @@ public class DiscountsRepository : IDiscountsRepository
     public async Task<IEnumerable<DiscountDao>> GetAllAsync()
     {
         return await _context.Discounts.Where(x => !x.IsDeleted).ToListAsync();
+    }
+
+    public async Task<IEnumerable<DiscountDao>> GetAllOrderDiscountsAsync()
+    {
+        return await _context.Discounts.Where(x => !x.IsDeleted && x.Target == DiscountTarget.Order).ToListAsync();
+    }
+
+    public async Task<IEnumerable<DiscountDao>> GetAllProductsDiscountsAsync()
+    {
+        return await _context.Discounts.Where(x => !x.IsDeleted && x.Target == DiscountTarget.Product).ToListAsync();
     }
 
     public async Task DeleteAsync(Guid id)

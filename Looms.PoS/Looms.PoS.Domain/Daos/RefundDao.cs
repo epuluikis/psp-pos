@@ -1,13 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Looms.PoS.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Looms.PoS.Domain.Daos;
-
-public enum RefundStatus
-{
-    Pending,
-    Completed,
-    Rejected
-}
 
 public class RefundDao
 {

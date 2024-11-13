@@ -12,7 +12,6 @@ public class CreateDiscountsCommandHandler : IRequestHandler<CreateDiscountsComm
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IDiscountModelsResolver _modelsResolver;
 
-
     public CreateDiscountsCommandHandler(
         IDiscountsRepository discountsRepository, 
         IHttpContentResolver httpContentResolver,
