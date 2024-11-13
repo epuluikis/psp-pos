@@ -1,6 +1,6 @@
 ﻿using Looms.PoS.Domain.Enums;
 
-namespace Looms.PoS.Application.Models.Responses;
+namespace Looms.PoS.Application.Models.Responses.Payment;
 
 public class PaymentResponse
 {
