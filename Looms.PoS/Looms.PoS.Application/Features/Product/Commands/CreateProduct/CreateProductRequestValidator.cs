@@ -7,6 +7,19 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
 {
     public CreateProductRequestValidator()
     {
-        //TODO: implement
+        RuleFor(x => x.Name)
+            .NotEmpty();
+
+        RuleFor(x => x.Price)
+            .PrecisionScale(10, 2, false)
+            .GreaterThanOrEqualTo(0);
+        
+        RuleFor(x => x.QuantityInStock)
+            .GreaterThanOrEqualTo(0);
+
+        RuleFor(x => x.Description)
+            .NotEmpty();
+
+        //TODO: validate variation
     }
 }

@@ -25,9 +25,9 @@ public class ProductsController : ControllerBase
     [HttpPost($"/{EntityName}")]
     public async Task<IActionResult> CreateProduct()
     {
-        var comnand = new CreateProductCommand(GetRequest());
+        var command = new CreateProductCommand(GetRequest());
 
-        return await _mediator.Send(comnand);
+        return await _mediator.Send(command);
     }
 
     [HttpGet($"/{EntityName}")]
