@@ -7,6 +7,6 @@ public record CreateProductRequest
     public decimal Price { get; init; }
     public decimal QuantityInStock { get; init; }
     public String Description { get; init; } = string.Empty;
-//TODO: should we need a variation id or 2 params for variation
+//TODO: add an IEnnumerable to insert variations
     public Guid VariationId { get; init; }
 }

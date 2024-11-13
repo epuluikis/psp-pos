@@ -8,8 +8,6 @@ public class ProductResponse
     public string Description { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public Guid TaxId { get; init; }
-    //TODO: Should also contain BusinessId
-    // public Guid BusinessId { get; init; }
+    public Guid BusinessId { get; init; }
     public bool IsDeleted { get; init; }
-
 }

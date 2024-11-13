@@ -7,23 +7,23 @@ namespace Looms.PoS.Application.Features.Product.Commands.DeleteProduct;
 
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, IActionResult>
 {
-    private readonly IProductsRepository _ProductsRepository;
+    private readonly IProductsRepository _productsRepository;
     private readonly IProductModelsResolver _modelsResolver;
 
     public DeleteProductCommandHandler(
-        IProductsRepository ProductsRepository,
+        IProductsRepository productsRepository,
         IProductModelsResolver modelsResolver)
     {
-        _ProductsRepository = ProductsRepository;
+        _productsRepository = productsRepository;
         _modelsResolver = modelsResolver;
     }
 
     public async Task<IActionResult> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
     {
-        var originalDao = await _ProductsRepository.GetAsync(Guid.Parse(command.Id));
+        var originalDao = await _productsRepository.GetAsync(Guid.Parse(command.Id));
 
-        var ProductDao = _modelsResolver.GetDeletedDao(originalDao);
-        _ = await _ProductsRepository.UpdateAsync(ProductDao);
+        var productDao = _modelsResolver.GetDeletedDao(originalDao);
+        _ = await _productsRepository.UpdateAsync(productDao);
 
         return new NoContentResult();
     }

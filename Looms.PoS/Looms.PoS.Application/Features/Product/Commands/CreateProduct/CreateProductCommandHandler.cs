@@ -9,29 +9,29 @@ namespace Looms.PoS.Application.Features.Product.Commands.CreateProduct;
 
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, IActionResult>
 {
-    private readonly IProductsRepository _ProductsRepository;
+    private readonly IProductsRepository _productsRepository;
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IProductModelsResolver _modelsResolver;
 
     public CreateProductCommandHandler(
-        IProductsRepository ProductsRepository,
+        IProductsRepository productsRepository,
         IHttpContentResolver httpContentResolver,
         IProductModelsResolver modelsResolver)
     {
-        _ProductsRepository = ProductsRepository;
+        _productsRepository = productsRepository;
         _httpContentResolver = httpContentResolver;
         _modelsResolver = modelsResolver;
     }
 
     public async Task<IActionResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var ProductRequest = await _httpContentResolver.GetPayloadAsync<CreateProductRequest>(command.Request);
+        var productRequest = await _httpContentResolver.GetPayloadAsync<CreateProductRequest>(command.Request);
 
-        var ProductDao = _modelsResolver.GetDaoFromRequest(ProductRequest);
-        var createdProductDao = await _ProductsRepository.CreateAsync(ProductDao);
+        var productDao = _modelsResolver.GetDaoFromRequest(productRequest);
+        var createdProductDao = await _productsRepository.CreateAsync(productDao);
 
         var response = _modelsResolver.GetResponseFromDao(createdProductDao);
 
-        return new CreatedAtRouteResult($"/Products{ProductDao.Id}", response);
+        return new CreatedAtRouteResult($"/products{productDao.Id}", response);
     }
 }
