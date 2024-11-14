@@ -5,6 +5,7 @@ using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
+
 public class DiscountModelsResolver : IDiscountModelsResolver
 {
     private readonly IMapper _mapper;

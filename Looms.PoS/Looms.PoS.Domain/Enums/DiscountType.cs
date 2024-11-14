@@ -2,6 +2,6 @@ namespace Looms.PoS.Domain.Enums;
 
 public enum DiscountType
 {
-    Percentage,
-    FixedAmount
+    Percentage = 0,
+    Amount = 1
 }

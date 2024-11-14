@@ -42,7 +42,7 @@ public class RefundsController : ControllerBase
     [HttpGet($"/{EntityName}")]
     public async Task<IActionResult> GetRefunds()
     {
-        var query = new GetRefundsQuery();
+        var query = new GetRefundsQuery(GetRequest());
 
         return await _mediator.Send(query);
     }

@@ -37,7 +37,7 @@ public class DiscountsController : ControllerBase
     [ProducesResponseType<DiscountResponse>(200)]
     public async Task<IActionResult> GetDiscounts()
     {
-        var query = new GetDiscountsQuery();
+        var query = new GetDiscountsQuery(GetRequest());
 
         return await _mediator.Send(query);
     }

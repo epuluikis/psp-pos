@@ -13,15 +13,25 @@ public class CreateDiscountsRequestValidator : AbstractValidator<CreateDiscountR
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.DiscountTarget)
-            .IsInEnum();
+            .NotEmpty()
+            .Must(value => Enum.TryParse<DiscountTarget>(value, true, out _))
+            .WithMessage("Invalid DiscountTarget value.");
         RuleFor(x => x.ProductId)
             .NotEmpty()
-            .When(x => x.DiscountTarget == DiscountTarget.Product);
+            .When(x =>
+                Enum.TryParse<DiscountTarget>(x.DiscountTarget, true, out var discountTarget) && 
+                discountTarget == DiscountTarget.Product)
+            .WithMessage("ProductId is required when discount is for product.");
         RuleFor(x => x.ProductId)
             .Empty()
-            .When(x => x.DiscountTarget == DiscountTarget.Order);
+            .When(x =>
+                Enum.TryParse<DiscountTarget>(x.DiscountTarget, true, out var discountTarget) && 
+                discountTarget == DiscountTarget.Order)
+            .WithMessage("ProductId must be empty when discount is for orders.");
         RuleFor(x => x.DiscountType)
-            .IsInEnum();
+            .NotEmpty()
+            .Must(value => Enum.TryParse<DiscountType>(value, true, out _))
+            .WithMessage("Invalid DiscountType value.");
         RuleFor(x => x.Value)
             .NotEmpty()
             .GreaterThan(0);

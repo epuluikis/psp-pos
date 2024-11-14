@@ -9,6 +9,7 @@ public class GetRefundsQueryHandler : IRequestHandler<GetRefundsQuery, IActionRe
 {
     private readonly IRefundsRepository _refundsRepository;
     private readonly IRefundModelsResolver _modelsResolver;
+    
     public GetRefundsQueryHandler(IRefundsRepository refundsRepository, IRefundModelsResolver modelsResolver)
     {
         _refundsRepository = refundsRepository;

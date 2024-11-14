@@ -13,7 +13,6 @@ public class UpdateDiscountCommandHandler : IRequestHandler<UpdateDiscountComman
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IDiscountModelsResolver _modelsResolver;
 
-
     public UpdateDiscountCommandHandler(
         IDiscountsRepository discountsRepository, 
         IHttpContentResolver httpContentResolver,
