@@ -1,6 +1,6 @@
 ﻿using Looms.PoS.Domain.Enums;
 
-namespace Looms.PoS.Application.Models.Requests;
+namespace Looms.PoS.Application.Models.Requests.Payment;
 
 public record CreatePaymentRequest
 {
