@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Looms.PoS.Application.Interfaces;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Payment;
 
 namespace Looms.PoS.Application.Features.Payment.Commands.CreatePayment;
 

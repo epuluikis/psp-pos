@@ -1,4 +1,6 @@
 ﻿using Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
+using Looms.PoS.Application.Features.Business.Commands.DeleteBusiness;
+using Looms.PoS.Application.Features.Business.Commands.UpdateBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
 using Looms.PoS.Application.Models.Responses;
@@ -42,6 +44,22 @@ public class BusinessesController : ControllerBase
     public async Task<IActionResult> GetBusiness(string businessId)
     {
         var query = new GetBusinessQuery(GetRequest(), businessId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpPut($"/{EntityName}/{{businessId}}")]
+    public async Task<IActionResult> UpdateBusiness(string businessId)
+    {
+        var query = new UpdateBusinessCommand(GetRequest(), businessId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpDelete($"/{EntityName}/{{businessId}}")]
+    public async Task<IActionResult> DeleteBusiness(string businessId)
+    {
+        var query = new DeleteBusinessCommand(GetRequest(), businessId);
 
         return await _mediator.Send(query);
     }
