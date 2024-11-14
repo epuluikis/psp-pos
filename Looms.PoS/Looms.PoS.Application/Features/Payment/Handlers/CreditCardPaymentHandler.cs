@@ -1,5 +1,5 @@
 using Looms.PoS.Application.Interfaces.Factories;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Responses.Payment;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Enums;
 
