@@ -1,16 +1,13 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Business;
 
-namespace Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
+namespace Looms.PoS.Application.Features.Business.Commands.UpdateBusiness;
 
-public class CreateBusinessRequestValidator : AbstractValidator<CreateBusinessRequest>
+public class UpdateBusinessRequestValidator : AbstractValidator<UpdateBusinessRequest>
 {
-    public CreateBusinessRequestValidator()
+    public UpdateBusinessRequestValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty();
-
-        RuleFor(x => x.Owner)
             .NotEmpty();
 
         RuleFor(x => x.Email)

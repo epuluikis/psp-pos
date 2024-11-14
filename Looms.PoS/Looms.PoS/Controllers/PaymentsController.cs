@@ -1,8 +1,8 @@
 ﻿using Looms.PoS.Application.Features.Payment.Commands.CreatePayment;
 using Looms.PoS.Application.Features.Payment.Queries.GetPayment;
 using Looms.PoS.Application.Features.Payment.Queries.GetPayments;
-using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Requests.Payment;
+using Looms.PoS.Application.Models.Responses.Payment;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

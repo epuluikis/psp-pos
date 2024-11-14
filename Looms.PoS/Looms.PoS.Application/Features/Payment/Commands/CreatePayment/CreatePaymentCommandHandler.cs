@@ -1,7 +1,7 @@
 ﻿using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.Factories;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Payment;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
