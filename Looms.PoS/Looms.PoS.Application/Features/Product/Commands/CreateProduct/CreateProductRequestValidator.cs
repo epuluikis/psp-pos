@@ -20,6 +20,7 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
         RuleFor(x => x.Description)
             .NotEmpty();
 
-        //TODO: validate variation
+        RuleFor(x => x.Variation.Name)
+            .NotEmpty();
     }
 }
