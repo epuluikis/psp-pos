@@ -1,6 +1,5 @@
 ﻿namespace Looms.PoS.Application.Models.Responses.Product;
 
-//TODO: is this really correct??
 public class ProductResponse
 {
     public Guid Id { get; init; }

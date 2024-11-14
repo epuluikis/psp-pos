@@ -9,6 +9,6 @@ public record CreateProductCommand : LoomsHttpRequest, IRequest<IActionResult>
 {
     public CreateProductCommand(HttpRequest request) : base(request)
     {
-        //TODO: probably should have a body
+        //TODO: idk where to check if this has a body, but from what i understand it doesnt 
     }
 }

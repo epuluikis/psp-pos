@@ -7,6 +7,7 @@ public record UpdateProductRequest
     public decimal Price { get; init; }
     public decimal QuantityInStock { get; init; }
     public String Description { get; init; } = string.Empty;
-//TODO: add an IEnnumerable to insert variations
-    public Guid VariationId { get; init; }
+    public Variation Variation { get; init; } = new Variation(string.Empty, null);
+    //TODO: maybe it would be better to reference the variation, because we have it in the class diagram
+    //public Guid VariationId { get; init; }
 }

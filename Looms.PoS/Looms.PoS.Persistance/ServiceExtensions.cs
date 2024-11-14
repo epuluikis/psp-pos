@@ -15,11 +15,8 @@ public static class ServiceExtensions
         services.AddTransient<IBusinessesRepository, BusinessesRepository>();
         services.AddTransient<IPaymentsRepository, PaymentsRepository>();
         services.AddTransient<IGiftCardsRepository, GiftCardsRepository>();
-<<<<<<< HEAD
         services.AddTransient<IProductsRepository, ProductsRepository>();
         services.AddTransient<IProductVariationRepository, ProductVariationRepository>();
         services.AddTransient<IProductStockRepository, ProductStockRepository>();
-=======
->>>>>>> master
     }
 }
