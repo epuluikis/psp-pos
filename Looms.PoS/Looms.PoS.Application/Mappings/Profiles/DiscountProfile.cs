@@ -24,9 +24,7 @@ public class DiscountProfile : Profile
             .ForMember(dest => dest.DiscountType, opt => opt.MapFrom(src => Enum.Parse<DiscountType>(src.DiscountType, true)));
 
         CreateMap<DiscountDao, DiscountResponse>()
-            .ForMember(dest => dest.DiscountTarget, opt => opt.MapFrom(src => src.Target.ToString()))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToLocal(src.StartDate)))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToLocal(src.EndDate)))
-            .ForMember(dest => dest.DiscountType, opt => opt.MapFrom(src => src.DiscountType.ToString()));
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToLocal(src.EndDate)));
     }
 }

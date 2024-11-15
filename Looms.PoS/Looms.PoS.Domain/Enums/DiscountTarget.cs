@@ -2,6 +2,8 @@ namespace Looms.PoS.Domain.Enums;
 
 public enum DiscountTarget
 {
-    Order = 0, 
-    Product = 1
+    [EnumMember(Value = "Order")]
+    Order, 
+    [EnumMember(Value = "Product")]
+    Product
 }
