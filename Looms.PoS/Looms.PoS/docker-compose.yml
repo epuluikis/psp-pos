@@ -6,9 +6,9 @@ services:
     image: postgres:14.13-alpine3.20
     container_name: looms-pos-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: triusis8
-      POSTGRES_DB: psp
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: default
     ports:
       - "5432:5432"
     volumes:
