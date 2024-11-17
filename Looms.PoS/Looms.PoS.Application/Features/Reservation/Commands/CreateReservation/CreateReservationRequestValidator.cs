@@ -7,15 +7,24 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
 {
     public CreateReservationRequestValidator()
     {
-        RuleFor(x => x.Name)
-            .NotEmpty();
 
-        RuleFor(x => x.Owner)
+        RuleFor(x => x.CustomerId)
             .NotEmpty();
-
-        RuleFor(x => x.Email)
+                    
+        RuleFor(x => x.AppointmentTime)
+            .NotEmpty();
+            
+        RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .EmailAddress();
+            .NotNull()
+            .NotEqual(Guid.Empty);
+        
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty();
+        
+        RuleFor(x => x.Email)
+            .NotEmpty();
+
+
     }
 }

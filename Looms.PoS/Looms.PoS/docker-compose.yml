@@ -3,18 +3,18 @@ volumes:
 
 services:
   postgres:
-    image: postgres:14.3-alpine
+    image: postgres:14.13-alpine3.20
     container_name: looms-pos-postgres
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: default
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: triusis8
+      POSTGRES_DB: psp
     ports:
       - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data:cached
     healthcheck:
-      test: pg_isready -U user -d default
+      test: pg_isready -U postgres -d psp
       interval: 5s
       timeout: 5s
       retries: 5
