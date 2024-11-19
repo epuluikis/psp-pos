@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Product.Commands.CreateProduct;
-
+//TODO: include ProductVariation and ProductStock repos
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, IActionResult>
 {
     private readonly IProductsRepository _productsRepository;
