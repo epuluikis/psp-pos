@@ -8,6 +8,7 @@ namespace Looms.PoS.Application.Features.Product.Commands.UpdateProduct;
 public record UpdateProductCommand : LoomsHttpRequest, IRequest<IActionResult>
 {
     public string Id { get; init; }
+    
     public UpdateProductCommand(HttpRequest request, string id) : base(request)
     {
         Id = id;

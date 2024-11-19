@@ -35,7 +35,6 @@ public class ProductModelsResolver : IProductModelsResolver
         return _mapper.Map<ProductDao>(updateProductRequest) with
         {
             Id = originalDao.Id,
-            //TODO: idk what to do here, pls help
         };
     }
 

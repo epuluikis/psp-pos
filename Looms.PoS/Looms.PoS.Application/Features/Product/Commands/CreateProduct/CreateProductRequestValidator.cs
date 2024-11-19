@@ -20,7 +20,8 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
         RuleFor(x => x.Description)
             .NotEmpty();
 
-        RuleFor(x => x.Variation.Name)
-            .NotEmpty();
+        //TODO: figure out how to do IEnumerable rules
+        // RuleFor(x => x.Variation.Name)
+        //     .NotEmpty();
     }
 }

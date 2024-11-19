@@ -9,7 +9,7 @@ namespace Looms.PoS.Application.Features.Product.Commands.UpdateProduct;
 
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, IActionResult>
 {
-     private readonly IProductsRepository _productsRepository;
+    private readonly IProductsRepository _productsRepository;
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IProductModelsResolver _modelsResolver;
 

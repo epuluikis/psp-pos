@@ -3,7 +3,6 @@ using Looms.PoS.Application.Features.Business.Commands.DeleteBusiness;
 using Looms.PoS.Application.Features.Business.Commands.UpdateBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
-using Looms.PoS.Application.Models.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
