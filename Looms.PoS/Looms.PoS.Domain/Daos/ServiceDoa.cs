@@ -11,9 +11,7 @@ public record ServiceDao
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Price { get; init; }
-    
-    [Column(TypeName = "decimal(10,0)")]
-    public decimal DurationMin { get; init; }
+    public int DurationMin { get; init; }
     public Guid BusinessId { get; init; }
     public Guid TaxId { get; init; }
     public bool IsDeleted { get; init; } = false;

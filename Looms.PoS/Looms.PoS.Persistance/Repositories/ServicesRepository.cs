@@ -31,7 +31,7 @@ public class ServicesRepository : IServicesRepository
         return await _context.Services.FindAsync(id)
             ?? throw new LoomsNotFoundException("Service not found");
     }
-
+    
     public void DeleteAsync(Guid id)
     {
         throw new NotImplementedException();

@@ -1,8 +1,12 @@
 using Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
 using Looms.PoS.Application.Features.Reservation.Queries.GetReservation;
 using Looms.PoS.Application.Features.Reservation.Queries.GetReservations;
+using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -22,6 +26,8 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost($"/{EntityName}")]
+    [SwaggerRequestType(typeof(CreateReservationRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Reservation successfully created.", typeof(List<ReservationResponse>))]
     public async Task<IActionResult> CreateReservation()
     {
         var comnand = new CreateReservationCommand(GetRequest());
@@ -30,6 +36,7 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "List of reservation returned successfully.", typeof(List<ReservationResponse>))]
     public async Task<IActionResult> GetReservations()
     {
         var query = new GetReservationsQuery(GetRequest());
@@ -38,6 +45,7 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{reservationId}}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Reservation details returned successfully.", typeof(ReservationResponse))]
     public async Task<IActionResult> GetReservation(string reservationId)
     {
         var query = new GetReservationQuery(GetRequest(), reservationId);

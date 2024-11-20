@@ -1,5 +1,6 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Utilities.Validators;
 
 namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
 
@@ -20,7 +21,8 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
 
         RuleFor(x => x.DurationMin)
             .GreaterThanOrEqualTo(0);
-
             
+        RuleFor(x => x.BussinessId)
+            .MustBeValidGuid();
     }
 }

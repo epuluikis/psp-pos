@@ -10,4 +10,23 @@ public static class FluentValidationExtensions
                       .Must(id => Guid.TryParse(id, out _) && id.Length == 36)
                       .WithMessage("{PropertyName} is not a valid Guid");
     }
+
+    public static IRuleBuilder<T, string> MustBeValidDateTime<T>(this IRuleBuilder<T, string> builder)
+    {
+        return builder.NotEmpty()
+                      .Must(date => DateTime.TryParse(date, out _)) // should we change to specific format?
+                      .WithMessage("{PropertyName} is not a valid DateTime");
+    }
+    public static IRuleBuilder<T, string> MustBeWithinBusinessHours<T>(this IRuleBuilder<T, string> builder)
+        {
+            return builder.Must((_, dateString) =>
+                          {
+                              if (DateTime.TryParse(dateString, out DateTime dateTime))
+                              {
+                                  return dateTime.Hour >= 9 && dateTime.Hour < 17;
+                              }
+                              return false;
+                          })
+                          .WithMessage("{PropertyName} must be between 9:00 and 17:00.");
+        }
 }
