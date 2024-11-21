@@ -1,4 +1,4 @@
-namespace Looms.PoS.Application.Models.Requests;
+namespace Looms.PoS.Application.Models.Requests.Service;
 
 public record CreateServiceRequest
 {
@@ -6,6 +6,6 @@ public record CreateServiceRequest
     public string Category { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public int DurationMin { get; init; }
-    public string BussinessId { get; init; } = string.Empty;
+    public string BusinessId { get; init; } = string.Empty;
     public string? Description { get; init; }
 }

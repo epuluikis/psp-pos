@@ -28,12 +28,26 @@ public class ServicesRepository : IServicesRepository
 
     public async Task<ServiceDao> GetAsync(Guid id)
     {
-        return await _context.Services.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Service not found");
+        var serviceDao = await _context.Services.FindAsync(id);
+
+        if (serviceDao is null || serviceDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Service not found");
+        }
+        return serviceDao;
     }
-    
-    public void DeleteAsync(Guid id)
+
+    public async Task<ServiceDao> UpdateAsync(ServiceDao serviceDao)
     {
-        throw new NotImplementedException();
+        await RemoveAsync(serviceDao.Id);
+        _context.Services.Update(serviceDao);
+        await _context.SaveChangesAsync();
+        return serviceDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var serviceDao = await _context.Services.FindAsync(id);
+        _context.Services.Remove(serviceDao!);
     }
 }

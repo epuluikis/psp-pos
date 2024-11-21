@@ -23,17 +23,31 @@ public class ReservationsRepository : IReservationsRepository
 
     public async Task<IEnumerable<ReservationDao>> GetAllAsync()
     {
-        return await _context.Reservations.ToListAsync();
+        return await _context.Reservations.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<ReservationDao> GetAsync(Guid id)
     {
-        return await _context.Reservations.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Reservation not found");
+        var reservationDao = await _context.Reservations.FindAsync(id);
+
+        if (reservationDao is null || reservationDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Reservation not found");
+        }
+        return reservationDao;
     }
 
-    public void DeleteAsync(Guid id)
+    public async Task<ReservationDao> UpdateAsync(ReservationDao reservationDao)
     {
-        throw new NotImplementedException();
+        await RemoveAsync(reservationDao.Id);
+        _context.Reservations.Update(reservationDao);
+        await _context.SaveChangesAsync();
+        return reservationDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var reservationDao = await _context.Reservations.FindAsync(id);
+        _context.Reservations.Remove(reservationDao!);
     }
 }

@@ -7,5 +7,5 @@ public interface IServicesRepository
     Task<ServiceDao> CreateAsync(ServiceDao serviceDao);
     Task<IEnumerable<ServiceDao>> GetAllAsync();
     Task<ServiceDao> GetAsync(Guid id);
-    void DeleteAsync(Guid id);
+    Task<ServiceDao> UpdateAsync(ServiceDao serviceDao);
 }

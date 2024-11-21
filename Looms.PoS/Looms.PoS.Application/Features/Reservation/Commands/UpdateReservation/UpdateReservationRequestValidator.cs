@@ -1,26 +1,17 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Utilities.Validators;
-using Looms.PoS.Application.Utilities;
 
-namespace Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
+namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 
-public class CreateReservationRequestValidator : AbstractValidator<CreateReservationRequest>
+public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
-    public CreateReservationRequestValidator()
-    {
-        RuleFor(x => x.CustomerId)
-            .MustBeValidGuid();
-                    
+    public UpdateReservationRequestValidator()
+    {               
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
-            .MustBeWithinBusinessHours()
-            .Must(dateString =>
-            {
-                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
-                return parsedDate >= DateTime.UtcNow;
-            });
+            .MustBeWithinBusinessHours();
 
         RuleFor(x => x.ServiceId)
             .MustBeValidGuid();

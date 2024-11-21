@@ -7,5 +7,5 @@ public interface IReservationsRepository
     Task<ReservationDao> CreateAsync(ReservationDao reservationDao);
     Task<IEnumerable<ReservationDao>> GetAllAsync();
     Task<ReservationDao> GetAsync(Guid id);
-    void DeleteAsync(Guid id);
+    Task<ReservationDao> UpdateAsync(ReservationDao reservationDao);
 }

@@ -2,12 +2,12 @@ using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Service;
 using Looms.PoS.Application.Utilities.Validators;
 
-namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
+namespace Looms.PoS.Application.Features.Service.Commands.UpdateService;
 
-public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequest>
+public class UpdateServiceRequestValidator : AbstractValidator<UpdateServiceRequest>
 {
-    public CreateServiceRequestValidator()
-    {
+    public UpdateServiceRequestValidator()
+    {               
         RuleFor(x => x.Name)
             .NotEmpty();
 
@@ -21,8 +21,5 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
 
         RuleFor(x => x.DurationMin)
             .GreaterThanOrEqualTo(0);
-            
-        RuleFor(x => x.BusinessId)
-            .MustBeValidGuid();
     }
 }
