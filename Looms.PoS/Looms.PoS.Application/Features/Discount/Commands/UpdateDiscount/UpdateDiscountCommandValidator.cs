@@ -18,6 +18,7 @@ public class UpdateDiscountCommandValidator : AbstractValidator<UpdateDiscountCo
             .MustBeValidGuid()
             .CustomAsync(async (id, _, cancellationToken) => await discountsRepository.GetAsync(Guid.Parse(id)));
 
+
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
