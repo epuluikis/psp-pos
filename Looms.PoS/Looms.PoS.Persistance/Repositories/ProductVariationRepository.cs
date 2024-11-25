@@ -14,9 +14,9 @@ public class ProductVariationRepository : IProductVariationRepository
         _context = context;
     }
 
-    public async Task<ProductVariationDao> CreateAsync(ProductVariationDao paymentDao)
+    public async Task<ProductVariationDao> CreateAsync(ProductVariationDao productVariationDao)
     {
-        var entityEntry = await _context.AddAsync(paymentDao);
+        var entityEntry = await _context.AddAsync(productVariationDao);
         await _context.SaveChangesAsync();
         return entityEntry.Entity;
     }

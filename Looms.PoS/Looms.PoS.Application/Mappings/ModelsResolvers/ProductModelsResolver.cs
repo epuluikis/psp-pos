@@ -15,14 +15,14 @@ public class ProductModelsResolver : IProductModelsResolver
         _mapper = mapper;
     }
 
-    public ProductDao GetDaoFromRequest(CreateProductRequest createProductRequest)
+    public (ProductDao, ProductVariationDao, ProductStockDao) GetDaoFromRequest(CreateProductRequest createProductRequest)
     {
-        return _mapper.Map<ProductDao>(createProductRequest);
+        return _mapper.Map<(ProductDao, ProductVariationDao, ProductStockDao)>(createProductRequest);
     }
-
-    public ProductResponse GetResponseFromDao(ProductDao productDao)
+    //TODO: i really dont want to make mappings for each one
+    public ProductResponse GetResponseFromDao(ProductDao productDao, ProductVariationDao variationDao, ProductStockDao stockDao)
     {
-        return _mapper.Map<ProductResponse>(productDao);
+        return _mapper.Map<ProductResponse>((productDao, variationDao, stockDao));
     }
 
     public IEnumerable<ProductResponse> GetResponseFromDao(IEnumerable<ProductDao> productDao)

@@ -6,7 +6,7 @@ public record ProductVariationDao
 {
     public Guid Id { get; init; }
     public Guid ProductId { get; init; }
-    public float Price { get; init; }
+    public decimal? Price { get; init; }
     public string VariationName { get; init; } = string.Empty;
     public bool IsDeleted { get; init; }
 }

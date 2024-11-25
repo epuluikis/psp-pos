@@ -10,6 +10,4 @@ public record CreateProductRequest
     public decimal QuantityInStock { get; init; }
     public String Description { get; init; } = string.Empty;
     public IEnumerable<VariationRequest> VariationRequest { get; init; } = [];
-    //TODO: reference in Dao
-    // public Guid VariationId { get; init; }
 }

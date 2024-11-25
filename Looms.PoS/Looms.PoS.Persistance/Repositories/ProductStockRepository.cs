@@ -14,9 +14,9 @@ public class ProductStockRepository : IProductStockRepository
         _context = context;
     }
 
-    public async Task<ProductStockDao> CreateAsync(ProductStockDao paymentDao)
+    public async Task<ProductStockDao> CreateAsync(ProductStockDao productStockDao)
     {
-        var entityEntry = await _context.AddAsync(paymentDao);
+        var entityEntry = await _context.AddAsync(productStockDao);
         await _context.SaveChangesAsync();
         return entityEntry.Entity;
     }
