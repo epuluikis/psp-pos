@@ -30,5 +30,11 @@ public class DiscountModelsResolver : IDiscountModelsResolver
 
     public IEnumerable<DiscountResponse> GetResponseFromDao(IEnumerable<DiscountDao> discountDao)
         => _mapper.Map<IEnumerable<DiscountResponse>>(discountDao);
-
+        
+    public DiscountDao GetDeletedDao(DiscountDao originalDao){
+        return originalDao with
+        {
+            IsDeleted = true
+        };
+    }
 }
