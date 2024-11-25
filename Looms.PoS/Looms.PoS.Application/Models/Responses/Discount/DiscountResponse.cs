@@ -6,14 +6,14 @@ namespace Looms.PoS.Application.Models.Responses;
 public class DiscountResponse
 {
     public Guid Id { get; init; }
-    public string? Name { get; set; } = string.Empty;
+    public string? Name { get; init; } = string.Empty;
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public DiscountType DiscountType { get; set; }
-    public decimal Value { get; set; }
+    public DiscountType DiscountType { get; init; } 
+    public decimal Value { get; init; } = 0;
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public DiscountTarget DiscountTarget { get; set; }
-    public Guid? ProductId { get; set; }
-    public string StartDate { get; set; }
-    public string EndDate { get; set; }
-    public bool IsDeleted { get; set; } = false;
+    public DiscountTarget DiscountTarget { get; init; } 
+    public Guid? ProductId { get; init; }
+    public string StartDate { get; init; }
+    public string EndDate { get; init; }
+    public bool IsDeleted { get; init; } = false;
 }
