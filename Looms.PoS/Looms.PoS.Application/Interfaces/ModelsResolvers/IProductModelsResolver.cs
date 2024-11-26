@@ -6,9 +6,9 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 
 public interface IProductModelsResolver
 {
-    (ProductDao, ProductVariationDao, ProductStockDao) GetDaoFromRequest(CreateProductRequest createProductRequest);
+    ProductDao GetDaoFromRequest(CreateProductRequest createProductRequest);
     ProductDao GetDaoFromDaoAndRequest(ProductDao originalDao, UpdateProductRequest updateProductRequest);
     ProductDao GetDeletedDao(ProductDao originalDao);
-    ProductResponse GetResponseFromDao(ProductDao productDao, ProductVariationDao variationDao, ProductStockDao stockDao);
+    ProductResponse GetResponseFromDao(ProductDao productDao);
     IEnumerable<ProductResponse> GetResponseFromDao(IEnumerable<ProductDao> productDao);
 }

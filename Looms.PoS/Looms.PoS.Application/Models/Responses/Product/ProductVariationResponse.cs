@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations.Schema;
+namespace Looms.PoS.Application.Models.Responses.Product;
 
-namespace Looms.PoS.Domain.Daos;
-
-public record ProductVariationDao
+public class ProductVariationResponse
 {
     public Guid Id { get; init; }
     public Guid ProductId { get; init; }
