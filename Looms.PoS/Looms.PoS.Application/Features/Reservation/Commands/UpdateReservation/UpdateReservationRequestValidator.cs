@@ -3,15 +3,16 @@ using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Domain.Interfaces;
+using Looms.PoS.Domain.Exceptions;
 
 namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 
 public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
-     private readonly IServicesRepository _serviceRepository;
-    public UpdateReservationRequestValidator(IServicesRepository serviceRepository)
+     private readonly IServicesRepository _servicesRepository;
+    public UpdateReservationRequestValidator(IServicesRepository servicesRepository)
     {    
-        _serviceRepository = serviceRepository;
+        _servicesRepository = servicesRepository;
                    
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
@@ -27,13 +28,21 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x.ServiceId)
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
-            {
-                if (Guid.TryParse(serviceId, out var guid))
                 {
-                    return await _serviceRepository.ExistsAsync(guid);
-                }
-                return false;
-            })
+                    if (Guid.TryParse(serviceId, out var guid))
+                    {
+                        try
+                        {
+                            await _servicesRepository.GetAsync(guid);
+                            return true;
+                        }
+                        catch (LoomsNotFoundException)
+                        {
+                            return false;
+                        }
+                    }
+                    return false;
+                })
             .WithMessage("Service does not exist.");
         
         RuleFor(x => x.PhoneNumber)

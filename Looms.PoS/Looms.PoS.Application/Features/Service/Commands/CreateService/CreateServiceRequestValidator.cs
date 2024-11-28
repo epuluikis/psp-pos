@@ -29,9 +29,9 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
             
         RuleFor(x => x.BusinessId)
             .MustBeValidGuid()
-            .MustAsync(async (serviceId, cancellation) => 
+            .MustAsync(async (businessId, cancellation) => 
                 {
-                    if (Guid.TryParse(serviceId, out var guid))
+                    if (Guid.TryParse(businessId, out var guid))
                     {
                         try
                         {
