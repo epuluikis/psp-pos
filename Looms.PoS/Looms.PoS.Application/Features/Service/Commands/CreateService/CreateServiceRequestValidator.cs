@@ -1,13 +1,18 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Service;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Interfaces;
+using Looms.PoS.Domain.Exceptions;
 
 namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
 
 public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequest>
 {
-    public CreateServiceRequestValidator()
+    private readonly IBusinessesRepository _businessesRepository;
+    public CreateServiceRequestValidator(IBusinessesRepository businessesRepository)
     {
+        _businessesRepository = businessesRepository;
+
         RuleFor(x => x.Name)
             .NotEmpty();
 
@@ -23,6 +28,23 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
             .GreaterThanOrEqualTo(0);
             
         RuleFor(x => x.BusinessId)
-            .MustBeValidGuid();
+            .MustBeValidGuid()
+            .MustAsync(async (serviceId, cancellation) => 
+                {
+                    if (Guid.TryParse(serviceId, out var guid))
+                    {
+                        try
+                        {
+                            await _businessesRepository.GetAsync(guid);
+                            return true;
+                        }
+                        catch (LoomsNotFoundException)
+                        {
+                            return false;
+                        }
+                    }
+                    return false;
+                })
+            .WithMessage("Business does not exist.");
     }
 }

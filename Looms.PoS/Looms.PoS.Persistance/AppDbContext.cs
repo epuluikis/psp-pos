@@ -23,6 +23,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<PaymentDao>().HasKey(p => p.Id);
         modelBuilder.Entity<GiftCardDao>().HasKey(p => p.Id);
         modelBuilder.Entity<ReservationDao>().HasKey(b => b.Id);
+        modelBuilder.Entity<ReservationDao>()
+            .HasOne<ServiceDao>()
+            .WithMany()
+            .HasForeignKey(r => r.ServiceId);
         modelBuilder.Entity<ServiceDao>().HasKey(b => b.Id);
     }
 

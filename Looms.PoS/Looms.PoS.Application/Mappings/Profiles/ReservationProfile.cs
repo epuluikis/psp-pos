@@ -13,14 +13,20 @@ public class ReservationProfile : Profile
         CreateMap<CreateReservationRequest, ReservationDao>(MemberList.Source)
             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => Guid.Parse(src.CustomerId)))
             .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => Guid.Parse(src.ServiceId)))
-            .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => 
-                !string.IsNullOrEmpty(src.EmployeeId) ? Guid.Parse(src.EmployeeId) : Guid.Empty))
+            .ForMember(dest => dest.EmployeeId, opt => 
+            {
+                opt.Condition(src => !string.IsNullOrEmpty(src.EmployeeId));
+                opt.MapFrom(src => Guid.Parse(src.EmployeeId));
+            })
             .ForMember(dest => dest.AppointmentTime, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.AppointmentTime)));
 
         CreateMap<UpdateReservationRequest, ReservationDao>(MemberList.Source)
             .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => Guid.Parse(src.ServiceId)))
-            .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => 
-                !string.IsNullOrEmpty(src.EmployeeId) ? Guid.Parse(src.EmployeeId) : Guid.Empty))
+            .ForMember(dest => dest.EmployeeId, opt => 
+            {
+                opt.Condition(src => !string.IsNullOrEmpty(src.EmployeeId));
+                opt.MapFrom(src => Guid.Parse(src.EmployeeId));
+            })
             .ForMember(dest => dest.AppointmentTime, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.AppointmentTime)));
 
         CreateMap<ReservationDao, ReservationResponse>()

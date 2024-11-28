@@ -1,20 +1,40 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Application.Utilities;
+using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 
 public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
-    public UpdateReservationRequestValidator()
-    {               
+     private readonly IServicesRepository _serviceRepository;
+    public UpdateReservationRequestValidator(IServicesRepository serviceRepository)
+    {    
+        _serviceRepository = serviceRepository;
+                   
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
-            .MustBeWithinBusinessHours();
+            .MustBeWithinBusinessHours()
+            .Must(dateString =>
+            {
+                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
+                return parsedDate >= DateTime.UtcNow;
+            })
+            .WithMessage("Appointment time must be in the future and within business hours.");
 
         RuleFor(x => x.ServiceId)
-            .MustBeValidGuid();
+            .MustBeValidGuid()
+            .MustAsync(async (serviceId, cancellation) => 
+            {
+                if (Guid.TryParse(serviceId, out var guid))
+                {
+                    return await _serviceRepository.ExistsAsync(guid);
+                }
+                return false;
+            })
+            .WithMessage("Service does not exist.");
         
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)

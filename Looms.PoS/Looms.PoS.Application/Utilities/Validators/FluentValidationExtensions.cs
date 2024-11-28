@@ -14,7 +14,18 @@ public static class FluentValidationExtensions
     public static IRuleBuilder<T, string> MustBeValidDateTime<T>(this IRuleBuilder<T, string> builder)
     {
         return builder.NotEmpty()
-                      .Must(date => DateTime.TryParse(date, out _)) // should we change to specific format?
+                      .Must(date =>
+                        {
+                            try
+                            {
+                                DateTimeHelper.ConvertToUtc(date);
+                                return true;
+                            }
+                            catch (FormatException)
+                            {
+                                return false;
+                            }
+                        })
                       .WithMessage("{PropertyName} is not a valid DateTime");
     }
     public static IRuleBuilder<T, string> MustBeWithinBusinessHours<T>(this IRuleBuilder<T, string> builder)
