@@ -32,6 +32,6 @@ public class CreateBusinessCommandHandler : IRequestHandler<CreateBusinessComman
 
         var response = _modelsResolver.GetResponseFromDao(createdBusinessDao);
 
-        return new CreatedAtRouteResult($"/businesses{businessDao.Id}", response);
+        return new CreatedAtRouteResult($"/businesses/{businessDao.Id}", response);
     }
 }
