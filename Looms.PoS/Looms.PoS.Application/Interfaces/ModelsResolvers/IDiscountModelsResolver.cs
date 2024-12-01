@@ -10,4 +10,5 @@ public interface IDiscountModelsResolver
     DiscountDao GetDaoFromDaoAndRequest(DiscountDao discountDao, UpdateDiscountRequest updateDiscountRequest);
     DiscountResponse GetResponseFromDao(DiscountDao discountDao);
     IEnumerable<DiscountResponse> GetResponseFromDao(IEnumerable<DiscountDao> discountDao);
+    DiscountDao GetDeletedDao(DiscountDao originalDao);
 }

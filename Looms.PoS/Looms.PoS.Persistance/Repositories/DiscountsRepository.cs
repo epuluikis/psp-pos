@@ -41,14 +41,6 @@ public class DiscountsRepository : IDiscountsRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task ArchiveDiscountAsync(Guid id)
-    {
-        var discount = await _context.Discounts.FindAsync(id)
-            ?? throw new LoomsNotFoundException("No valid discount provided");
-        discount.IsDeleted = true;
-        await _context.SaveChangesAsync();
-    }
-
     public async Task<DiscountDao> UpdateAsync(DiscountDao discountDao)
     {
         await RemoveAsync(discountDao.Id);
