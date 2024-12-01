@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Product;
 
-namespace Looms.PoS.Application.Features.Product.Commands.CreateProduct;
+namespace Looms.PoS.Application.Features.Product.Commands.CreateProductVariation;
 
 public class CreateProductRequestValidator : AbstractValidator<CreateProductRequest>
 {

@@ -1,4 +1,4 @@
-namespace Looms.PoS.Application.Models.Requests.Product;
+namespace Looms.PoS.Application.Models.Requests.ProductVariation;
 
 public record CreateProductVariationRequest
 {

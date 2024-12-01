@@ -1,4 +1,5 @@
 namespace Looms.PoS.Domain.Enums;
+using System.Runtime.Serialization;
 
 public enum DiscountType
 {

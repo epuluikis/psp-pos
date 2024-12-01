@@ -11,6 +11,4 @@ public interface IProductModelsResolver
     ProductDao GetDeletedDao(ProductDao originalDao);
     ProductResponse GetResponseFromDao(ProductDao productDao);
     IEnumerable<ProductResponse> GetResponseFromDao(IEnumerable<ProductDao> productDao);
-    ProductVariationDao GetDaoFromDaoAndRequest(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest);
-    object GetResponseFromDao(object updatedProductVariationDao);
 }

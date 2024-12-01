@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Looms.PoS.Application.Models.Requests.Product;
+using Looms.PoS.Application.Models.Requests.ProductVariation;
 
 namespace Looms.PoS.Application.Features.Product.Commands.UpdateProductVariation;
 
@@ -16,12 +16,5 @@ public class UpdateProductVariationRequestValidator : AbstractValidator<UpdatePr
         
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0);
-
-        // RuleFor(x => x.Description)
-        //     .NotEmpty();
-
-        //TODO: figure out how to do IEnumerable rules
-        // RuleFor(x => x.VariationRequest.Name)
-        //     .NotEmpty();
     }
 }

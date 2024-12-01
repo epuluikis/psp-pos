@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Product.Commands.DeleteProduct;
-//TODO: Should this delete associated ProductVariation and ProductStock entries?
+
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, IActionResult>
 {
     private readonly IProductsRepository _productsRepository;

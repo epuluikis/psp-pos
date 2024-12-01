@@ -1,17 +1,17 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Interfaces;
-using Looms.PoS.Application.Models.Requests.Product;
+using Looms.PoS.Application.Models.Requests.ProductVariation;
 
-namespace Looms.PoS.Application.Features.Product.Commands.CreateProduct;
+namespace Looms.PoS.Application.Features.Product.Commands.CreateProductVariation;
 
-public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+public class CreateProductVariationCommandValidator : AbstractValidator<CreateProductVariationCommand>
 {
-    public CreateProductCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateProductRequest>> validators)
+    public CreateProductVariationCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateProductVariationRequest>> validators)
     {
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<CreateProductRequest>(request);
+                var body = await httpContentResolver.GetPayloadAsync<CreateProductVariationRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);

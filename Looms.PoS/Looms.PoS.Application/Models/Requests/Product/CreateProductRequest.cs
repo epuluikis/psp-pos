@@ -1,6 +1,4 @@
-﻿using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
-
-namespace Looms.PoS.Application.Models.Requests.Product;
+﻿namespace Looms.PoS.Application.Models.Requests.Product;
 
 public record CreateProductRequest
 {
@@ -9,5 +7,4 @@ public record CreateProductRequest
     public decimal Price { get; init; }
     public decimal QuantityInStock { get; init; }
     public String Description { get; init; } = string.Empty;
-    public IEnumerable<VariationRequest> VariationRequest { get; init; } = [];
 }
