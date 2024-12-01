@@ -16,5 +16,7 @@ public static class ServiceExtensions
         services.AddTransient<IUsersRepository, UsersRepository>();
         services.AddTransient<IPaymentsRepository, PaymentsRepository>();
         services.AddTransient<IGiftCardsRepository, GiftCardsRepository>();
+        services.AddTransient<IDiscountsRepository, DiscountsRepository>();
+        services.AddTransient<IRefundsRepository, RefundsRepository>();
     }
 }

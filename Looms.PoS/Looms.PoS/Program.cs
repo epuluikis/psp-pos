@@ -1,6 +1,8 @@
 
 using Looms.PoS.Application;
+using Looms.PoS.Domain.Interfaces;
 using Looms.PoS.Persistance;
+using Looms.PoS.Persistance.Repositories;
 using Looms.PoS.Swagger.Filters;
 
 namespace Looms.PoS;
@@ -14,6 +16,7 @@ public class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>

@@ -44,6 +44,8 @@ public static class ServiceExtensions
     {
         services.AddSingleton<IBusinessModelsResolver, BusinessModelsResolver>();
         services.AddSingleton<IUserModelsResolver, UserModelsResolver>();
+        services.AddSingleton<IDiscountModelsResolver, DiscountModelsResolver>();
+        services.AddSingleton<IRefundModelsResolver, RefundModelsResolver>();
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
     }
 
