@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Product.Commands.UpdateProduct;
-//TODO: include ProductVariation and ProductStock repos
+
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, IActionResult>
 {
     private readonly IProductsRepository _productsRepository;

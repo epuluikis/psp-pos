@@ -19,6 +19,5 @@ public static class ServiceExtensions
         services.AddScoped<IGiftCardsRepository, GiftCardsRepository>();
         services.AddTransient<IProductsRepository, ProductsRepository>();
         services.AddTransient<IProductVariationRepository, ProductVariationRepository>();
-        services.AddTransient<IProductStockRepository, ProductStockRepository>();
     }
 }
