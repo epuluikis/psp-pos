@@ -19,9 +19,5 @@ public class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequ
 
         RuleFor(x => x.Description)
             .NotEmpty();
-
-        //TODO: figure out how to do IEnumerable rules
-        // RuleFor(x => x.VariationRequest.Name)
-        //     .NotEmpty();
     }
 }
