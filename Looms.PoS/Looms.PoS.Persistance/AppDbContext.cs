@@ -10,6 +10,7 @@ public class AppDbContext : DbContext
     public DbSet<RefundDao> Refunds { get; set; }
     public DbSet<PaymentDao> Payments { get; set; }
     public DbSet<GiftCardDao> GiftCards { get; set; }
+    public DbSet<TaxDao> Taxes { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -24,5 +25,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RefundDao>().HasKey(x => x.Id);
         modelBuilder.Entity<PaymentDao>().HasKey(p => p.Id);
         modelBuilder.Entity<GiftCardDao>().HasKey(p => p.Id);
+        modelBuilder.Entity<TaxDao>().HasKey(x => x.Id);
     }
 }
