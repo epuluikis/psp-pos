@@ -15,29 +15,32 @@ public static class FluentValidationExtensions
     {
         return builder.NotEmpty()
                       .Must(date =>
-                        {
-                            try
-                            {
-                                DateTimeHelper.ConvertToUtc(date);
-                                return true;
-                            }
-                            catch (FormatException)
-                            {
-                                return false;
-                            }
-                        })
+                      {
+                          try
+                          {
+                              DateTimeHelper.ConvertToUtc(date);
+                              return true;
+                          }
+                          catch (FormatException)
+                          {
+                              return false;
+                          }
+                      })
                       .WithMessage("{PropertyName} is not a valid DateTime");
     }
     public static IRuleBuilder<T, string> MustBeWithinBusinessHours<T>(this IRuleBuilder<T, string> builder)
-        {
-            return builder.Must((_, dateString) =>
+    {
+        int businessStartHour = 9;
+        int businessEndHour = 17;
+
+        return builder.Must((_, dateString) =>
+                      {
+                          if (DateTime.TryParse(dateString, out DateTime dateTime))
                           {
-                              if (DateTime.TryParse(dateString, out DateTime dateTime))
-                              {
-                                  return dateTime.Hour >= 9 && dateTime.Hour < 17;
-                              }
-                              return false;
-                          })
-                          .WithMessage("{PropertyName} must be between 9:00 and 17:00.");
-        }
+                              return dateTime.Hour >= businessStartHour && dateTime.Hour < businessEndHour;
+                          }
+                          return false;
+                      })
+                      .WithMessage("{PropertyName} must be between 9:00 and 17:00.");
+    }
 }
