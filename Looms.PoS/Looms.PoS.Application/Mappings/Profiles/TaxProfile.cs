@@ -9,7 +9,6 @@ namespace Looms.PoS.Application.Mappings.Profiles;
 
 public class TaxProfile : Profile
 {
-    //TODO
     public TaxProfile()
     {
         CreateMap<CreateTaxRequest, TaxDao>(MemberList.Source)

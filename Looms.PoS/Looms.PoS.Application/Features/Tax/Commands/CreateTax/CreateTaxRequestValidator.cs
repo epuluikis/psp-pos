@@ -12,8 +12,7 @@ public class CreateTaxRequestValidator : AbstractValidator<CreateTaxRequest>
         RuleFor(x => x.Percentage)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .InclusiveBetween(0, 100)
-            .WithMessage("Percentage must be between 0 and 100.");
+            .InclusiveBetween(0, 100);
 
         RuleFor(x => x.TaxCategory)
             .Cascade(CascadeMode.Stop)

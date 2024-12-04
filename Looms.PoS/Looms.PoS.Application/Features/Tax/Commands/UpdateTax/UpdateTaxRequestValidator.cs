@@ -5,7 +5,6 @@ using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Tax.Commands.UpdateTax;
 
-//TODO
 public class UpdateTaxRequestValidator : AbstractValidator<UpdateTaxRequest>
 {
     public UpdateTaxRequestValidator()

@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Tax.Commands.UpdateTax;
+
 public class UpdateTaxCommandHandler : IRequestHandler<UpdateTaxCommand, IActionResult>
 {
     private readonly ITaxesRepository _taxesRepository;
