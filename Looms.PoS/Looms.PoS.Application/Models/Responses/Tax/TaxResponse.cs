@@ -2,7 +2,7 @@ using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Models.Responses.Tax;
 
-public class TaxResponse
+public record TaxResponse
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;
