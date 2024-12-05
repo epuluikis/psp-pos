@@ -48,6 +48,8 @@ public static class ServiceExtensions
         services.AddSingleton<IRefundModelsResolver, RefundModelsResolver>();
 
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
+        services.AddSingleton<IServiceModelsResolver, ServiceModelsResolver>();
+        services.AddSingleton<IReservationModelsResolver, ReservationModelsResolver>();
     }
 
     private static void RegisterFactories(this IServiceCollection services)
