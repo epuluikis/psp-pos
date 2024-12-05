@@ -4,6 +4,7 @@ namespace Looms.PoS.Application.Utilities.Validators;
 
 public static class FluentValidationExtensions
 {
+    private static readonly BusinessHours businessHours = new BusinessHours();
     public static IRuleBuilder<T, string> MustBeValidGuid<T>(this IRuleBuilder<T, string> builder)
     {
         return builder.NotEmpty()
@@ -28,19 +29,17 @@ public static class FluentValidationExtensions
                       })
                       .WithMessage("{PropertyName} is not a valid DateTime");
     }
+    
     public static IRuleBuilder<T, string> MustBeWithinBusinessHours<T>(this IRuleBuilder<T, string> builder)
     {
-        int businessStartHour = 9;
-        int businessEndHour = 17;
-
         return builder.Must((_, dateString) =>
                       {
                           if (DateTime.TryParse(dateString, out DateTime dateTime))
                           {
-                              return dateTime.Hour >= businessStartHour && dateTime.Hour < businessEndHour;
+                              return dateTime.Hour >= businessHours.StartHour && dateTime.Hour < businessHours.EndHour;
                           }
                           return false;
                       })
-                      .WithMessage("{PropertyName} must be between 9:00 and 17:00.");
+                      .WithMessage("{PropertyName} must be between business hours");
     }
 }

@@ -2,7 +2,7 @@ using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Models.Responses;
 
-public class ReservationResponse
+public record ReservationResponse
 {
     public Guid Id { get; init; }
     public Guid ServiceId { get; init; }

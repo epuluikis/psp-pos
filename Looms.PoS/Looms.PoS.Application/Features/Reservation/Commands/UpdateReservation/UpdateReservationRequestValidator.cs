@@ -28,21 +28,9 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x.ServiceId)
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
-                {
-                    if (Guid.TryParse(serviceId, out var guid))
-                    {
-                        try
-                        {
-                            await _servicesRepository.GetAsync(guid);
-                            return true;
-                        }
-                        catch (LoomsNotFoundException)
-                        {
-                            return false;
-                        }
-                    }
-                    return false;
-                })
+            {
+                return Guid.TryParse(serviceId, out var guid) && await _servicesRepository.GetAsync(guid) != null;
+            })
             .WithMessage("Service does not exist.");
         
         RuleFor(x => x.PhoneNumber)

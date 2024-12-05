@@ -8,4 +8,5 @@ public interface IReservationsRepository
     Task<IEnumerable<ReservationDao>> GetAllAsync();
     Task<ReservationDao> GetAsync(Guid id);
     Task<ReservationDao> UpdateAsync(ReservationDao reservationDao);
+    Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(Guid customerId, DateTime appointmentTime);
 }

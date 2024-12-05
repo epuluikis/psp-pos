@@ -50,4 +50,11 @@ public class ReservationsRepository : IReservationsRepository
         var reservationDao = await _context.Reservations.FindAsync(id);
         _context.Reservations.Remove(reservationDao!);
     }
+
+    public async Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(Guid customerId, DateTime appointmentTime)
+    {
+        return await _context.Reservations
+            .Where(r => r.CustomerId == customerId && r.AppointmentTime == appointmentTime && !r.IsDeleted)
+            .ToListAsync();
+    }
 }

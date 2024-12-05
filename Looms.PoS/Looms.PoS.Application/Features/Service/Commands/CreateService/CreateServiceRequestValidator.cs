@@ -30,21 +30,9 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
         RuleFor(x => x.BusinessId)
             .MustBeValidGuid()
             .MustAsync(async (businessId, cancellation) => 
-                {
-                    if (Guid.TryParse(businessId, out var guid))
-                    {
-                        try
-                        {
-                            await _businessesRepository.GetAsync(guid);
-                            return true;
-                        }
-                        catch (LoomsNotFoundException)
-                        {
-                            return false;
-                        }
-                    }
-                    return false;
-                })
+            {
+                return Guid.TryParse(businessId, out var guid) && await _businessesRepository.GetAsync(guid) != null;
+            })
             .WithMessage("Business does not exist.");
     }
 }
