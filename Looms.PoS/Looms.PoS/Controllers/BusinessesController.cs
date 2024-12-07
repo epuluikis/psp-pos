@@ -3,11 +3,12 @@ using Looms.PoS.Application.Features.Business.Commands.DeleteBusiness;
 using Looms.PoS.Application.Features.Business.Commands.UpdateBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
-using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Models.Responses;
-using Looms.PoS.Domain.Daos;
+using Looms.PoS.Application.Models.Requests.Business;
+using Looms.PoS.Application.Models.Responses.Business;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -25,8 +26,10 @@ public class BusinessesController : ControllerBase
         _mediator = mediator;
         _contextAccessor = contextAccessor;
     }
-  
+
     [HttpPost($"/{EntityName}")]
+    [SwaggerRequestType(typeof(CreateBusinessRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Business successfully created.", typeof(BusinessResponse))]
     public async Task<IActionResult> CreateBusiness()
     {
         var comnand = new CreateBusinessCommand(GetRequest());
@@ -35,6 +38,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "List of businesses returned successfully.", typeof(List<BusinessResponse>))]
     public async Task<IActionResult> GetBusinesses()
     {
         var query = new GetBusinessesQuery(GetRequest());
@@ -43,6 +47,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{businessId}}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Business details returned successfully.", typeof(BusinessResponse))]
     public async Task<IActionResult> GetBusiness(string businessId)
     {
         var query = new GetBusinessQuery(GetRequest(), businessId);
@@ -51,6 +56,8 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{businessId}}")]
+    [SwaggerRequestType(typeof(UpdateBusinessRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Business successfully updated.", typeof(BusinessResponse))]
     public async Task<IActionResult> UpdateBusiness(string businessId)
     {
         var query = new UpdateBusinessCommand(GetRequest(), businessId);
@@ -59,6 +66,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpDelete($"/{EntityName}/{{businessId}}")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Business successfully deleted.")]
     public async Task<IActionResult> DeleteBusiness(string businessId)
     {
         var query = new DeleteBusinessCommand(GetRequest(), businessId);

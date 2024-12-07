@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace Looms.PoS.Domain.Enums;
 
-public enum PaymentMethod : byte
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PaymentMethod
 {
-    Cash = 0,
-    CreditCard = 1,
-    GiftCard = 2
+    Cash,
+    CreditCard,
+    GiftCard
 }

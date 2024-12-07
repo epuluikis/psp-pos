@@ -3,9 +3,12 @@ using Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
 using Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
 using Looms.PoS.Application.Features.Discount.Queries;
 using Looms.PoS.Application.Features.Discount.Queries.GetDiscount;
+using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -25,7 +28,8 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpPost($"/{EntityName}")]
-    [ProducesResponseType<DiscountResponse>(201)]
+    [SwaggerRequestType(typeof(CreateDiscountRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Discount successfully created.", typeof(DiscountResponse))]
     public async Task<IActionResult> CreateDiscount()
     {
         var command = new CreateDiscountsCommand(GetRequest());
@@ -34,7 +38,7 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
-    [ProducesResponseType<DiscountResponse>(200)]
+    [SwaggerResponse(StatusCodes.Status200OK, "List of discounts returned successfully.", typeof(List<DiscountResponse>))]
     public async Task<IActionResult> GetDiscounts()
     {
         var query = new GetDiscountsQuery(GetRequest());
@@ -43,7 +47,7 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{discountId}}")]
-    [ProducesResponseType<DiscountResponse>(200)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Discount details returned successfully.", typeof(DiscountResponse))]
     public async Task<IActionResult> GetDiscount(string discountId)
     {
         var query = new GetDiscountQuery(GetRequest(), discountId);
@@ -52,7 +56,8 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{discountId}}")]
-    [ProducesResponseType<DiscountResponse>(200)]
+    [SwaggerRequestType(typeof(UpdateDiscountRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Discount successfully updated.", typeof(DiscountResponse))]
     public async Task<IActionResult> UpdateDiscount(string discountId)
     {
         var command = new UpdateDiscountCommand(GetRequest(), discountId);
@@ -61,7 +66,7 @@ public class DiscountsController : ControllerBase
     }
 
     [HttpDelete($"/{EntityName}/{{discountId}}")]
-    [ProducesResponseType(204)]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Discount successfully deleted.")]
     public async Task<IActionResult> DeleteDiscount(string discountId)
     {
         var query = new DeleteDiscountCommand(GetRequest(), discountId);
