@@ -3,11 +3,12 @@ using Looms.PoS.Application.Features.Tax.Commands.DeleteTax;
 using Looms.PoS.Application.Features.Tax.Commands.UpdateTax;
 using Looms.PoS.Application.Features.Tax.Queries.GetTax;
 using Looms.PoS.Application.Features.Tax.Queries.GetTaxes;
-using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Models.Responses;
-using Looms.PoS.Domain.Daos;
+using Looms.PoS.Application.Models.Requests.Tax;
+using Looms.PoS.Application.Models.Responses.Tax;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -25,8 +26,10 @@ public class TaxesController : ControllerBase
         _mediator = mediator;
         _contextAccessor = contextAccessor;
     }
-  
+
     [HttpPost($"/{EntityName}")]
+    [SwaggerRequestType(typeof(CreateTaxRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Tax successfully created.", typeof(TaxResponse))]
     public async Task<IActionResult> CreateTax()
     {
         var comnand = new CreateTaxCommand(GetRequest());
@@ -35,6 +38,7 @@ public class TaxesController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "List of taxes returned successfully.", typeof(List<TaxResponse>))]
     public async Task<IActionResult> GetTaxes()
     {
         var query = new GetTaxesQuery(GetRequest());
@@ -43,6 +47,7 @@ public class TaxesController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{taxId}}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Tax details returned successfully.", typeof(TaxResponse))]
     public async Task<IActionResult> GetTax(string taxId)
     {
         var query = new GetTaxQuery(GetRequest(), taxId);
@@ -51,6 +56,8 @@ public class TaxesController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{taxId}}")]
+    [SwaggerRequestType(typeof(UpdateTaxRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Tax successfully updated.", typeof(TaxResponse))]
     public async Task<IActionResult> UpdateTax(string taxId)
     {
         var query = new UpdateTaxCommand(GetRequest(), taxId);
@@ -59,6 +66,7 @@ public class TaxesController : ControllerBase
     }
 
     [HttpDelete($"/{EntityName}/{{taxId}}")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Tax successfully deleted.")]
     public async Task<IActionResult> DeleteTax(string taxId)
     {
         var query = new DeleteTaxCommand(GetRequest(), taxId);

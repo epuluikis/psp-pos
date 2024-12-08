@@ -1,9 +1,12 @@
 using Looms.PoS.Application.Features.Refund.Commands.CreateRefund;
 using Looms.PoS.Application.Features.Refund.Queries.GetRefund;
 using Looms.PoS.Application.Features.Refund.Queries.GetRefunds;
+using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -23,7 +26,8 @@ public class RefundsController : ControllerBase
     }
 
     [HttpPost($"/{EntityName}")]
-    [ProducesResponseType<RefundResponse>(201)]
+    [SwaggerRequestType(typeof(CreateRefundRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Refund successfully created.", typeof(RefundResponse))]
     public async Task<IActionResult> CreateRefund()
     {
         var command = new CreateRefundCommand(GetRequest());
@@ -32,6 +36,7 @@ public class RefundsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{refundId}}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Refund details returned successfuly.", typeof(RefundResponse))]
     public async Task<IActionResult> GetRefund(string refundId)
     {
         var query = new GetRefundQuery(GetRequest(), refundId);
@@ -40,6 +45,7 @@ public class RefundsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "List of refunds returned successfully.", typeof(List<RefundResponse>))]
     public async Task<IActionResult> GetRefunds()
     {
         var query = new GetRefundsQuery(GetRequest());
@@ -51,5 +57,4 @@ public class RefundsController : ControllerBase
     {
         return _contextAccessor.HttpContext!.Request;
     }
-
 }

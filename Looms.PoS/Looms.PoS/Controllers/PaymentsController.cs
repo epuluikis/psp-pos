@@ -27,7 +27,7 @@ public class PaymentsController : ControllerBase
 
     [HttpPost($"/{EntityName}")]
     [SwaggerRequestType(typeof(CreatePaymentRequest))]
-    [SwaggerResponse(StatusCodes.Status201Created, "Payment successfully created.", typeof(List<PaymentResponse>))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Payment successfully created.", typeof(PaymentResponse))]
     public async Task<IActionResult> CreatePayment()
     {
         var comnand = new CreatePaymentCommand(GetRequest());
