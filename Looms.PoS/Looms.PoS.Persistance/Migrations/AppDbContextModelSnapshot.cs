@@ -49,7 +49,7 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesses", (string)null);
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.DiscountDao", b =>
@@ -84,7 +84,110 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Discounts", (string)null);
+                    b.ToTable("Discounts");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("CurrentBalance")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("InitialBalance")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("IssuedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("GiftCards");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentDao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid?>("GiftCardId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("PaymentMethod")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal>("Tip")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GiftCardId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.UserDao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<short>("Role")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.RefundDao", b =>
@@ -120,75 +223,37 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Refunds", (string)null);
+                    b.ToTable("Refunds");
                 });
-            modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.TaxDao", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("BusinessId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Code")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("CurrentBalance")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Percentage")
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime>("ExpiryDate")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("InitialBalance")
-                        .HasColumnType("numeric");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("IssuedBy")
-                        .HasColumnType("uuid");
+                    b.Property<int>("TaxCategory")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BusinessId");
-
-                    b.ToTable("GiftCards");
-                });
-
-            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentDao", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<Guid?>("GiftCardId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<byte>("PaymentMethod")
-                        .HasColumnType("smallint");
-
-                    b.Property<decimal>("Tip")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GiftCardId");
-
-                    b.ToTable("Payments");
+                    b.ToTable("Taxes");
                 });
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
@@ -209,6 +274,22 @@ namespace Looms.PoS.Persistance.Migrations
                         .HasForeignKey("GiftCardId");
 
                     b.Navigation("GiftCard");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.UserDao", b =>
+                {
+                    b.HasOne("Looms.PoS.Domain.Daos.BusinessDao", "Business")
+                        .WithMany("Users")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.BusinessDao", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

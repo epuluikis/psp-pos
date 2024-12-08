@@ -43,11 +43,12 @@ public static class ServiceExtensions
     private static void RegisterMappers(this IServiceCollection services)
     {
         services.AddSingleton<IBusinessModelsResolver, BusinessModelsResolver>();
-
+        services.AddSingleton<IUserModelsResolver, UserModelsResolver>();
         services.AddSingleton<IDiscountModelsResolver, DiscountModelsResolver>();
         services.AddSingleton<IRefundModelsResolver, RefundModelsResolver>();
-
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
+        services.AddSingleton<ITaxModelsResolver, TaxModelsResolver>();
+        services.AddSingleton<IGiftCardModelsResolver, GiftCardModelsResolver>();
         services.AddSingleton<IProductModelsResolver, ProductModelsResolver>();
         services.AddSingleton<IProductVariationModelsResolver, ProductVariationModelsResolver>();
     }
