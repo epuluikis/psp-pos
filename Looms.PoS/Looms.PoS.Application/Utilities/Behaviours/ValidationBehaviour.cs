@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Looms.PoS.Domain.Exceptions;
 using MediatR;
 
 namespace Looms.PoS.Application.Utilities.Behaviours;
@@ -25,7 +26,7 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
 
         if (errors.Count != 0)
         {
-            throw new ValidationException(errors);
+            throw new LoomsBadRequestException(string.Join("; ", errors.Select(x => x.ErrorMessage)));
         }
 
         return await next();
