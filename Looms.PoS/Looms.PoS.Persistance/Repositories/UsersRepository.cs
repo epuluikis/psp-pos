@@ -37,6 +37,17 @@ public class UsersRepository : IUsersRepository
         return userDao;
     }
 
+    public async Task<UserDao> GetByEmailAsync(string email)
+    {
+        var userDao = await _context.Users.FirstAsync(x => x.Email == email && !x.IsDeleted);
+
+        if (userDao is null || userDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("User not found");
+        }
+        return userDao;
+    }
+
     public async Task<UserDao> UpdateAsync(UserDao userDao)
     {
         await RemoveAsync(userDao.Id);
