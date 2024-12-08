@@ -10,7 +10,7 @@ public class BadRequestExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        if (exception is not LoomsBadRequestException and ValidationException)
+        if (exception is not LoomsBadRequestException or ValidationException)
         {
             return false;
         }
