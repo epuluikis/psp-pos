@@ -12,11 +12,12 @@ public static class ServiceExtensions
     {
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
-        services.AddTransient<IBusinessesRepository, BusinessesRepository>();
-        services.AddTransient<IUsersRepository, UsersRepository>();
-        services.AddTransient<IPaymentsRepository, PaymentsRepository>();
-        services.AddTransient<IGiftCardsRepository, GiftCardsRepository>();
-        services.AddTransient<IDiscountsRepository, DiscountsRepository>();
-        services.AddTransient<IRefundsRepository, RefundsRepository>();
+        services.AddScoped<IBusinessesRepository, BusinessesRepository>();
+        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<IDiscountsRepository, DiscountsRepository>();
+        services.AddScoped<IRefundsRepository, RefundsRepository>();
+        services.AddScoped<IPaymentsRepository, PaymentsRepository>();
+        services.AddScoped<IGiftCardsRepository, GiftCardsRepository>();
+        services.AddScoped<ITaxesRepository, TaxesRepository>();
     }
 }
