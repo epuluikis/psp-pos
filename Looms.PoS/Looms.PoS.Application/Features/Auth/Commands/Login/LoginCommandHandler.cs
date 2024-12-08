@@ -25,8 +25,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, IActionResult>
         var loginRequest = await _httpContentResolver.GetPayloadAsync<LoginRequest>(command.Request);
 
         var userDao = await _usersRepository.GetByEmailAsync(loginRequest.Email);
-        var token = _tokenService.CreateToken(userDao);
+        var loginResponse = _tokenService.CreateToken(userDao);
 
-        return new OkObjectResult(token);
+        return new OkObjectResult(loginResponse);
     }
 }

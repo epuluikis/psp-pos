@@ -18,7 +18,7 @@ public static class ServiceExtensions
 {
     public static void AddApplicationLayer(this IServiceCollection services)
     {
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthenticationBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         services.AddHttpContextAccessor();
@@ -54,6 +54,7 @@ public static class ServiceExtensions
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
         services.AddSingleton<ITaxModelsResolver, TaxModelsResolver>();
         services.AddSingleton<IGiftCardModelsResolver, GiftCardModelsResolver>();
+        services.AddSingleton<IAuthModelsResolver, AuthModelsResolver>();
     }
 
     private static void RegisterFactories(this IServiceCollection services)

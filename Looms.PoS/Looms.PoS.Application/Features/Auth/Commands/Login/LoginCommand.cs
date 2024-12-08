@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Auth.Commands.Login;
 
-public record LoginCommand : LoomsHttpRequest, IRequest<IActionResult>
+public record LoginCommand : AuthRequest, IRequest<IActionResult>
 {
     public LoginCommand(HttpRequest request) : base(request)
     {
