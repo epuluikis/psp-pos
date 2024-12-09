@@ -30,7 +30,21 @@ public class AuthController : ControllerBase
     {
         var comnand = new LoginCommand(GetRequest());
 
-        return await _mediator.Send(comnand);
+        var response = await _mediator.Send(comnand);
+
+        if (response is LoginResponse loginResponse)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = loginResponse.Expires,
+            };
+
+            Response.Cookies.Append("auth-token", loginResponse.Token, cookieOptions);
+        }
+
+        return response;
     }
 
     private HttpRequest GetRequest()

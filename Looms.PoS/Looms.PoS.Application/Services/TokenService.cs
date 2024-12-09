@@ -35,7 +35,6 @@ public class TokenService : ITokenService
             [
                 new Claim(ClaimTypes.NameIdentifier, userDao.Id.ToString()),
                 new Claim(ClaimTypes.Role, userRole.ToString()),
-                new Claim(TokenConstants.BusinessIdClaim, userDao.BusinessId.ToString())
             ]),
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -54,9 +53,9 @@ public class TokenService : ITokenService
 
         try
         {
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+            tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
 
-            return validatedToken.ValidTo < DateTime.UtcNow;
+            return validatedToken.ValidTo > DateTime.UtcNow;
         }
         catch (Exception)
         {

@@ -2,10 +2,7 @@
 using Looms.PoS.Application;
 using Looms.PoS.Persistance;
 using Looms.PoS.Swagger.Filters;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 
 namespace Looms.PoS;
 
@@ -52,22 +49,6 @@ public class Program
                 }
             });
         });
-
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
 
         builder.Services.AddApplicationLayer();
         builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
