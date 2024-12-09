@@ -10,23 +10,24 @@ public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, IAc
     private readonly IOrdersRepository _orderRepository;
     private readonly IOrderItemsRepository _orderItemRepository;
     private readonly IOrderItemModelsResolver _orderItemModelResolver;
-    private readonly IOrderModelsResolver orderModelsResolver;
+    private readonly IOrderModelsResolver _orderModelsResolver;
 
     public DeleteOrderCommandHandler(IOrdersRepository orderRepository, 
-    IOrderItemsRepository orderItemRepository, 
-    IOrderItemModelsResolver orderItemModelResolver,
-    IOrderModelsResolver orderModelsResolver)
+        IOrderItemsRepository orderItemRepository, 
+        IOrderItemModelsResolver orderItemModelResolver,
+        IOrderModelsResolver orderModelsResolver)
     {
         _orderRepository = orderRepository;
         _orderItemRepository = orderItemRepository;
         _orderItemModelResolver = orderItemModelResolver;
-        this.orderModelsResolver = orderModelsResolver;
+        _orderModelsResolver = orderModelsResolver;
     }
+    
     public async Task<IActionResult> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
     {
         var originalDao = await _orderRepository.GetAsync(Guid.Parse(request.Id));
 
-        var orderDao = orderModelsResolver.GetDeletedDao(originalDao);
+        var orderDao = _orderModelsResolver.GetDeletedDao(originalDao);
         _ = await _orderRepository.UpdateAsync(orderDao);
 
         if(orderDao.OrderItems.Count != 0)

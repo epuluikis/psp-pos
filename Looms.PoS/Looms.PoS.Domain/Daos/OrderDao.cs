@@ -7,6 +7,8 @@ public record OrderDao
     public Guid Id { get; init; }
 
     public Guid UserId { get; init; }
+    
+    public UserDao User { get; init; } 
 
     public Guid BussinessId { get; init; }
 

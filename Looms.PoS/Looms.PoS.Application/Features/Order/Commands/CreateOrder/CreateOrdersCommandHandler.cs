@@ -11,17 +11,20 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
 {
     private readonly IOrdersRepository _ordersRepository;
     private readonly IBusinessesRepository _businessRepository;
+    private readonly IUsersRepository _usersRepository;
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IOrderModelsResolver _modelsResolver;
 
     public CreateOrdersCommandHandler(
         IOrdersRepository ordersRepository, 
         IBusinessesRepository businessRepository,
+        IUsersRepository usersRepository,
         IHttpContentResolver httpContentResolver,
         IOrderModelsResolver modelsResolver)
     {
         _ordersRepository = ordersRepository;
         _businessRepository = businessRepository;
+        _usersRepository = usersRepository;
         _httpContentResolver = httpContentResolver;
         _modelsResolver = modelsResolver;
     }
@@ -31,8 +34,9 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
         var orderRequest = await _httpContentResolver.GetPayloadAsync<CreateOrderRequest>(command.Request);
 
         var businessDao = await _businessRepository.GetAsync(Guid.Parse(orderRequest.BusinessId));
+        var userDao = await _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
         
-        var orderDao = _modelsResolver.GetDaoFromRequest(orderRequest, businessDao);
+        var orderDao = _modelsResolver.GetDaoFromRequest(orderRequest, businessDao, userDao);
         var createdOrderDao = await _ordersRepository.CreateAsync(orderDao);
         
         var response = _modelsResolver.GetResponseFromDao(createdOrderDao);

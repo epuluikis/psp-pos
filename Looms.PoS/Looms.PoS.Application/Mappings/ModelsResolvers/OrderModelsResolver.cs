@@ -18,11 +18,12 @@ public class OrderModelsResolver : IOrderModelsResolver
         _mapper = mapper;
     }
 
-    public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest, BusinessDao businessDao)
+    public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest, BusinessDao businessDao, UserDao userDao)
     {
         return _mapper.Map<OrderDao>(createOrderRequest) with 
         {
-            Business = businessDao
+            Business = businessDao,
+            User = userDao
         };
     }
 
