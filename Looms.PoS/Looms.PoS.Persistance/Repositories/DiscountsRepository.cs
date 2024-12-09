@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Looms.PoS.Persistance.Repositories;
 
+// TODO: Add Get Active discounts for orders and order items
+
 public class DiscountsRepository : IDiscountsRepository
 {
     private readonly AppDbContext _context;

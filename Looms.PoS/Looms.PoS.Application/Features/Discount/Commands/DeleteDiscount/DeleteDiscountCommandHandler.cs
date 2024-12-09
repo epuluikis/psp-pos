@@ -1,5 +1,4 @@
-﻿using Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
-using Looms.PoS.Application.Interfaces.ModelsResolvers;
+﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

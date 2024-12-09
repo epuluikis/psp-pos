@@ -1,28 +1,28 @@
 using Looms.PoS.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace Looms.PoS.Domain.Daos;
 
 public record OrderDao
 {
-    [Key]
     public Guid Id { get; init; }
 
-    public Guid UserId { get; set; }
+    public Guid UserId { get; init; }
 
     public Guid BussinessId { get; init; }
 
-    public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public BusinessDao Business { get; init; } = null!;
 
-    public Guid? DiscountId { get; set; } = null;
+    public OrderStatus Status { get; init; } = OrderStatus.Pending;
 
-    public DiscountDao? Discount { get; set; } = null;
+    public Guid? DiscountId { get; init; } = null;
 
-    public ICollection<PaymentDao> Payments { get; set; } = new List<PaymentDao>();
+    public DiscountDao? Discount { get; init; } = null;
 
-    public ICollection<RefundDao>? Refunds { get; set; }
+    public ICollection<PaymentDao> Payments { get; init; } = new List<PaymentDao>();
 
-    public ICollection<OrderItemDao> OrderItems { get; set; } = new List<OrderItemDao>();
+    public ICollection<RefundDao>? Refunds { get; init; } = new List<RefundDao>();
 
-    public bool IsDeleted { get; set; } = false;
+    public ICollection<OrderItemDao> OrderItems { get; init; } = new List<OrderItemDao>();
+
+    public bool IsDeleted { get; init; } = false;
 }

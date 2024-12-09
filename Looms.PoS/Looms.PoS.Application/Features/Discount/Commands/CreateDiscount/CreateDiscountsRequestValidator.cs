@@ -2,7 +2,6 @@
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Domain.Enums;
-using System.Globalization;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 

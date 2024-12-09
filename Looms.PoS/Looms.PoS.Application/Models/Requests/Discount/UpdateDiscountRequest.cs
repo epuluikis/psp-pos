@@ -1,5 +1,3 @@
-using Looms.PoS.Domain.Enums;
-
 namespace Looms.PoS.Application.Models.Requests;
 
 public record UpdateDiscountRequest

@@ -5,8 +5,6 @@ using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
 
-// TODO : Add checking for dates, if they are the same as in the database, otherwise need to be in the future
-
 public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRequest>
 {
     public UpdateDiscountRequestValidator()
@@ -41,14 +39,20 @@ public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRe
             .NotEmpty()
             .Must(dateString =>
             {
-                return DateTimeHelper.TryConvertToUtc(dateString);
-            });
+                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
+                return parsedDate >= DateTime.UtcNow;
+            })
+            .WithMessage("Start date must be a valid future date.");
+
         RuleFor(x => x.EndDate)
             .NotEmpty()
             .Must(dateString =>
             {
-                return DateTimeHelper.TryConvertToUtc(dateString);
-            });
+                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
+                return parsedDate >= DateTime.UtcNow;
+            })
+            .WithMessage("End date must be a valid future date.");
+
         RuleFor(x => x)
             .Must(x =>
             {

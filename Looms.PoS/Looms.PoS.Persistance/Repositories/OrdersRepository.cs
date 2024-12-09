@@ -18,7 +18,7 @@ public class OrdersRepository : LoomsException, IOrdersRepository
     public async Task<OrderDao> CreateAsync(OrderDao order)
     {
         var orderDao = await _context.Orders.AddAsync(order);
-        await Save();
+        await _context.SaveChangesAsync();
         return orderDao.Entity;
     }
 
@@ -46,68 +46,15 @@ public class OrdersRepository : LoomsException, IOrdersRepository
         return order;
     }
 
-    public async Task<OrderDao> UpdateDiscountAsync(Guid orderId, Guid discounId)
+    public async Task<OrderDao> UpdateAsync(OrderDao order)
     {
-        var order = await _context.Orders.FindAsync(orderId);
-        var discount = await _context.Discounts.FindAsync(discounId);
-
         ValidateOrder(order);
 
-        _context.Orders.Remove(order!);
-
-        order!.DiscountId = discounId;
-        order!.Discount = discount;
-        await Save();
+        await RemoveAsync(order.Id);
+        _context.Orders.Update(order);
+        _context.SaveChanges();
 
         return order;
-    }
-
-    public async Task<OrderDao> UpdateItemAsync(Guid orderId, OrderItemDao orderItem)
-    {
-        var order = await _context.Orders.FindAsync(orderId);
-
-        ValidateOrder(order);
-
-        _context.Orders.Remove(order!);
-
-        order.OrderItems.Add(orderItem);
-        await Save();
-        return order;
-    }
-
-    public async Task<OrderDao> UpdateItemsAsync(Guid orderId, IEnumerable<OrderItemDao> orderItems)
-    {
-        var order = await _context.Orders.FindAsync(orderId);
-
-        ValidateOrder(order);
-
-        _context.Orders.Remove(order!);
-        order.OrderItems.Concat(orderItems);
-        await Save();
-        return order;
-    }
-
-    public async Task<OrderDao> UpdateStatusAsync(Guid orderId, OrderStatus status)
-    {
-        var order = await _context.Orders.FindAsync(orderId);
-
-        ValidateOrder(order);
-
-        _context.Orders.Remove(order!);
-
-        order!.Status = status;
-        await Save();
-        return order;
-    }
-
-    public Task<OrderDao> UpdateUserAsync(Guid orderId, Guid userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task Save()
-    {
-        await _context.SaveChangesAsync();
     }
 
     private void ValidateOrder(OrderDao order)

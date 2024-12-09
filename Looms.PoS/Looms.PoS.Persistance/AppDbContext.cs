@@ -29,6 +29,12 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<OrderDao>(x => {
             x.HasKey(o => o.Id);
 
+            x.HasOne(o => o.Business)
+                .WithMany()
+                .HasForeignKey(o => o.BussinessId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(true);
+
             x.HasMany(o => o.OrderItems)
                 .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
@@ -67,6 +73,25 @@ public class AppDbContext : DbContext
                 .HasForeignKey(oi => oi.DiscountId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
+            
+// TODO: Uncomment the following lines after ProductDao, VariationDao, and ServiceDao classes are in the project
+/*             x.HasOne(oi => oi.Product)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            x.HasOne(oi => oi.Variation)
+                .WithMany()
+                .HasForeignKey(oi => oi.VariationId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            x.HasOne(oi => oi.Service)
+                .WithMany()
+                .HasForeignKey(oi => oi.ServiceId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false); */
         });
     }
 }
