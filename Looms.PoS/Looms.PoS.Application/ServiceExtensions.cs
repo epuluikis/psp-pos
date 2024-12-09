@@ -4,7 +4,9 @@ using Looms.PoS.Application.Features.Payment.Handlers;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.Factories;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Mappings.ModelsResolvers;
+using Looms.PoS.Application.Services;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Application.Utilities.Behaviours;
 using MediatR;
@@ -16,11 +18,13 @@ public static class ServiceExtensions
 {
     public static void AddApplicationLayer(this IServiceCollection services)
     {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthenticationBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         services.AddHttpContextAccessor();
 
         services.AddSingleton<IHttpContentResolver, HttpContentResolver>();
+        services.AddSingleton<ITokenService, TokenService>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
         services.AddValidatorsFromAssembly(typeof(ServiceExtensions).Assembly);
@@ -33,6 +37,7 @@ public static class ServiceExtensions
 
     private static void RegisterExceptionHandling(this IServiceCollection services)
     {
+        services.AddExceptionHandler<UnauthorizedExceptionHandler>();
         services.AddExceptionHandler<BadRequestExceptionHandler>();
         services.AddExceptionHandler<NotFoundExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -51,6 +56,9 @@ public static class ServiceExtensions
         services.AddSingleton<IOrderItemModelsResolver, OrderItemModelsResolver>();
         services.AddSingleton<ITaxModelsResolver, TaxModelsResolver>();
         services.AddSingleton<IGiftCardModelsResolver, GiftCardModelsResolver>();
+        services.AddSingleton<IProductModelsResolver, ProductModelsResolver>();
+        services.AddSingleton<IProductVariationModelsResolver, ProductVariationModelsResolver>();
+        services.AddSingleton<IAuthModelsResolver, AuthModelsResolver>();
     }
 
     private static void RegisterFactories(this IServiceCollection services)

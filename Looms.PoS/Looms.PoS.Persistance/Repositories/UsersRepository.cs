@@ -37,6 +37,22 @@ public class UsersRepository : IUsersRepository
         return userDao;
     }
 
+    public async Task<UserDao> GetByEmailAsync(string email)
+    {
+        var userDao = _context.ChangeTracker.Entries<UserDao>().FirstOrDefault(x => x.Entity.Email == email && !x.Entity.IsDeleted)?.Entity;
+
+        if (userDao is null)
+        {
+            userDao = await _context.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted);
+        }
+
+        if (userDao is null || userDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("User not found");
+        }
+        return userDao;
+    }
+
     public async Task<UserDao> UpdateAsync(UserDao userDao)
     {
         await RemoveAsync(userDao.Id);

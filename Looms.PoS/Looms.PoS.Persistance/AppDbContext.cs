@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<GiftCardDao> GiftCards { get; set; }
     public DbSet<OrderDao> Orders { get; set; }
     public DbSet<OrderItemDao> OrderItems { get; set; }
+    public DbSet<ProductDao> Products { get; set; }
+    public DbSet<ProductVariationDao> ProductVariations { get; set; }
     public DbSet<TaxDao> Taxes { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -98,12 +100,17 @@ public class AppDbContext : DbContext
         });
 
         modelBuilder.Entity<TaxDao>().HasKey(x => x.Id);
-
+        modelBuilder.Entity<ProductDao>().HasKey(p => p.Id);
+        modelBuilder.Entity<ProductVariationDao>().HasKey(p => p.Id);
+        
         // Relationships
         modelBuilder.Entity<BusinessDao>()
             .HasMany(b => b.Users)
             .WithOne(u => u.Business)
             .HasForeignKey(u => u.BusinessId)
             .IsRequired();
+
+
+
     }
 }

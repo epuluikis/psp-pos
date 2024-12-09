@@ -10,7 +10,7 @@ public static class ServiceExtensions
 {
     public static void AddPersistanceLayer(this IServiceCollection services, string? connectionString)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Scoped);
 
         services.AddScoped<IBusinessesRepository, BusinessesRepository>();
         services.AddScoped<IUsersRepository, UsersRepository>();
@@ -21,5 +21,7 @@ public static class ServiceExtensions
         services.AddScoped<IOrdersRepository, OrdersRepository>();
         services.AddScoped<IOrderItemsRepository, OrderItemsRepository>();
         services.AddScoped<ITaxesRepository, TaxesRepository>();
+        services.AddScoped<IProductsRepository, ProductsRepository>();
+        services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
     }
 }

@@ -1,8 +1,8 @@
-﻿using Looms.PoS.Domain.Exceptions;
+﻿using FluentValidation;
+using Looms.PoS.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace Looms.PoS.Application.Exceptions.Handlers;
 
