@@ -12,19 +12,22 @@ public class GiftCardPaymentHandler : IPaymentHandler
 {
     private readonly IPaymentsRepository _paymentsRepository;
     private readonly IGiftCardsRepository _giftCardsRepository;
-    private readonly IPaymentModelsResolver _modelsResolver;
+    private readonly IPaymentModelsResolver _paymentModelsResolver;
+    private readonly IGiftCardModelsResolver _giftCardModelsResolver;
 
     public PaymentMethod SupportedMethod => PaymentMethod.GiftCard;
 
     public GiftCardPaymentHandler(
         IPaymentsRepository paymentsRepository,
         IGiftCardsRepository giftCardsRepository,
-        IPaymentModelsResolver modelsResolver
+        IPaymentModelsResolver paymentModelsResolver,
+        IGiftCardModelsResolver giftCardModelsResolver
     )
     {
         _paymentsRepository = paymentsRepository;
         _giftCardsRepository = giftCardsRepository;
-        _modelsResolver = modelsResolver;
+        _paymentModelsResolver = paymentModelsResolver;
+        _giftCardModelsResolver = giftCardModelsResolver;
     }
 
     public async Task<PaymentResponse> HandlePayment(PaymentDao paymentDao)
@@ -36,23 +39,26 @@ public class GiftCardPaymentHandler : IPaymentHandler
             throw new LoomsBadRequestException("Gift card is not active");
         }
 
-        if (giftCardDao.ExpiryDate < DateTime.Now)
+        if (giftCardDao.ExpiryDate < DateTime.UtcNow)
         {
             throw new LoomsBadRequestException("Gift card is expired");
         }
 
-        giftCardDao.CurrentBalance -= paymentDao.Amount;
-        giftCardDao.CurrentBalance -= paymentDao.Tip;
+        var currentBalance = giftCardDao.CurrentBalance;
 
-        if (giftCardDao.CurrentBalance < 0)
+        currentBalance -= paymentDao.Amount;
+        currentBalance -= paymentDao.Tip;
+
+        if (currentBalance < 0)
         {
             throw new LoomsBadRequestException("Gift card balance is insufficient");
         }
 
-        await _giftCardsRepository.Save();
+        giftCardDao = _giftCardModelsResolver.GetDaoFromDaoAndCurrentBalance(giftCardDao, currentBalance);
+        await _giftCardsRepository.UpdateAsync(giftCardDao);
 
         paymentDao = await _paymentsRepository.CreateAsync(paymentDao);
 
-        return _modelsResolver.GetResponseFromDao(paymentDao);
+        return _paymentModelsResolver.GetResponseFromDao(paymentDao);
     }
 }

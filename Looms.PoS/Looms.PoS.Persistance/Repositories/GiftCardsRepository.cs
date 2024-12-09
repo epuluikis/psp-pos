@@ -17,28 +17,38 @@ public class GiftCardsRepository : IGiftCardsRepository
     public async Task<GiftCardDao> CreateAsync(GiftCardDao giftCardDao)
     {
         var entityEntry = await _context.AddAsync(giftCardDao);
-        await Save();
+        await _context.SaveChangesAsync();
         return entityEntry.Entity;
     }
 
     public async Task<IEnumerable<GiftCardDao>> GetAllAsync()
     {
-        return await _context.GiftCards.ToListAsync();
+        return await _context.GiftCards.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<GiftCardDao> GetAsync(Guid id)
     {
-        return await _context.GiftCards.FindAsync(id)
-            ?? throw new LoomsNotFoundException("GiftCard not found");
+        var giftCardDao = await _context.GiftCards.FindAsync(id);
+
+        if (giftCardDao is null || giftCardDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("GiftCard not found");
+        }
+
+        return giftCardDao;
     }
 
-    public void DeleteAsync(Guid id)
+    public async Task<GiftCardDao> UpdateAsync(GiftCardDao giftCardDao)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task Save()
-    {
+        await RemoveAsync(giftCardDao.Id);
+        _context.GiftCards.Update(giftCardDao);
         await _context.SaveChangesAsync();
+        return giftCardDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var giftCardDao = await _context.GiftCards.FindAsync(id);
+        _context.GiftCards.Remove(giftCardDao!);
     }
 }

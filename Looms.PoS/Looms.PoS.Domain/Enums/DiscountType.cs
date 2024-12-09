@@ -1,11 +1,10 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Looms.PoS.Domain.Enums;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum DiscountType
 {
-    [EnumMember(Value = "Percentage")]
-    Percentage, 
-    [EnumMember(Value = "Amount")]
-    Amount 
+    Percentage,
+    Amount
 }

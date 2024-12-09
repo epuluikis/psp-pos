@@ -1,11 +1,10 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Looms.PoS.Domain.Enums;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum DiscountTarget
 {
-    [EnumMember(Value = "Order")]
-    Order, 
-    [EnumMember(Value = "Product")]
+    Order,
     Product
 }
