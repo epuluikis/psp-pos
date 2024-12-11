@@ -11,27 +11,25 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
 {
     private readonly IServicesRepository _servicesRepository;
     private readonly IReservationsRepository _reservationsRepository;
+
     public CreateReservationRequestValidator(IServicesRepository servicesRepository, IReservationsRepository reservationsRepository)
     {
         _servicesRepository = servicesRepository;
         _reservationsRepository = reservationsRepository;
 
         RuleFor(x => x.CustomerId)
+            .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
             .MustAsync(async (request, customerId, cancellation) =>
-                {
-                    if (Guid.TryParse(customerId, out var customerGuid))
-                    {
-                        var appointmentTime = DateTimeHelper.ConvertToUtc(request.AppointmentTime);
-                        var allReservations = await _reservationsRepository.GetAllAsync();
-                        var existingReservation = allReservations
-                            .FirstOrDefault(r => r.CustomerId == customerGuid && r.AppointmentTime == appointmentTime);
-                        return existingReservation == null;
-                    }
-                    return false;
-                })
-                .WithMessage("An appointment for the same customer at the same time already exists.");
-                    
+            {
+                var customerGuid = Guid.Parse(customerId);
+                var appointmentTime = DateTimeHelper.ConvertToUtc(request.AppointmentTime);
+                var existingReservations = await _reservationsRepository.GetReservationsByCustomerAndTimeAsync(customerGuid, appointmentTime);
+                var existingReservation = existingReservations.FirstOrDefault();
+                return existingReservation is null;
+            })
+            .WithMessage("An appointment for the same customer at the same time already exists.");
+
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
@@ -44,24 +42,13 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
             .WithMessage("Appointment time must be in the future and within business hours.");
 
         RuleFor(x => x.ServiceId)
+            .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
-                {
-                    if (Guid.TryParse(serviceId, out var guid))
-                    {
-                        try
-                        {
-                            await _servicesRepository.GetAsync(guid);
-                            return true;
-                        }
-                        catch (LoomsNotFoundException)
-                        {
-                            return false;
-                        }
-                    }
-                    return false;
-                })
-            .WithMessage("Service does not exist.");
+            {
+                return await _servicesRepository.GetAsync(new Guid(serviceId)) != null;
+            })
+            .WithMessage("Invalid service ID.");
         
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)

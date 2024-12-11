@@ -26,6 +26,7 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
             .WithMessage("Appointment time must be in the future and within business hours.");
 
         RuleFor(x => x.ServiceId)
+            .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
             {
