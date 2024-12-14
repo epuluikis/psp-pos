@@ -18,7 +18,6 @@ public class Program
 
         builder.Services.AddCors(p => p.AddPolicy("corspolicy", build =>
         {
-            //on my side its localhost:3000, but it might be different when someone else runs it so maybe its fine to leave it as *
             build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
         }));
 
@@ -61,7 +60,6 @@ public class Program
         builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder.Build();
-
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
