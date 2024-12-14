@@ -1,10 +1,9 @@
-
 using Looms.PoS.Application;
 using Looms.PoS.Persistance;
 using Looms.PoS.Swagger.Filters;
 using Microsoft.OpenApi.Models;
 
-namespace Looms.PoS;
+namespace Looms.PoS.Configuration;
 
 public class Program
 {
@@ -27,6 +26,7 @@ public class Program
         builder.Services.AddSwaggerGen(c =>
         {
             c.OperationFilter<SwaggerRequestTypeOperationFilter>();
+            c.OperationFilter<AddBusinessIdHeader>();
 
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {

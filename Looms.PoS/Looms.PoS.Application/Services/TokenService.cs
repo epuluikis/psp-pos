@@ -43,7 +43,7 @@ public class TokenService : ITokenService
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        return _authModelsResolver.GetResponse(tokenHandler.WriteToken(token), expires, userRole);
+        return _authModelsResolver.GetResponse(tokenHandler.WriteToken(token), expires, userRole, userDao.BusinessId);
     }
 
     public bool IsTokenValid(string token)
