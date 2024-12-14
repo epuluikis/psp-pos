@@ -21,9 +21,9 @@ public class UpdateBusinessCommandValidator : AbstractValidator<UpdateBusinessCo
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateBusinessCommand>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateBusinessRequest>(request);
 
-                var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
+                var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);
 
                 foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))

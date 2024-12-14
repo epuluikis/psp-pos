@@ -5,6 +5,7 @@ using Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 using Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
 using Looms.PoS.Application.Models.Requests.Business;
 using Looms.PoS.Application.Models.Responses.Business;
+using Looms.PoS.Configuration.Attributes;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +29,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpPost($"/{EntityName}")]
+    [ExcludeHeader]
     [SwaggerRequestType(typeof(CreateBusinessRequest))]
     [SwaggerResponse(StatusCodes.Status201Created, "Business successfully created.", typeof(BusinessResponse))]
     public async Task<IActionResult> CreateBusiness()
@@ -38,6 +40,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [ExcludeHeader]
     [SwaggerResponse(StatusCodes.Status200OK, "List of businesses returned successfully.", typeof(List<BusinessResponse>))]
     public async Task<IActionResult> GetBusinesses()
     {
@@ -47,6 +50,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{businessId}}")]
+    [ExcludeHeader]
     [SwaggerResponse(StatusCodes.Status200OK, "Business details returned successfully.", typeof(BusinessResponse))]
     public async Task<IActionResult> GetBusiness(string businessId)
     {
@@ -56,6 +60,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{businessId}}")]
+    [ExcludeHeader]
     [SwaggerRequestType(typeof(UpdateBusinessRequest))]
     [SwaggerResponse(StatusCodes.Status200OK, "Business successfully updated.", typeof(BusinessResponse))]
     public async Task<IActionResult> UpdateBusiness(string businessId)
@@ -66,6 +71,7 @@ public class BusinessesController : ControllerBase
     }
 
     [HttpDelete($"/{EntityName}/{{businessId}}")]
+    [ExcludeHeader]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Business successfully deleted.")]
     public async Task<IActionResult> DeleteBusiness(string businessId)
     {

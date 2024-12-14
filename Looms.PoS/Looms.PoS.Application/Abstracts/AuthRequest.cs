@@ -2,7 +2,7 @@
 
 namespace Looms.PoS.Application.Abstracts;
 
-public abstract record AuthRequest : LoomsHttpRequest
+public abstract record AuthRequest : GlobalLoomsHttpRequest
 {
     protected AuthRequest(HttpRequest request) : base(request)
     {

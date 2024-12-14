@@ -6,13 +6,14 @@ namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 
 public class AuthModelsResolver : IAuthModelsResolver
 {
-    public LoginResponse GetResponse(string token, DateTime expires, UserRole role)
+    public LoginResponse GetResponse(string token, DateTime expires, UserRole role, Guid businessId)
     {
         return new()
         {
             Token = token,
             Expires = expires,
             Role = role,
+            BusinessId = businessId
         };
     }
 }
