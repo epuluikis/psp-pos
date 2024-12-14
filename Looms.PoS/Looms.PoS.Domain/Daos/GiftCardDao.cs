@@ -20,5 +20,6 @@ public record GiftCardDao
     public Guid BusinessId { get; init; }
     public bool IsDeleted { get; init; }
 
-    public BusinessDao? Business { get; init; }
+    public virtual BusinessDao Business { get; init; } = null!;
+    public virtual ICollection<PaymentDao> Payments { get; init; } = [];
 }

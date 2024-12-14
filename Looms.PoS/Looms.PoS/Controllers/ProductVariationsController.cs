@@ -16,7 +16,7 @@ public class ProductVariationsController : ControllerBase
     private readonly IMediator _mediator;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    private const string EntityName = "productVariation";
+    private const string EntityName = "productvariation";
 
     public ProductVariationsController(IMediator mediator, IHttpContextAccessor contextAccessor)
     {

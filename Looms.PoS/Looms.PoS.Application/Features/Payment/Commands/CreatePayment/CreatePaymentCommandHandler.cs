@@ -11,24 +11,24 @@ public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand,
 {
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IPaymentModelsResolver _modelsResolver;
-    private readonly IPaymentHandlerFactory _paymentHandlerFactory;
+    private readonly IPaymentHandlerServiceFactory _paymentHandlerServiceFactory;
 
     public CreatePaymentCommandHandler(
         IHttpContentResolver httpContentResolver,
         IPaymentModelsResolver modelsResolver,
-        IPaymentHandlerFactory paymentHandlerFactory
+        IPaymentHandlerServiceFactory paymentHandlerServiceFactory
     )
     {
         _httpContentResolver = httpContentResolver;
         _modelsResolver = modelsResolver;
-        _paymentHandlerFactory = paymentHandlerFactory;
+        _paymentHandlerServiceFactory = paymentHandlerServiceFactory;
     }
 
     public async Task<IActionResult> Handle(CreatePaymentCommand command, CancellationToken cancellationToken)
     {
         var paymentRequest = await _httpContentResolver.GetPayloadAsync<CreatePaymentRequest>(command.Request);
         var paymentDao = _modelsResolver.GetDaoFromRequest(paymentRequest);
-        var response = await _paymentHandlerFactory.GetHandler(paymentDao.PaymentMethod).HandlePayment(paymentDao);
+        var response = await _paymentHandlerServiceFactory.GetService(paymentDao.PaymentMethod).HandlePayment(paymentDao);
 
         return new CreatedAtRouteResult($"/payments/{paymentDao.Id}", response);
     }

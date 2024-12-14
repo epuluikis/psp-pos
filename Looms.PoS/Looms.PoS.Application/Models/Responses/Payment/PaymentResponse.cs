@@ -10,5 +10,6 @@ public class PaymentResponse
     public PaymentMethod PaymentMethod { get; init; }
     public string? GiftCardId { get; init; }
     public decimal Tip { get; init; }
+    public PaymentStatus Status { get; init; }
     public bool IsDeleted { get; init; } = false;
 }

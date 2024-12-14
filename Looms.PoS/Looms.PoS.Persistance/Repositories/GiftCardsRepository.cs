@@ -38,6 +38,18 @@ public class GiftCardsRepository : IGiftCardsRepository
         return giftCardDao;
     }
 
+    public async Task<GiftCardDao> GetAsyncByBusinessIdAndCode(Guid businessId, string code)
+    {
+        var giftCardDao = await _context.GiftCards.Where(x => x.BusinessId == businessId && x.Code == code).FirstAsync();
+
+        if (giftCardDao is null || giftCardDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("GiftCard not found");
+        }
+
+        return giftCardDao;
+    }
+
     public async Task<GiftCardDao> UpdateAsync(GiftCardDao giftCardDao)
     {
         await RemoveAsync(giftCardDao.Id);

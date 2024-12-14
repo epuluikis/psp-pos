@@ -19,7 +19,7 @@ public class GiftCardsController : ControllerBase
     private readonly IMediator _mediator;
     private readonly IHttpContextAccessor _contextAccessor;
 
-    private const string EntityName = "giftCards";
+    private const string EntityName = "giftcards";
 
     public GiftCardsController(IMediator mediator, IHttpContextAccessor contextAccessor)
     {
@@ -29,7 +29,7 @@ public class GiftCardsController : ControllerBase
 
     [HttpPost($"/{EntityName}")]
     [SwaggerRequestType(typeof(CreateGiftCardRequest))]
-    [SwaggerResponse(StatusCodes.Status201Created, "GiftCard successfully created.", typeof(List<GiftCardResponse>))]
+    [SwaggerResponse(StatusCodes.Status201Created, "GiftCard successfully created.", typeof(GiftCardResponse))]
     public async Task<IActionResult> CreateGiftCard()
     {
         var comnand = new CreateGiftCardCommand(GetRequest());
@@ -58,6 +58,7 @@ public class GiftCardsController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{giftCardId}}")]
+    [SwaggerRequestType(typeof(UpdateGiftCardRequest))]
     [SwaggerResponse(StatusCodes.Status200OK, "GiftCard successfully updated.", typeof(GiftCardResponse))]
     public async Task<IActionResult> UpdateGiftCard(string giftCardId)
     {
