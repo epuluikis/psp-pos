@@ -16,6 +16,13 @@ public class Program
 
         builder.Services.AddControllers();
 
+        builder.Services.AddCors(p => p.AddPolicy("corspolicy", build =>
+        {
+            //on my side its localhost:3000, but it might be different when someone else runs it so maybe its fine to leave it as *
+            build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+        }));
+
+        
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(c =>
@@ -54,6 +61,7 @@ public class Program
         builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder.Build();
+        app.UseCors("corspolicy");
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
