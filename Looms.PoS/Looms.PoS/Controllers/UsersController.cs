@@ -56,6 +56,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{userId}}")]
+    [SwaggerRequestType(typeof(UpdateUserRequest))]
     [SwaggerResponse(StatusCodes.Status200OK, "User updated successfully.", typeof(UserResponse))]
     public async Task<IActionResult> UpdateUser(string userId)
     {
