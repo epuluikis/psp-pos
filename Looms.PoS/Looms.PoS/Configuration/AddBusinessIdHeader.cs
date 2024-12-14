@@ -10,8 +10,7 @@ public class AddBusinessIdHeader : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        if (operation.Parameters is null)
-            operation.Parameters = [];
+        operation.Parameters ??= [];
 
         if (!context.MethodInfo.GetCustomAttributes(typeof(ExcludeHeaderAttribute)).Any())
         {
