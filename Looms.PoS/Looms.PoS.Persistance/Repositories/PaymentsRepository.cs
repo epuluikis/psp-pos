@@ -42,7 +42,7 @@ public class PaymentsRepository : IPaymentsRepository
     {
         var paymentDao = await _context.Payments.Where(x => x.ExternalId == externalId).FirstOrDefaultAsync();
 
-        if (paymentDao is null || paymentDao.IsDeleted || paymentDao.ExternalId != externalId)
+        if (paymentDao is null || paymentDao.IsDeleted)
         {
             throw new LoomsNotFoundException("Payment not found");
         }

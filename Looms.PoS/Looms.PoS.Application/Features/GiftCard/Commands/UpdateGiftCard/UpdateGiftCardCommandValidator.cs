@@ -21,7 +21,7 @@ public class UpdateGiftCardCommandValidator : AbstractValidator<UpdateGiftCardCo
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateGiftCardCommand>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateGiftCardRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
                 await Task.WhenAll(validationResults);

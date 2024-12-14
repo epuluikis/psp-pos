@@ -21,7 +21,7 @@ public class UpdatePaymentProviderCommandValidator : AbstractValidator<UpdatePay
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdatePaymentProviderCommand>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdatePaymentProviderRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
                 await Task.WhenAll(validationResults);
