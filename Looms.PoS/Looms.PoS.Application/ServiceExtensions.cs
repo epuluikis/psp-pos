@@ -1,12 +1,14 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Exceptions.Handlers;
-using Looms.PoS.Application.Features.Payment.Handlers;
+using Looms.PoS.Application.Factories;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.Factories;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Mappings.ModelsResolvers;
 using Looms.PoS.Application.Services;
+using Looms.PoS.Application.Services.PaymentHandler;
+using Looms.PoS.Application.Services.PaymentProvider;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Application.Utilities.Behaviours;
 using MediatR;
@@ -57,14 +59,18 @@ public static class ServiceExtensions
         services.AddSingleton<IProductModelsResolver, ProductModelsResolver>();
         services.AddSingleton<IProductVariationModelsResolver, ProductVariationModelsResolver>();
         services.AddSingleton<IAuthModelsResolver, AuthModelsResolver>();
+        services.AddSingleton<IPaymentProviderModelsResolver, PaymentProviderModelsResolver>();
+        services.AddSingleton<IPaymentTerminalModelsResolver, PaymentTerminalModelsResolver>();
     }
 
     private static void RegisterFactories(this IServiceCollection services)
     {
-        services.AddScoped<IPaymentHandler, CashPaymentHandler>();
-        services.AddScoped<IPaymentHandler, CreditCardPaymentHandler>();
-        services.AddScoped<IPaymentHandler, GiftCardPaymentHandler>();
+        services.AddScoped<IPaymentHandlerService, CashPaymentHandlerService>();
+        services.AddScoped<IPaymentHandlerService, CreditCardPaymentHandlerService>();
+        services.AddScoped<IPaymentHandlerService, GiftCardPaymentHandlerService>();
+        services.AddScoped<IPaymentHandlerServiceFactory, PaymentHandlerServiceFactory>();
 
-        services.AddScoped<IPaymentHandlerFactory, PaymentHandlerFactory>();
+        services.AddScoped<IPaymentProviderService, StripePaymentProviderService>();
+        services.AddScoped<IPaymentProviderServiceFactory, PaymentProviderServiceFactory>();
     }
 }

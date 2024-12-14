@@ -15,8 +15,11 @@ public record PaymentDao
     public PaymentMethod PaymentMethod { get; init; }
     public Guid? GiftCardId { get; init; }
     public decimal Tip { get; init; }
+    public Guid? PaymentTerminalId { get; init; }
+    public PaymentStatus Status { get; init; }
+    public string? ExternalId { get; init; }
     public bool IsDeleted { get; init; }
 
-
-    public GiftCardDao? GiftCard { get; init; }
+    public virtual GiftCardDao? GiftCard { get; init; }
+    public virtual PaymentTerminalDao? PaymentTerminal { get; init; }
 }

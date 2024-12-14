@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.ProductVariation;
-using Looms.PoS.Application.Models.Responses.ProductVariation;
+using Looms.PoS.Application.Models.Responses.Product;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
@@ -30,19 +30,15 @@ public class ProductVariationModelsResolver : IProductVariationModelsResolver
         return _mapper.Map<IEnumerable<ProductVariationResponse>>(productVariationDao);
     }
 
-    ProductVariationDao IProductVariationModelsResolver.GetDaoFromDaoAndRequest(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest)
+    ProductVariationDao IProductVariationModelsResolver.GetDaoFromDaoAndRequest(
+        ProductVariationDao originalDao,
+        UpdateProductVariationRequest updateProductVariationRequest)
     {
-        return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with
-        {
-            Id = originalDao.Id,
-        };
+        return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with { Id = originalDao.Id };
     }
 
     ProductVariationDao IProductVariationModelsResolver.GetDeletedDao(ProductVariationDao originalDao)
     {
-        return originalDao with
-        {
-            IsDeleted = true
-        };
+        return originalDao with { IsDeleted = true };
     }
 }

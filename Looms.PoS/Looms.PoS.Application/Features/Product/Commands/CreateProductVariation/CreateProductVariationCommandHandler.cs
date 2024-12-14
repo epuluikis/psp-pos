@@ -32,6 +32,6 @@ public class CreateProductVariationCommandHandler : IRequestHandler<CreateProduc
 
         var response = _modelsResolver.GetResponseFromDao(createdProductVariationDao);
 
-        return new CreatedAtRouteResult($"/products{createdProductVariationDao.Id}", response);
+        return new CreatedAtRouteResult($"/productvariations/{createdProductVariationDao.Id}", response);
     }
 }

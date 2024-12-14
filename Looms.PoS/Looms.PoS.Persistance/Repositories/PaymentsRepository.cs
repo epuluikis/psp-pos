@@ -38,6 +38,18 @@ public class PaymentsRepository : IPaymentsRepository
         return paymentDao;
     }
 
+    public async Task<PaymentDao> GetAsyncByExternalId(string externalId)
+    {
+        var paymentDao = await _context.Payments.Where(x => x.ExternalId == externalId).FirstOrDefaultAsync();
+
+        if (paymentDao is null || paymentDao.IsDeleted || paymentDao.ExternalId != externalId)
+        {
+            throw new LoomsNotFoundException("Payment not found");
+        }
+
+        return paymentDao;
+    }
+
     public async Task<PaymentDao> UpdateAsync(PaymentDao paymentDao)
     {
         await RemoveAsync(paymentDao.Id);
