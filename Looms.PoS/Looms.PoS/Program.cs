@@ -61,7 +61,7 @@ public class Program
         builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder.Build();
-        app.UseCors("corspolicy");
+
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -72,6 +72,7 @@ public class Program
 
         app.UseAuthorization();
         app.UseExceptionHandler();
+        app.UseCors("corspolicy");
 
         app.MapControllers();
 
