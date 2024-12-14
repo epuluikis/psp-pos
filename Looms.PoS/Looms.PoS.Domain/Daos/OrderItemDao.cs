@@ -1,4 +1,3 @@
-using Looms.PoS.Domain.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Looms.PoS.Domain.Daos;
@@ -13,29 +12,29 @@ public record OrderItemDao
     
     public OrderDao Order { get; init; }
 
-    public Guid? ProductId { get; set; }
+    public Guid? ProductId { get; init; }
 
-    //public ProductDao? Product { get; set; }
+    public ProductDao? Product { get; init; }
 
-    public Guid? VariationId { get; set; }
+    public Guid? ProductVariationId { get; init; }
 
-    //public VariationDao? Variation { get; set; }
+    public ProductVariationDao? ProductVariation { get; init; }
 
-    public Guid? ServiceId { get; set; }
+    public Guid? ServiceId { get; init; }
 
-    //public ServiceDao? Service { get; set; }
+    //public ServiceDao? Service { get; init; }
 
-    public Guid? DiscountId { get; set; }
+    public Guid? DiscountId { get; init; }
 
-    public DiscountDao? Discount { get; set; }
+    public DiscountDao? Discount { get; init; }
 
-    public int Quantity { get; set; }
+    public int Quantity { get; init; }
+    
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Price { get; init; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal Price { get; set; }
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Tax { get; init; }
 
-    [Column(TypeName = "decimal(10,2)")]
-    public decimal TaxAmount { get; set; }
-
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; init; }
 }

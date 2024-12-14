@@ -1,12 +1,10 @@
 namespace Looms.PoS.Application.Models.Requests;
 
 public record CreateOrderItemRequest
-{
-    public string OrderId { get; init; } 
-    
+{    
     public string? ProductId { get; init; }
     
-    public string? VariationId { get; init; }
+    public string? ProductVariationId { get; init; }
     
     public string? ServiceId { get; init; }
     

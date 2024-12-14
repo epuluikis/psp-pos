@@ -20,11 +20,11 @@ public record OrderDao
 
     public DiscountDao? Discount { get; init; } = null;
 
-    public ICollection<PaymentDao> Payments { get; init; } = new List<PaymentDao>();
+    public List<PaymentDao> Payments { get; init; } = [];
 
-    public ICollection<RefundDao>? Refunds { get; init; } = new List<RefundDao>();
+    public List<RefundDao>? Refunds { get; init; } = [];
 
-    public ICollection<OrderItemDao> OrderItems { get; init; } = new List<OrderItemDao>();
+    public List<OrderItemDao> OrderItems { get; init; } =[];
 
     public bool IsDeleted { get; init; } = false;
 }

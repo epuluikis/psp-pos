@@ -45,4 +45,12 @@ public class ProductVariationModelsResolver : IProductVariationModelsResolver
             IsDeleted = true
         };
     }
+
+    public ProductVariationDao GetUpdatedQuantityDao(ProductVariationDao originalDao, int quantity)
+    {
+        return originalDao with
+        {
+            Quantity = originalDao.Quantity - quantity
+        };
+    }
 }

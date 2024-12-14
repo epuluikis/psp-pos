@@ -2,10 +2,14 @@
 using Looms.PoS.Application.Features.Product.Commands.DeleteProductVariation;
 using Looms.PoS.Application.Features.Product.Commands.UpdateProductVariation;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariation;
+using Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariations;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Requests.ProductVariation;
+using Looms.PoS.Application.Models.Responses.ProductVariation;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -25,6 +29,8 @@ public class ProductVariationsController : ControllerBase
     }
 
     [HttpPost($"/{EntityName}")]
+    [SwaggerRequestType(typeof(CreateProductVariationRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Product variation successfully created.", typeof(ProductVariationResponse))]
     public async Task<IActionResult> CreateProductVariation()
     {
         var command = new CreateProductVariationCommand(GetRequest());
@@ -33,6 +39,7 @@ public class ProductVariationsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Product variations successfully retrieved.", typeof(IEnumerable<ProductVariationResponse>))]
     public async Task<IActionResult> GetProductVariations()
     {
         var query = new GetProductVariationsQuery(GetRequest());
@@ -40,8 +47,17 @@ public class ProductVariationsController : ControllerBase
         return await _mediator.Send(query);
     }
 
+    [HttpGet($"/product/{{productId}}/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Product variations successfully retrieved.", typeof(IEnumerable<ProductVariationResponse>))]
+    public async Task<IActionResult> GetProductVariations(string productId)
+    {
+        var query = new GetProductVariationForProductQuery(GetRequest(), productId);
+        return await _mediator.Send(query);
+    }
+
     [HttpGet($"/{EntityName}/{{productVariationId}}")]
-    public async Task<IActionResult> GetProductVariations(string productVariationId)
+    [SwaggerResponse(StatusCodes.Status200OK, "Product variations for specific product successfully retrieved.", typeof(IEnumerable<ProductVariationResponse>))]
+    public async Task<IActionResult> GetProductVariation(string productVariationId)
     {
         var query = new GetProductVariationQuery(GetRequest(), productVariationId);
 
@@ -49,6 +65,8 @@ public class ProductVariationsController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{productVariationId}}")]
+    [SwaggerRequestType(typeof(UpdateProductVariationRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Product variation successfully updated.", typeof(ProductVariationResponse))]
     public async Task<IActionResult> UpdateProductVariation(string productVariationId)
     {
         var query = new UpdateProductVariationCommand(GetRequest(), productVariationId);
@@ -57,6 +75,7 @@ public class ProductVariationsController : ControllerBase
     }
 
     [HttpDelete($"/{EntityName}/{{productVariationId}}")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Product variation successfully deleted.")]
     public async Task<IActionResult> DeleteProductVariation(string productVariationId)
     {
         var query = new DeleteProductVariationCommand(GetRequest(), productVariationId);

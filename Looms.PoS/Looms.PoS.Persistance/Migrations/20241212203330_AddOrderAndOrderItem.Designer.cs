@@ -3,6 +3,7 @@ using System;
 using Looms.PoS.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Looms.PoS.Persistance.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241212203330_AddOrderAndOrderItem")]
+    partial class AddOrderAndOrderItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,9 +175,6 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<Guid?>("ProductId")
                         .HasColumnType("uuid");
 
@@ -186,9 +186,6 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.Property<Guid?>("ServiceId")
                         .HasColumnType("uuid");
-
-                    b.Property<decimal>("Tax")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -417,7 +414,7 @@ namespace Looms.PoS.Persistance.Migrations
                     b.HasOne("Looms.PoS.Domain.Daos.BusinessDao", "Business")
                         .WithMany()
                         .HasForeignKey("BussinessId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Looms.PoS.Domain.Daos.DiscountDao", "Discount")
@@ -502,7 +499,8 @@ namespace Looms.PoS.Persistance.Migrations
                 {
                     b.HasOne("Looms.PoS.Domain.Daos.OrderDao", "Order")
                         .WithMany("Refunds")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Order");
                 });

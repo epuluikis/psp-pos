@@ -26,6 +26,11 @@ public class ProductVariationRepository : IProductVariationRepository
         return await _context.ProductVariations.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<ProductVariationDao>> GetAllAsync(Guid productId)
+    {
+        return await _context.ProductVariations.Where(x => !x.IsDeleted && x.ProductId == productId).ToListAsync();
+    }
+
     public async Task<ProductVariationDao> GetAsync(Guid id)
     {
         var productVariationDao = await _context.ProductVariations.FindAsync(id);

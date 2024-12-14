@@ -10,7 +10,9 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
 {
     public CreateOrderItemRequestValidator(
         IOrdersRepository ordersRepository, 
-        IDiscountsRepository discountsRepository)
+        IDiscountsRepository discountsRepository,
+        IProductVariationRepository variationRepository,
+        IProductsRepository productsRepository)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -18,28 +20,49 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
             .Must(x => x.ServiceId != null || x.ProductId != null)
             .WithMessage("ServiceId or ProductId is required.");
 
-        RuleFor(x => x.OrderId)
-        .Cascade(CascadeMode.Stop)
-        .MustBeValidGuid()
-        .CustomAsync(async (orderId, _, cancellationToken) => 
-        await ordersRepository.GetAsync(Guid.Parse(orderId)));
+// TODO: add rules for service ids with custom async validation like from GetOrderItemsQueryValidator
 
-// TODO: add rules for service, product and variation ids with custom async validation like from GetOrderItemsQueryValidator
-        
-// TODO: change this when varuation is added
+        RuleFor(x => x.ProductId!)
+            .MustBeValidGuid()
+            .CustomAsync(async (productId, context, cancellationToken) => 
+            {
+                var product = await productsRepository.GetAsync(Guid.Parse(productId));
+                if (product is null)
+                {
+                    context.AddFailure("Product not found.");
+                }else{
+                    if(product!.Quantity < context.InstanceToValidate.Quantity)
+                    {
+                        context.AddFailure("Product quantity is too low.");
+                    }
+                }
 
-        // RuleFor(x => x.VariationId!)
-        //     .MustBeValidGuid()
-        //     .CustomAsync(async (variationId, _, cancellationToken) => 
-        // await variationRepository.GetAsync(Guid.Parse(variationId)))
-        //     .When(x => x.ServiceId == null && x.ProductId != null);
+            })
+            .When(x => x.ServiceId is null && x.ProductId != null);
+
+        RuleFor(x => x.ProductVariationId!)
+            .MustBeValidGuid()
+            .CustomAsync(async (variationId, context, cancellationToken) => 
+            {
+                var variation = await variationRepository.GetAsync(Guid.Parse(variationId));
+                if (variation is null)
+                {
+                    context.AddFailure("Variation not found.");
+
+                    if(variation!.Quantity < context.InstanceToValidate.Quantity)
+                    {
+                        context.AddFailure("Variation quantity is too low.");
+                    }
+                }
+            })
+            .When(x => x.ServiceId is null && x.ProductId != null && x.ProductVariationId != null);
 
         RuleFor(x => x.DiscountId!)
             .MustBeValidGuid()
             .CustomAsync(async (discountId, context, cancellationToken) =>
             {
                 var discount = await discountsRepository.GetAsync(Guid.Parse(discountId));
-                if (discount == null)
+                if (discount is null)
                 {
                     context.AddFailure("Discount not found.");
                 }else if (discount.Target == DiscountTarget.Order)

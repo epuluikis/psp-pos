@@ -11,12 +11,12 @@ public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
     public UpdateOrderCommandValidator(
         IHttpContentResolver httpContentResolver, 
         IEnumerable<IValidator<UpdateOrderRequest>> validators,
-        IDiscountsRepository discountsRepository)
+        IOrdersRepository ordersRepository)
     {
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, _, cancellationToken) => await discountsRepository.GetAsync(Guid.Parse(id)));
+            .CustomAsync(async (id, _, cancellationToken) => await ordersRepository.GetAsync(Guid.Parse(id)));
 
 
         RuleFor(x => x.Request)

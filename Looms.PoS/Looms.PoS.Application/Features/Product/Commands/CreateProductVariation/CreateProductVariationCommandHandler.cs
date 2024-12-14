@@ -27,10 +27,10 @@ public class CreateProductVariationCommandHandler : IRequestHandler<CreateProduc
     public async Task<IActionResult> Handle(CreateProductVariationCommand command, CancellationToken cancellationToken)
     {
         var productVariationRequest = await _httpContentResolver.GetPayloadAsync<CreateProductVariationRequest>(command.Request);
-
         var createdProductVariationDao = _modelsResolver.GetDaoFromRequest(productVariationRequest);
 
-        var response = _modelsResolver.GetResponseFromDao(createdProductVariationDao);
+        var productVariationDao = await _productVariationRepository.CreateAsync(createdProductVariationDao);
+        var response = _modelsResolver.GetResponseFromDao(productVariationDao);
 
         return new CreatedAtRouteResult($"/products{createdProductVariationDao.Id}", response);
     }

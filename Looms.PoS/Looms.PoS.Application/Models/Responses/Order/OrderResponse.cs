@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Looms.PoS.Application.Models.Responses;
 
-public class OrderResponse
+public record OrderResponse
 {
     public Guid Id { get; init; }
 

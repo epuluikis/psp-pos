@@ -31,74 +31,6 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RefundDao>().HasKey(x => x.Id);
         modelBuilder.Entity<PaymentDao>().HasKey(p => p.Id);
         modelBuilder.Entity<GiftCardDao>().HasKey(p => p.Id);
-        modelBuilder.Entity<OrderDao>(x => {
-            x.HasKey(o => o.Id);
-
-            x.HasOne(o => o.Business)
-                .WithMany()
-                .HasForeignKey(o => o.BussinessId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .IsRequired(true);
-
-            x.HasMany(o => o.OrderItems)
-                .WithOne(oi => oi.Order)
-                .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            x.HasOne(o => o.Discount)
-                .WithMany()
-                .HasForeignKey(o => o.DiscountId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false);
-
-            x.HasMany(o => o.Payments)
-                .WithOne(p => p.Order)
-                .HasForeignKey(p => p.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            x.HasMany(o => o.Refunds)
-                .WithOne(r => r.Order)
-                .HasForeignKey(r => r.OrderId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(false);
-        });
-
-
-        modelBuilder.Entity<OrderItemDao>(x => {
-            x.HasKey(oi => oi.Id);
-
-            x.HasOne(oi => oi.Order)
-                .WithMany(o => o.OrderItems)
-                .HasForeignKey(oi => oi.OrderId)
-                .IsRequired(true)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            x.HasOne(oi => oi.Discount)
-                .WithMany()
-                .HasForeignKey(oi => oi.DiscountId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false);
-            
-// TODO: Uncomment the following lines after ProductDao, VariationDao, and ServiceDao classes are in the project
-/*             x.HasOne(oi => oi.Product)
-                .WithMany()
-                .HasForeignKey(oi => oi.ProductId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false);
-
-            x.HasOne(oi => oi.Variation)
-                .WithMany()
-                .HasForeignKey(oi => oi.VariationId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false);
-
-            x.HasOne(oi => oi.Service)
-                .WithMany()
-                .HasForeignKey(oi => oi.ServiceId)
-                .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false); */
-        });
-
         modelBuilder.Entity<TaxDao>().HasKey(x => x.Id);
         modelBuilder.Entity<ProductDao>().HasKey(p => p.Id);
         modelBuilder.Entity<ProductVariationDao>().HasKey(p => p.Id);
@@ -110,7 +42,75 @@ public class AppDbContext : DbContext
             .HasForeignKey(u => u.BusinessId)
             .IsRequired();
 
+        modelBuilder.Entity<ProductDao>()
+            .HasOne(p => p.Tax)
+            .WithMany()
+            .HasForeignKey(p => p.TaxId)
+            .IsRequired(true);
 
+        modelBuilder.Entity<OrderDao>(x => {
+            x.HasKey(o => o.Id);
+
+            x.HasOne(o => o.Business)
+                .WithMany()
+                .HasForeignKey(o => o.BussinessId)
+                .IsRequired(true);
+
+            x.HasMany(o => o.OrderItems)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .IsRequired(true);
+
+            x.HasOne(o => o.Discount)
+                .WithMany()
+                .HasForeignKey(o => o.DiscountId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            x.HasMany(o => o.Payments)
+                .WithOne(p => p.Order)
+                .HasForeignKey(p => p.OrderId);
+
+            x.HasMany(o => o.Refunds)
+                .WithOne(r => r.Order)
+                .HasForeignKey(r => r.OrderId)
+                .IsRequired(false);
+        });
+
+        modelBuilder.Entity<OrderItemDao>(x => {
+            x.HasKey(oi => oi.Id);
+
+            x.HasOne(oi => oi.Order)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(oi => oi.OrderId)
+                .IsRequired(true);
+                
+            x.HasOne(oi => oi.Discount)
+                .WithMany()
+                .HasForeignKey(oi => oi.DiscountId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+            
+            x.HasOne(oi => oi.Product)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            x.HasOne(oi => oi.ProductVariation)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductVariationId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+// TODO: Uncomment the following lines after ProductDao, VariationDao, and ServiceDao classes are in the project
+/* 
+            x.HasOne(oi => oi.Service)
+                .WithMany()
+                .HasForeignKey(oi => oi.ServiceId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false); */
+        });
 
     }
 }

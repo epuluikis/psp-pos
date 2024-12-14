@@ -6,6 +6,7 @@ public interface IProductVariationRepository
 {
     Task<ProductVariationDao> CreateAsync(ProductVariationDao productVariationDao);
     Task<IEnumerable<ProductVariationDao>> GetAllAsync();
+    Task<IEnumerable<ProductVariationDao>> GetAllAsync(Guid productId);
     Task<ProductVariationDao> GetAsync(Guid id);
     Task<ProductVariationDao> UpdateAsync(ProductVariationDao productVariationDao);
 }

@@ -3,9 +3,12 @@ using Looms.PoS.Application.Features.Product.Commands.DeleteProduct;
 using Looms.PoS.Application.Features.Product.Commands.UpdateProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProducts;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Requests.Product;
+using Looms.PoS.Application.Models.Responses.Product;
+using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Looms.PoS.Controllers;
 
@@ -23,16 +26,17 @@ public class ProductsController : ControllerBase
         _mediator = mediator;
         _contextAccessor = contextAccessor;
     }
-
     [HttpPost($"/{EntityName}")]
+    [SwaggerRequestType(typeof(CreateProductRequest))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Product successfully created.", typeof(ProductResponse))]
     public async Task<IActionResult> CreateProduct()
     {
         var command = new CreateProductCommand(GetRequest());
 
         return await _mediator.Send(command);
     }
-
     [HttpGet($"/{EntityName}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Products successfully retrieved.", typeof(IEnumerable<ProductResponse>))]
     public async Task<IActionResult> GetProducts()
     {
         var query = new GetProductsQuery(GetRequest());
@@ -41,6 +45,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{productId}}")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Product successfully retrieved.", typeof(ProductResponse))]
     public async Task<IActionResult> GetProducts(string productId)
     {
         var query = new GetProductQuery(GetRequest(), productId);
@@ -49,6 +54,8 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut($"/{EntityName}/{{productId}}")]
+    [SwaggerRequestType(typeof(UpdateProductRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Product successfully updated.", typeof(ProductResponse))]
     public async Task<IActionResult> UpdateProduct(string productId)
     {
         var query = new UpdateProductCommand(GetRequest(), productId);
@@ -57,6 +64,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete($"/{EntityName}/{{productId}}")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Product successfully deleted.")]
     public async Task<IActionResult> DeleteProduct(string productId)
     {
         var query = new DeleteProductCommand(GetRequest(), productId);

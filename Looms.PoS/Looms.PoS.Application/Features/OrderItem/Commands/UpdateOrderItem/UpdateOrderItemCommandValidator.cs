@@ -24,7 +24,7 @@ public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItem
                 if (orderItem == null)
                 {
                     context.AddFailure("Order item not found.");
-                } else if(orderItem.OrderId == Guid.Parse(context.InstanceToValidate.OrderId))
+                } else if(orderItem.OrderId != Guid.Parse(context.InstanceToValidate.OrderId))
                 {
                     context.AddFailure("Order item does not belong to the order.");
                 }

@@ -15,9 +15,13 @@ public class ProductModelsResolver : IProductModelsResolver
         _mapper = mapper;
     }
 
-    public ProductDao GetDaoFromRequest(CreateProductRequest createProductRequest)
+    public ProductDao GetDaoFromRequest(CreateProductRequest createProductRequest, TaxDao taxDao)
     {
-        return _mapper.Map<ProductDao>(createProductRequest);
+        return _mapper.Map<ProductDao>(createProductRequest) with
+        {
+            TaxId = taxDao.Id,
+            Tax = taxDao
+        };
     }
 
     public ProductResponse GetResponseFromDao(ProductDao productDao)
@@ -43,6 +47,14 @@ public class ProductModelsResolver : IProductModelsResolver
         return originalDao with
         {
             IsDeleted = true
+        };
+    }
+
+    public ProductDao GetUpdatedQuantityDao(ProductDao originalDao, int quantity)
+    {
+        return originalDao with
+        {
+            Quantity = originalDao.Quantity - quantity
         };
     }
 }

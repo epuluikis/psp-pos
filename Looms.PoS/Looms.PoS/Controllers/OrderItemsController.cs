@@ -36,7 +36,7 @@ public class OrderItemsController : ControllerBase
         return await _mediator.Send(command);
     }
 
-    [HttpPut($"/{EntityName}/{{orderId}}/{EntityName}/{{orderItemId}}")]
+    [HttpPut($"/orders/{{orderId}}/{EntityName}/{{orderItemId}}")]
     [SwaggerRequestType(typeof(UpdateOrderItemRequest))]
     [SwaggerResponse(StatusCodes.Status200OK, "Order item updated successfully.", typeof(OrderItemResponse))]
     public async Task<IActionResult> UpdateOrderItem(string orderId, string orderItemId)
@@ -46,7 +46,7 @@ public class OrderItemsController : ControllerBase
         return await _mediator.Send(command);
     }
 
-    [HttpDelete($"/{EntityName}/{{orderId}}/{EntityName}/{{orderItemId}}")]
+    [HttpDelete($"/orders/{{orderId}}/{EntityName}/{{orderItemId}}")]
     [SwaggerResponse(StatusCodes.Status204NoContent, "Order item deleted successfully.")]
     public async Task<IActionResult> DeleteOrderItem(string orderId, string orderItemId)
     {
@@ -55,7 +55,7 @@ public class OrderItemsController : ControllerBase
         return await _mediator.Send(command);
     }
 
-    [HttpGet($"/{EntityName}/{{orderId}}/{EntityName}/{{orderItemId}}")]
+    [HttpGet($"/orders/{{orderId}}/{EntityName}/{{orderItemId}}")]
     [SwaggerResponse(StatusCodes.Status200OK, "Order item retrieved successfully.", typeof(OrderItemResponse))]
     public async Task<IActionResult> GetOrderItem(string orderId, string orderItemId)
     {
