@@ -9,7 +9,7 @@ public record PaymentDao
     public Guid Id { get; init; }
     public Guid OrderId { get; init; }
     
-    public OrderDao Order { get; init; }
+    public virtual OrderDao Order { get; init; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Amount { get; init; }

@@ -15,14 +15,8 @@ public class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
 
         RuleFor(x => x.DiscountId!)
             .MustBeValidGuid()
-            .CustomAsync(async (discountId, _, cancellationToken) => {
-                Console.WriteLine(discountId);
-                Console.WriteLine(Guid.Parse(discountId));
-                if (discountId is not null)
-                {
-                    var discount = await discountsRepository.GetAsync(Guid.Parse(discountId)) ?? throw new LoomsNotFoundException("Discount n found");
-                }
-            })
+            .CustomAsync(async (discountId, _, cancellationToken) => 
+                await discountsRepository.GetAsync(Guid.Parse(discountId)))
         .When(x => x.DiscountId is not null);
 
         RuleFor(x => x.Status)

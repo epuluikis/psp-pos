@@ -16,11 +16,11 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
         RuleFor(x => x.BusinessId)
             .MustBeValidGuid()
             .CustomAsync(async (businessId, _, cancellationToken) => 
-        await businessesRepository.GetAsync(Guid.Parse(businessId)));
+                await businessesRepository.GetAsync(Guid.Parse(businessId)));
 
         RuleFor(x => x.UserId)
             .MustBeValidGuid()
             .CustomAsync(async (userId, _, cancellationToken) =>
-        await usersRepository.GetAsync(Guid.Parse(userId)));
+                await usersRepository.GetAsync(Guid.Parse(userId)));
     }
 }

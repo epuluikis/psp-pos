@@ -7,7 +7,7 @@ public class RefundDao
 {
     public Guid Id { get; init; }
     public Guid OrderId { get; init; }
-    public OrderDao Order { get; init; }
+    public virtual OrderDao Order { get; init; }
     public Guid PaymentId { get; init; }
     
     [Column(TypeName = "decimal(10,2)")]

@@ -18,10 +18,6 @@ public class CreateOrderItemsCommandValidator : AbstractValidator<CreateOrderIte
             .CustomAsync(async (orderId, context, cancellationToken) =>
             {
                 var order = await ordersRepository.GetAsync(Guid.Parse(orderId));
-                if (order is null)
-                {
-                    context.AddFailure("Order not found.");
-                }
             });
 
         RuleFor(x => x.Request)

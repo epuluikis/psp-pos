@@ -20,18 +20,9 @@ public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, IActionResu
 
     public async Task<IActionResult> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
     {
-        var orderDaos = await _ordersRepository.GetAllAsync();
+        var filter = _modelsResolver.GetFiltersFromQuery(request);
 
-        if(request.Status is not null)
-        {
-            var status = Enum.Parse<OrderStatus>(request.Status);
-            orderDaos = orderDaos.Where(x => x.Status == status).ToList();
-        }
-        if(request.UserId is not null)
-        {
-            var userId = Guid.Parse(request.UserId);
-            orderDaos = orderDaos.Where(x => x.UserId == userId).ToList();
-        }
+        var orderDaos = await _ordersRepository.GetAllAsync(filter);
 
         var response = _modelsResolver.GetResponseFromDao(orderDaos);
 

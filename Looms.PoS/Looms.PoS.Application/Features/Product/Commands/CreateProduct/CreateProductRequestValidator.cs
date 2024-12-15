@@ -16,7 +16,7 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
             .MustBeValidGuid()
             .CustomAsync(async (taxId, context, cancellationToken) => 
                 await taxesRepository.GetAsync(Guid.Parse(taxId)))
-            .When(x => x.TaxId != null);
+            .When(x => x.TaxId is not null);
 
         RuleFor(x => x.Price)
             .PrecisionScale(10, 2, false)

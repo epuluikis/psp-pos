@@ -18,10 +18,8 @@ public class DeleteOrderItemCommandValidator : AbstractValidator<DeleteOrderItem
             .MustBeValidGuid()
             .CustomAsync(async (id, context, cancellationToken) => {
                 var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(id));
-                if (orderItem == null)
-                {
-                    context.AddFailure("Order item not found.");
-                } else if(orderItem.OrderId == Guid.Parse(context.InstanceToValidate.OrderId))
+                
+                if(orderItem.OrderId == Guid.Parse(context.InstanceToValidate.OrderId))
                 {
                     context.AddFailure("Order item does not belong to the order.");
                 }

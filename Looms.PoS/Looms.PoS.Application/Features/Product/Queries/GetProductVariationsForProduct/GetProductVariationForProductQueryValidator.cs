@@ -11,6 +11,6 @@ public class GetProductVariationForProductQueryValidator : AbstractValidator<Get
         RuleFor(x => x.Id)
             .MustBeValidGuid()
             .CustomAsync(async (id, context, cancellationToken) => 
-            await productsRepository.GetAsync(Guid.Parse(id)));
+                await productsRepository.GetAsync(Guid.Parse(id)));
     }
 }

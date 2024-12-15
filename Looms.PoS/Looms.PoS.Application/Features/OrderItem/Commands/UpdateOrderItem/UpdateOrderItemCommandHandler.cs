@@ -41,7 +41,7 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
         var orderItemRequest = await _httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(command.Request);
         var originalDao = await _orderItemsRepository.GetAsync(Guid.Parse(command.Id));
 
-        var discountDao = orderItemRequest.DiscountId != null ? await _discountsRepository.GetAsync(Guid.Parse(orderItemRequest.DiscountId)) : null;
+        var discountDao = orderItemRequest.DiscountId is not null ? await _discountsRepository.GetAsync(Guid.Parse(orderItemRequest.DiscountId)) : null;
         var orderItemDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, orderItemRequest, discountDao);
 
         await CompleteTransaction(orderItemDao, originalDao);
