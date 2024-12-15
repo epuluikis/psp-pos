@@ -1,8 +1,8 @@
 using AutoMapper;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
-using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
@@ -10,16 +10,20 @@ namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 public class OrderItemModelsResolver : IOrderItemModelsResolver
 {
     private readonly IMapper _mapper;
+    private readonly IOrderItemTotalsService _orderItemTotalsService;
+    
 
-    public OrderItemModelsResolver(IMapper mapper)
+    public OrderItemModelsResolver(IMapper mapper,
+        IOrderItemTotalsService orderItemTotalsService)
     {
         _mapper = mapper;
+        _orderItemTotalsService = orderItemTotalsService;
     }
 
     public OrderItemDao GetDaoFromDaoAndRequest(OrderItemDao orderItemDao, UpdateOrderItemRequest updateOrderItemRequest, DiscountDao? discountDao)
     {
-        var price = TotalsHelper.CalculateOrderItemPrice(orderItemDao, discountDao, orderItemDao.Quantity);
-        var tax = TotalsHelper.CalculateOrderItemTax(orderItemDao.Product?.Tax, price);
+        var price = _orderItemTotalsService.CalculateOrderItemPrice(orderItemDao, discountDao, orderItemDao.Quantity);
+        var tax = _orderItemTotalsService.CalculateOrderItemTax(orderItemDao.Product?.Tax, price);
 
         return _mapper.Map(updateOrderItemRequest, orderItemDao) with
         {
@@ -32,8 +36,8 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
 
     public OrderItemDao GetDaoFromRequest(Guid orderId, CreateOrderItemRequest createOrderItemRequest, ProductDao? productDao, ProductVariationDao? productVariationDao)
     {
-        var price = TotalsHelper.CalculateOrderItemPrice(productDao, productVariationDao, createOrderItemRequest.Quantity);
-        var tax = TotalsHelper.CalculateOrderItemTax(productDao?.Tax, price);
+        var price = _orderItemTotalsService.CalculateOrderItemPrice(productDao, productVariationDao, createOrderItemRequest.Quantity);
+        var tax = _orderItemTotalsService.CalculateOrderItemTax(productDao?.Tax, price);
 
         return _mapper.Map<OrderItemDao>(createOrderItemRequest) with
         {

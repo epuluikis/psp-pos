@@ -22,12 +22,12 @@ public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, IActionResu
     {
         var orderDaos = await _ordersRepository.GetAllAsync();
 
-        if(request.Status != null)
+        if(request.Status is not null)
         {
             var status = Enum.Parse<OrderStatus>(request.Status);
             orderDaos = orderDaos.Where(x => x.Status == status).ToList();
         }
-        if(request.UserId != null)
+        if(request.UserId is not null)
         {
             var userId = Guid.Parse(request.UserId);
             orderDaos = orderDaos.Where(x => x.UserId == userId).ToList();

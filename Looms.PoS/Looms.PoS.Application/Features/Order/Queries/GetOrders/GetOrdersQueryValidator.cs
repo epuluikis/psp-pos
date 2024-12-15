@@ -11,10 +11,10 @@ public class GetOrdersQueryValidator : AbstractValidator<GetOrdersQuery>
     {
         RuleFor(x => x.Status)
             .Must(x => Enum.TryParse<OrderStatus>(x, out _))
-            .When(x => x.Status != null);
+            .When(x => x.Status is not null);
 
         RuleFor(x => x.UserId)
             .Must(x => Guid.TryParse(x, out _))
-            .When(x => x.UserId != null);
+            .When(x => x.UserId is not null);
     }
 }

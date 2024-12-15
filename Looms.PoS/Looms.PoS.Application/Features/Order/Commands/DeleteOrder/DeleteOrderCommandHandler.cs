@@ -1,4 +1,5 @@
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -28,17 +29,26 @@ public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand, IAc
         var originalDao = await _orderRepository.GetAsync(Guid.Parse(request.Id));
 
         var orderDao = _orderModelsResolver.GetDeletedDao(originalDao);
-        _ = await _orderRepository.UpdateAsync(orderDao);
+        await _orderRepository.UpdateAsync(orderDao);
+
+        await DeleteOrderItems(orderDao);
+        return new NoContentResult();
+    }
+
+    private async Task DeleteOrderItems(OrderDao orderDao)
+    {
+        List<Task> tasks = [];
+
 
         if(orderDao.OrderItems.Count != 0)
         {
             foreach (var orderItem in orderDao.OrderItems)
             {
-                var originalOrderItemDao = await _orderItemRepository.GetAsync(orderItem.Id);
-                var orderItemDao = _orderItemModelResolver.GetDeletedDao(originalOrderItemDao);
-                _ = await _orderItemRepository.UpdateAsync(orderItemDao);
+                var deleteItemDao = _orderItemModelResolver.GetDeletedDao(orderItem);
+                var deleteItem = _orderItemRepository.UpdateAsync(deleteItemDao);
+                tasks.Add(deleteItem);
             }
+            await Task.WhenAll(tasks);
         }
-        return new NoContentResult();
     }
 }

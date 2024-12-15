@@ -21,10 +21,8 @@ public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItem
             .MustBeValidGuid()
             .CustomAsync(async (id, context, cancellationToken) => {
                 var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(id));
-                if (orderItem == null)
-                {
-                    context.AddFailure("Order item not found.");
-                } else if(orderItem.OrderId != Guid.Parse(context.InstanceToValidate.OrderId))
+                
+                if(orderItem.OrderId != Guid.Parse(context.InstanceToValidate.OrderId))
                 {
                     context.AddFailure("Order item does not belong to the order.");
                 }
@@ -34,6 +32,21 @@ public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItem
             .CustomAsync(async (request, context, cancellationToken) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(request);
+                var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(context.InstanceToValidate.Id));
+
+                var deltaQuantity = body.Quantity - orderItem.Quantity;
+
+                if (deltaQuantity > 0)
+                {
+                    if (orderItem.Product is not null && orderItem.Product.Quantity < deltaQuantity)
+                    {
+                        context.AddFailure("Product quantity is too low.");
+                    }
+                    if (orderItem.ProductVariation is not null && orderItem.ProductVariation.Quantity < deltaQuantity)
+                    {
+                        context.AddFailure("Product variation quantity is too low.");
+                    }
+                }
 
                 var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);

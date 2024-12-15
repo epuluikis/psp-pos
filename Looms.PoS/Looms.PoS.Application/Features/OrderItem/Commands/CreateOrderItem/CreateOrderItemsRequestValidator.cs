@@ -9,7 +9,6 @@ namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
 {
     public CreateOrderItemRequestValidator(
-        IOrdersRepository ordersRepository, 
         IDiscountsRepository discountsRepository,
         IProductVariationRepository variationRepository,
         IProductsRepository productsRepository)
@@ -17,7 +16,7 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x)
-            .Must(x => x.ServiceId != null || x.ProductId != null)
+            .Must(x => x.ServiceId is not null || x.ProductId is not null)
             .WithMessage("ServiceId or ProductId is required.");
 
 // TODO: add rules for service ids with custom async validation like from GetOrderItemsQueryValidator
@@ -27,56 +26,48 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
             .CustomAsync(async (productId, context, cancellationToken) => 
             {
                 var product = await productsRepository.GetAsync(Guid.Parse(productId));
-                if (product is null)
+
+                if(product!.Quantity < context.InstanceToValidate.Quantity)
                 {
-                    context.AddFailure("Product not found.");
-                }else{
-                    if(product!.Quantity < context.InstanceToValidate.Quantity)
-                    {
-                        context.AddFailure("Product quantity is too low.");
-                    }
+                    context.AddFailure("Product quantity is too low.");
                 }
 
             })
-            .When(x => x.ServiceId is null && x.ProductId != null);
+            .When(x => x.ServiceId is null && x.ProductId is not null);
 
         RuleFor(x => x.ProductVariationId!)
             .MustBeValidGuid()
             .CustomAsync(async (variationId, context, cancellationToken) => 
             {
                 var variation = await variationRepository.GetAsync(Guid.Parse(variationId));
-                if (variation is null)
-                {
-                    context.AddFailure("Variation not found.");
 
-                    if(variation!.Quantity < context.InstanceToValidate.Quantity)
-                    {
-                        context.AddFailure("Variation quantity is too low.");
-                    }
+                if(variation!.Quantity < context.InstanceToValidate.Quantity)
+                {
+                    context.AddFailure("Variation quantity is too low.");
                 }
             })
-            .When(x => x.ServiceId is null && x.ProductId != null && x.ProductVariationId != null);
+            .When(x => x.ServiceId is null && x.ProductId is not null && x.ProductVariationId is not null);
 
         RuleFor(x => x.DiscountId!)
             .MustBeValidGuid()
             .CustomAsync(async (discountId, context, cancellationToken) =>
             {
                 var discount = await discountsRepository.GetAsync(Guid.Parse(discountId));
-                if (discount is null)
-                {
-                    context.AddFailure("Discount not found.");
-                }else if (discount.Target == DiscountTarget.Order)
+                
+                if (discount.Target == DiscountTarget.Order)
                 {
                     context.AddFailure("Discount cannot be applied to order item.");
-                }else if(context.InstanceToValidate.ProductId != null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ProductId))
+                }
+                else if(context.InstanceToValidate.ProductId is not null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ProductId))
                 {
                     context.AddFailure("Discount cannot be applied to product item.");
-                }else if(context.InstanceToValidate.ServiceId != null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ServiceId))
+                }
+                else if(context.InstanceToValidate.ServiceId is not null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ServiceId))
                 {
                     context.AddFailure("Discount cannot be applied to service item.");
                 }
             })
-            .When(x => x.DiscountId != null);
+            .When(x => x.DiscountId is not null);
 
         RuleFor(x => x.Quantity)
             .NotEmpty()

@@ -25,6 +25,13 @@ public static class ServiceExtensions
 
         services.AddSingleton<IHttpContentResolver, HttpContentResolver>();
         services.AddSingleton<ITokenService, TokenService>();
+        services.AddSingleton<IDiscountTotalsService, DiscountsTotalsService>();
+        services.AddSingleton<IOrderTotalsService, OrderTotalsService>();
+        services.AddSingleton<IOrderItemTotalsService, OrderItemTotalsService>();
+        services.AddSingleton<IRefundsTotalsService, RefundsTotalsService>();
+        services.AddSingleton<IPaymentTotalsService, PaymentsTotalsService>();
+        services.AddSingleton<IProductUpdatesService, ProductUpdatesService>();
+        services.AddSingleton<IProductVariationUpdatesService, ProductVariationUpdatesService>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
         services.AddValidatorsFromAssembly(typeof(ServiceExtensions).Assembly);

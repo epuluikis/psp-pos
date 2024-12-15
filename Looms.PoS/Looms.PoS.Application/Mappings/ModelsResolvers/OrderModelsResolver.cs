@@ -1,8 +1,8 @@
 using AutoMapper;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Responses;
-using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
@@ -13,18 +13,27 @@ public class OrderModelsResolver : IOrderModelsResolver
     private readonly IPaymentModelsResolver _paymentModelsResolver;
     private readonly IOrderItemModelsResolver _orderItemModelsResolver;
     private readonly IRefundModelsResolver _refundModelsResolver;
+    private readonly IOrderTotalsService _orderTotalsService;
+    private readonly IRefundsTotalsService _refundsTotalsService;
+    private readonly IPaymentTotalsService _paymentTotalsService;
 
 // TODO: Add same thing as for business for user 
 
     public OrderModelsResolver(IMapper mapper,
         IPaymentModelsResolver paymentModelsResolver,
         IOrderItemModelsResolver orderItemModelsResolver,
-        IRefundModelsResolver refundModelsResolver)
+        IRefundModelsResolver refundModelsResolver,
+        IOrderTotalsService orderTotalsService,
+        IRefundsTotalsService refundsTotalsService,
+        IPaymentTotalsService paymentTotalsService)
     {
         _mapper = mapper;
         _paymentModelsResolver = paymentModelsResolver;
         _orderItemModelsResolver = orderItemModelsResolver;
         _refundModelsResolver = refundModelsResolver;
+        _orderTotalsService = orderTotalsService;
+        _refundsTotalsService = refundsTotalsService;
+        _paymentTotalsService = paymentTotalsService;
     }
 
     public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest, BusinessDao businessDao, UserDao userDao)
@@ -54,10 +63,10 @@ public class OrderModelsResolver : IOrderModelsResolver
             Payments = _paymentModelsResolver.GetResponseFromDao(orderDao.Payments),
             Refunds = _refundModelsResolver.GetResponseFromDao(orderDao.Refunds),
             OrderItems = _orderItemModelsResolver.GetResponseFromDao(orderDao.OrderItems),
-            TotalAmount = TotalsHelper.CalculateOrderTotal(orderDao),
-            AmountPaid = TotalsHelper.CalculatePaymentTotal(orderDao.Payments),
-            AmountRefunded = TotalsHelper.CalculateRefundTotal(orderDao.Refunds),
-            TaxAmount = TotalsHelper.CalculateOrderTax(orderDao)
+            TotalAmount = _orderTotalsService.CalculateOrderTotal(orderDao),
+            AmountPaid = _paymentTotalsService.CalculatePaymentTotal(orderDao.Payments),
+            AmountRefunded = _refundsTotalsService.CalculateRefundTotal(orderDao.Refunds),
+            TaxAmount = _orderTotalsService.CalculateOrderTax(orderDao)
         };
     }
 

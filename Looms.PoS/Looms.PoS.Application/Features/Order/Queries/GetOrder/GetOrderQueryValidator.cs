@@ -7,6 +7,7 @@ public class GetOrderQueryValidator : AbstractValidator<GetOrderQuery>
 {
     public GetOrderQueryValidator()
     {
-        RuleFor(x => x.Id).MustBeValidGuid();
+        RuleFor(x => x.Id)
+            .MustBeValidGuid();
     }
 }

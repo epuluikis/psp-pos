@@ -1,7 +1,7 @@
-using FluentValidation.Validators;
 using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
@@ -22,8 +22,8 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
     private readonly IOrdersRepository _ordersRepository;
     private readonly IProductsRepository _productsRepository;
     private readonly IProductVariationRepository _variationsRepository;
-    private readonly IProductModelsResolver _productModelsResolver;
-    private readonly IProductVariationModelsResolver _productVariationModelsResolver;
+    private readonly IProductUpdatesService _productUpdatesService;
+    private readonly IProductVariationUpdatesService _productVariationUpdatesService;
 
     public CreateOrderItemsCommandHandler(IHttpContentResolver httpContentResolver,
         IOrderItemsRepository orderItemsRepository,
@@ -32,8 +32,8 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         IOrdersRepository ordersRepository,
         IProductsRepository productsRepository,
         IProductVariationRepository variationsRepository,
-        IProductModelsResolver productModelsResolver,
-        IProductVariationModelsResolver productVariationModelsResolver)
+        IProductUpdatesService productUpdatesService,
+        IProductVariationUpdatesService productVariationUpdatesService)
     {
         _httpContentResolver = httpContentResolver;
         _orderItemsRepository = orderItemsRepository;
@@ -42,8 +42,8 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         _ordersRepository = ordersRepository;
         _productsRepository = productsRepository;
         _variationsRepository = variationsRepository;
-        _productModelsResolver = productModelsResolver;
-        _productVariationModelsResolver = productVariationModelsResolver;
+        _productUpdatesService = productUpdatesService;
+        _productVariationUpdatesService = productVariationUpdatesService;
     }
 
     public async Task<IActionResult> Handle(CreateOrderItemsCommand command, CancellationToken cancellationToken)
@@ -67,15 +67,13 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
     private async Task CompleteTransaction(ProductDao product, ProductVariationDao productVariation, OrderItemDao orderItemDao ,int quantity)
     {
         using TransactionScope tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-        if (product != null)
+        if (product is not null)
         {
-            var updatedProductDao = _productModelsResolver.GetUpdatedQuantityDao(product, quantity);
-            await _productsRepository.UpdateAsync(updatedProductDao);
+            await _productUpdatesService.UpdateProductStock(product, quantity);
         }
-        if (productVariation != null)
+        if (productVariation is not null)
         {
-            var updatedVariationDao = _productVariationModelsResolver.GetUpdatedQuantityDao(productVariation, quantity);
-            await _variationsRepository.UpdateAsync(updatedVariationDao);
+            await _productVariationUpdatesService.UpdateProductVariationStock(productVariation, quantity);
         }
         await _orderItemsRepository.CreateAsync(orderItemDao);
         tran.Complete();

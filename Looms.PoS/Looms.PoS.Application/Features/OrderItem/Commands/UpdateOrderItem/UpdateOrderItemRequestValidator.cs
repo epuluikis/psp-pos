@@ -9,8 +9,8 @@ namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItemRequest>
 {
     public UpdateOrderItemRequestValidator(
-        IOrdersRepository ordersRepository, 
-        IDiscountsRepository discountsRepository)
+        IDiscountsRepository discountsRepository,
+        IProductVariationRepository variationsRepository)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -23,31 +23,24 @@ public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItem
             .CustomAsync(async (discountId, context, cancellationToken) =>
             {
                 var discount = await discountsRepository.GetAsync(Guid.Parse(discountId));
-                if (discount == null)
-                {
-                    context.AddFailure("Discount not found.");
-                }
-                else if (discount.Target == DiscountTarget.Order)
+
+                if (discount.Target == DiscountTarget.Order)
                 {
                     context.AddFailure("Discount cannot be applied to order item.");
                 }
             })
-            .When(x => x.DiscountId != null);
+            .When(x => x.DiscountId is not null);
 
-// TODO: uncomment this when variation is added
-
-        // RuleFor(x => x.VariationId)
-        //     .MustBeValidGuid()
-        //     .CustomAsync(async (variationId, context, cancellationToken) =>
-        //     {
-        //         var variation = await variationsRepository.GetAsync(Guid.Parse(variationId));
-        //         if (variation == null)
-        //         {
-        //             context.AddFailure("Variation not found.");
-        //         }
-        //     })
-        //     .When(x => x.VariationId != null);
-
-
+        RuleFor(x => x.VariationId!)
+            .MustBeValidGuid()
+            .CustomAsync(async (variationId, context, cancellationToken) =>
+            {
+                var variation = await variationsRepository.GetAsync(Guid.Parse(variationId));
+                if (variation.Quantity < context.InstanceToValidate.Quantity)
+                {
+                    context.AddFailure("Product variation quantity is too low.");
+                }
+            })
+            .When(x => x.VariationId is not null);
     }
 }

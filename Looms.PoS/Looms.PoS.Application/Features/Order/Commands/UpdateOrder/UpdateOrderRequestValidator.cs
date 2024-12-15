@@ -18,15 +18,15 @@ public class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
             .CustomAsync(async (discountId, _, cancellationToken) => {
                 Console.WriteLine(discountId);
                 Console.WriteLine(Guid.Parse(discountId));
-                if (discountId != null)
+                if (discountId is not null)
                 {
                     var discount = await discountsRepository.GetAsync(Guid.Parse(discountId)) ?? throw new LoomsNotFoundException("Discount n found");
                 }
             })
-        .When(x => x.DiscountId != null);
+        .When(x => x.DiscountId is not null);
 
         RuleFor(x => x.Status)
             .Must(value => Enum.TryParse<OrderStatus>(value, true, out _))
-            .When(x => x.Status != null);
+            .When(x => x.Status is not null);
     }
 }

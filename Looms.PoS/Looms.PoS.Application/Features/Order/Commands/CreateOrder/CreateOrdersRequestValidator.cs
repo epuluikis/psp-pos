@@ -7,7 +7,9 @@ namespace Looms.PoS.Application.Features.Order.Commands.CreateOrder;
 
 public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
 {
-    public CreateOrderRequestValidator(IBusinessesRepository businessesRepository)
+    public CreateOrderRequestValidator(
+        IBusinessesRepository businessesRepository,
+        IUsersRepository usersRepository)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
@@ -16,6 +18,9 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
             .CustomAsync(async (businessId, _, cancellationToken) => 
         await businessesRepository.GetAsync(Guid.Parse(businessId)));
 
-        // TODO: add same rule for userId
+        RuleFor(x => x.UserId)
+            .MustBeValidGuid()
+            .CustomAsync(async (userId, _, cancellationToken) =>
+        await usersRepository.GetAsync(Guid.Parse(userId)));
     }
 }

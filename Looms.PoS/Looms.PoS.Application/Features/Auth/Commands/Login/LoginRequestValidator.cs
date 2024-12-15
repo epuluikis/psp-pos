@@ -28,17 +28,12 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
                     .CustomAsync(async (password, context, cancellationToken) =>
                     {
                         var user = await usersRepository.GetByEmailAsync(context.InstanceToValidate.Email);
-                        Console.WriteLine(user.Password);
-                        Console.WriteLine(user.Email);
-                        Console.WriteLine(context.InstanceToValidate.Email);
-
 
                         var hashedPassword = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(password)));
-                        Console.WriteLine(hashedPassword);
 
                         if (user.Password != hashedPassword)
                         {
-                            throw new LoomsUnauthorizedException("Invalid 2 credentials");
+                            throw new LoomsUnauthorizedException("Invalid credentials");
                         }
                     });
             });

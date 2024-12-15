@@ -33,14 +33,16 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
     {
         var orderRequest = await _httpContentResolver.GetPayloadAsync<CreateOrderRequest>(command.Request);
 
-        var businessDao = await _businessRepository.GetAsync(Guid.Parse(orderRequest.BusinessId));
-        var userDao = await _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
+        var businessDao = _businessRepository.GetAsync(Guid.Parse(orderRequest.BusinessId));
+        var userDao =  _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
+
+        await Task.WhenAll(businessDao, userDao);
         
-        var orderDao = _modelsResolver.GetDaoFromRequest(orderRequest, businessDao, userDao);
+        var orderDao = _modelsResolver.GetDaoFromRequest(orderRequest, businessDao.Result, userDao.Result);
         var createdOrderDao = await _ordersRepository.CreateAsync(orderDao);
         
         var response = _modelsResolver.GetResponseFromDao(createdOrderDao);
 
-        return new CreatedAtRouteResult($"/orders/{{orderDao.Id}}", response);
+        return new CreatedAtRouteResult($"/orders/{orderDao.Id}", response);
     }
 }
