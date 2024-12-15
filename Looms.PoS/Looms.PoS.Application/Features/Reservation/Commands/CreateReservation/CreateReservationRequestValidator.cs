@@ -8,14 +8,9 @@ namespace Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
 
 public class CreateReservationRequestValidator : AbstractValidator<CreateReservationRequest>
 {
-    private readonly IServicesRepository _servicesRepository;
-    private readonly IReservationsRepository _reservationsRepository;
 
     public CreateReservationRequestValidator(IServicesRepository servicesRepository, IReservationsRepository reservationsRepository)
     {
-        _servicesRepository = servicesRepository;
-        _reservationsRepository = reservationsRepository;
-
         RuleFor(x => x.CustomerId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
@@ -23,7 +18,7 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
             {
                 var customerGuid = Guid.Parse(customerId);
                 var appointmentTime = DateTimeHelper.ConvertToUtc(request.AppointmentTime);
-                var existingReservations = await _reservationsRepository.GetReservationsByCustomerAndTimeAsync(customerGuid, appointmentTime);
+                var existingReservations = await reservationsRepository.GetReservationsByCustomerAndTimeAsync(customerGuid, appointmentTime);
                 var existingReservation = existingReservations.FirstOrDefault();
                 return existingReservation is null;
             })
@@ -45,7 +40,8 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
             {
-                return await _servicesRepository.GetAsync(new Guid(serviceId)) != null;
+                await servicesRepository.GetAsync(new Guid(serviceId));
+                return true;
             })
             .WithMessage("Invalid service ID.");
         

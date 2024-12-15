@@ -27,7 +27,8 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
             {
-                return await servicesRepository.GetAsync(new Guid(serviceId)) != null;
+                await servicesRepository.GetAsync(new Guid(serviceId));
+                return true;
             })
             .WithMessage("Service does not exist.");
         

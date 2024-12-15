@@ -7,11 +7,8 @@ namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
 
 public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequest>
 {
-    private readonly IBusinessesRepository _businessesRepository;
     public CreateServiceRequestValidator(IBusinessesRepository businessesRepository)
     {
-        _businessesRepository = businessesRepository;
-
         RuleFor(x => x.Name)
             .NotEmpty();
 
@@ -27,10 +24,12 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
             .GreaterThanOrEqualTo(0);
             
         RuleFor(x => x.BusinessId)
+            .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
             .MustAsync(async (businessId, cancellation) => 
             {
-                return Guid.TryParse(businessId, out var guid) && await _businessesRepository.GetAsync(guid) != null;
+                await businessesRepository.GetAsync(new Guid(businessId));
+                return true;
             })
             .WithMessage("Business does not exist.");
     }
