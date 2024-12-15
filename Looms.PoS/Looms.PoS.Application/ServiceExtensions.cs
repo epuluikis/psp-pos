@@ -21,6 +21,7 @@ public static class ServiceExtensions
     public static void AddApplicationLayer(this IServiceCollection services)
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthenticationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(HttpContextBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PermissionBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 

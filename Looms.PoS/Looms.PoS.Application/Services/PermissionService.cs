@@ -1,4 +1,4 @@
-﻿using Looms.PoS.Application.Constants;
+﻿using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Exceptions;
@@ -17,8 +17,7 @@ public class PermissionService : IPermissionService
 
     public void CheckPermissions(HttpRequest request, IEnumerable<UserRole> requiredRoles)
     {
-        var businessId = GetBusinessId(request);
-        var (requiredBusinessId, userRole) = _tokenService.GetTokenData(GetToken(request));
+        var (businessId, requiredBusinessId, userRole) = GetRequestData(request);
 
         ThrowIfInsufficient(!requiredRoles.Contains(userRole));
 
@@ -26,15 +25,13 @@ public class PermissionService : IPermissionService
             && !requiredBusinessId.Equals(businessId, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    private static string GetToken(HttpRequest request)
+    private static (string BusinessId, string RequiredBusinessId, UserRole UserRole) GetRequestData(HttpRequest request)
     {
-        var token = request.Headers[TokenConstants.TokenHeader][0]!;
-        return token[TokenConstants.TokenPrefix.Length..];
-    }
+        var businessId = HttpContextHelper.GetHeaderBusinessId(request);
+        var requiredBusinessId = HttpContextHelper.GetTokenBusinessId(request);
+        var userRole = HttpContextHelper.GetUserRole(request);
 
-    private static string GetBusinessId(HttpRequest request)
-    {
-        return request.Headers[HeaderConstants.BusinessIdHeader]!;
+        return (businessId, requiredBusinessId, userRole);
     }
 
     private static void ThrowIfInsufficient(bool isInsufficient)
