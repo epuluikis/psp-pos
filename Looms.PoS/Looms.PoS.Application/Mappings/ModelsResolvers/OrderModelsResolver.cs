@@ -17,8 +17,6 @@ public class OrderModelsResolver : IOrderModelsResolver
     private readonly IRefundsTotalsService _refundsTotalsService;
     private readonly IPaymentTotalsService _paymentTotalsService;
 
-// TODO: Add same thing as for business for user 
-
     public OrderModelsResolver(IMapper mapper,
         IPaymentModelsResolver paymentModelsResolver,
         IOrderItemModelsResolver orderItemModelsResolver,

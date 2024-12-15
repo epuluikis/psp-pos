@@ -32,8 +32,9 @@ public static class ServiceExtensions
         services.AddSingleton<IOrderItemTotalsService, OrderItemTotalsService>();
         services.AddSingleton<IRefundsTotalsService, RefundsTotalsService>();
         services.AddSingleton<IPaymentTotalsService, PaymentsTotalsService>();
-        services.AddSingleton<IProductUpdatesService, ProductUpdatesService>();
-        services.AddSingleton<IProductVariationUpdatesService, ProductVariationUpdatesService>();
+
+        services.AddScoped<IProductUpdatesService, ProductUpdatesService>();
+        services.AddScoped<IProductVariationUpdatesService, ProductVariationUpdatesService>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
         services.AddValidatorsFromAssembly(typeof(ServiceExtensions).Assembly);

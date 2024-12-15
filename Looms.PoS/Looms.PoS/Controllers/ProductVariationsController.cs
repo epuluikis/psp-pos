@@ -5,7 +5,7 @@ using Looms.PoS.Application.Features.Product.Queries.GetProductVariation;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariations;
 using Looms.PoS.Application.Models.Requests.ProductVariation;
-using Looms.PoS.Application.Models.Responses.ProductVariation;
+using Looms.PoS.Application.Models.Responses.Product;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

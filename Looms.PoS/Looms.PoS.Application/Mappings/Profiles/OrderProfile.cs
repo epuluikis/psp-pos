@@ -14,6 +14,6 @@ public class OrderProfile : Profile
         CreateMap<CreateOrderRequest, OrderDao>(MemberList.Source);
 
         CreateMap<UpdateOrderRequest, OrderDao>(MemberList.Source)
-            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember is not null));
     }
 }

@@ -630,7 +630,6 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Navigation("Users");
                 });
 
-
             modelBuilder.Entity("Looms.PoS.Domain.Daos.OrderDao", b =>
                 {
                     b.Navigation("OrderItems");
@@ -638,6 +637,7 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Navigation("Payments");
 
                     b.Navigation("Refunds");
+                });
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
                 {

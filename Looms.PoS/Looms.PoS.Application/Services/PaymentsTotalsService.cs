@@ -16,7 +16,7 @@ public class PaymentsTotalsService : IPaymentTotalsService
         foreach (var payment in payments)
         {
             total += payment.Amount;
-            if(payment.Tip != default(decimal))
+            if(payment.Tip is not default(decimal))
             {
                 total += payment.Tip;
             }
