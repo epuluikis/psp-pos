@@ -15,7 +15,7 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
             .MustAsync(async (request, customerName, cancellation) =>
             {
                 var appointmentTime = DateTimeHelper.ConvertToUtc(request.AppointmentTime);
-                var existingReservations = await reservationsRepository.GetReservationsByCustomerAndTimeAsync(customerName, appointmentTime);
+                var existingReservations = await reservationsRepository.GetReservationsByCustomerAndTimeAsync(customerName, request.Email, appointmentTime);
                 var existingReservation = existingReservations.FirstOrDefault();
                 return existingReservation is null;
             })
@@ -50,7 +50,7 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
                 var existingReservation = existingReservations.FirstOrDefault();
                 return existingReservation is null;
             })
-            .WithMessage("An appointment for the same employee at the same time already exists.");
+            .WithMessage("An appointment with the same employee at the same time already exists.");
             
 
         RuleFor(x => x.ServiceId)
