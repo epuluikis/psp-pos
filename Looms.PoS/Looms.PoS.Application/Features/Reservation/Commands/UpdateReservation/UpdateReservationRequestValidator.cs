@@ -13,7 +13,13 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
-            .MustBeWithinBusinessHours()
+            .MustAsync(async (request, dateString, cancellation) =>
+            {
+                var service = await servicesRepository.GetAsync(Guid.Parse(request.ServiceId));
+                var business = service.Business;
+                var appointmentTime = DateTimeHelper.ConvertToUtc(dateString);
+                return appointmentTime.Hour >= business.StartHour && appointmentTime.Hour < business.EndHour;
+            })
             .Must(dateString =>
             {
                 var parsedDate = DateTimeHelper.ConvertToUtc(dateString);

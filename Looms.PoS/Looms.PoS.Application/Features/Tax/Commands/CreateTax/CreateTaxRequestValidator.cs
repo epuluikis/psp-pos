@@ -22,7 +22,6 @@ public class CreateTaxRequestValidator : AbstractValidator<CreateTaxRequest>
 
         RuleFor(x => x.StartDate)
             .Cascade(CascadeMode.Stop)
-            .MustBeValidDateTime()
-            .MustBeWithinBusinessHours();
+            .MustBeValidDateTime();
     }
 }

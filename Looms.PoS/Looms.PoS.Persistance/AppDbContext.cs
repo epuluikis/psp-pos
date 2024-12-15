@@ -87,7 +87,13 @@ public class AppDbContext : DbContext
          modelBuilder.Entity<ServiceDao>()
                     .HasOne(s => s.Tax)
                     .WithMany(t => t.Services)
-                    .HasForeignKey(r => r.TaxId)
+                    .HasForeignKey(s => s.TaxId)
+                    .IsRequired();
+
+        modelBuilder.Entity<ServiceDao>()
+                    .HasOne(s => s.Business)
+                    .WithMany(b => b.Services)
+                    .HasForeignKey(s => s.BusinessId)
                     .IsRequired();
     }
 

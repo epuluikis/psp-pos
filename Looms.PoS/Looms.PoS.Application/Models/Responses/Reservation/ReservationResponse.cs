@@ -7,7 +7,7 @@ public record ReservationResponse
     public Guid Id { get; init; }
     public Guid ServiceId { get; init; }
     public Guid EmployeeId { get; init; }
-    public Guid CustomerId { get; init; }
+    public string CustomerName { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public DateTime AppointmentTime { get; init; }
