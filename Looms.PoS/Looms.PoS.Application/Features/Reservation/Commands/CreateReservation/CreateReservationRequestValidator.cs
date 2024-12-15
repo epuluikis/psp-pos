@@ -8,7 +8,6 @@ namespace Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
 
 public class CreateReservationRequestValidator : AbstractValidator<CreateReservationRequest>
 {
-
     public CreateReservationRequestValidator(IServicesRepository servicesRepository, IReservationsRepository reservationsRepository)
     {
         RuleFor(x => x.CustomerId)

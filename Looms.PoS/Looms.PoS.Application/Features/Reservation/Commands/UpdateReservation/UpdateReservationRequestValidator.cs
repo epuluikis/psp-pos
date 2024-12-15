@@ -9,8 +9,7 @@ namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
     public UpdateReservationRequestValidator(IServicesRepository servicesRepository)
-    {    
-                   
+    {              
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
