@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Business.Commands.UpdateBusiness;
 
-public record UpdateBusinessCommand : LoomsHttpRequest, IRequest<IActionResult>
+public record UpdateBusinessCommand : GlobalLoomsHttpRequest, IRequest<IActionResult>
 {
     public string Id { get; init; }
 

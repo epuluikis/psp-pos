@@ -1,8 +1,10 @@
 ﻿using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
+using Looms.PoS.Application.Models.Dtos;
 using Looms.PoS.Application.Models.Responses.Auth;
 using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -33,8 +35,9 @@ public class TokenService : ITokenService
         {
             Subject = new ClaimsIdentity(
             [
-                new Claim(ClaimTypes.NameIdentifier, userDao.Id.ToString()),
-                new Claim(ClaimTypes.Role, userRole.ToString()),
+                new Claim(TokenConstants.UserIdClaim, userDao.Id.ToString()),
+                new Claim(TokenConstants.UserRoleClaim, userRole.ToString()),
+                new Claim(TokenConstants.BusinessIdClaim, userDao.BusinessId.ToString()),
             ]),
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -46,14 +49,22 @@ public class TokenService : ITokenService
         return _authModelsResolver.GetResponse(tokenHandler.WriteToken(token), expires, userRole, userDao.BusinessId);
     }
 
+    public TokenDataDto GetTokenData(string token)
+    {
+        var claims = ValidateToken(token, out var validatedToken);
+
+        var businessId = claims.Claims.First(x => x.Type == TokenConstants.BusinessIdClaim).Value;
+        var userRole = claims.Claims.First(x => x.Type == TokenConstants.UserRoleClaim).Value;
+        var userId = claims.Claims.First(x => x.Type == TokenConstants.UserIdClaim).Value;
+
+        return new(userId, Enum.Parse<UserRole>(userRole), businessId);
+    }
+
     public bool IsTokenValid(string token)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var validationParameters = GetValidationParameters();
-
         try
         {
-            tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+            ValidateToken(token, out var validatedToken);
 
             return validatedToken.ValidTo > DateTime.UtcNow;
         }
@@ -61,6 +72,14 @@ public class TokenService : ITokenService
         {
             return false;
         }
+    }
+
+    private ClaimsPrincipal ValidateToken(string token, out SecurityToken validatedToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var validationParameters = GetValidationParameters();
+
+        return tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
     }
 
     private TokenValidationParameters GetValidationParameters()

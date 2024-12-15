@@ -21,6 +21,8 @@ public static class ServiceExtensions
     public static void AddApplicationLayer(this IServiceCollection services)
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthenticationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(HttpContextBehaviour<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PermissionBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         services.AddHttpContextAccessor();
@@ -32,6 +34,7 @@ public static class ServiceExtensions
         services.AddSingleton<IOrderItemTotalsService, OrderItemTotalsService>();
         services.AddSingleton<IRefundsTotalsService, RefundsTotalsService>();
         services.AddSingleton<IPaymentTotalsService, PaymentsTotalsService>();
+        services.AddSingleton<IPermissionService, PermissionService>();
 
         services.AddScoped<IProductUpdatesService, ProductUpdatesService>();
         services.AddScoped<IProductVariationUpdatesService, ProductVariationUpdatesService>();
