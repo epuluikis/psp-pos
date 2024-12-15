@@ -1,7 +1,7 @@
 using Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
 using Looms.PoS.Application.Features.Reservation.Queries.GetReservation;
 using Looms.PoS.Application.Features.Reservation.Queries.GetReservations;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;

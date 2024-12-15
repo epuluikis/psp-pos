@@ -1,7 +1,7 @@
 using Looms.PoS.Application.Features.Service.Commands.CreateService;
 using Looms.PoS.Application.Features.Service.Queries.GetService;
 using Looms.PoS.Application.Features.Service.Queries.GetServices;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Service;
 using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;

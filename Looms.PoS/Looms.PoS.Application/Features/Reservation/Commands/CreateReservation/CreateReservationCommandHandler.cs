@@ -1,5 +1,6 @@
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -12,15 +13,19 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
     private readonly IReservationsRepository _reservationsRepository;
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IReservationModelsResolver _modelsResolver;
+    private readonly INotificationService _notificationService;
 
     public CreateReservationCommandHandler(
         IReservationsRepository reservationsRepository,
         IHttpContentResolver httpContentResolver,
-        IReservationModelsResolver modelsResolver)
+        IReservationModelsResolver modelsResolver,
+        INotificationService notificationService
+    )
     {
         _reservationsRepository = reservationsRepository;
         _httpContentResolver = httpContentResolver;
         _modelsResolver = modelsResolver;
+        _notificationService = notificationService;
     }
 
     public async Task<IActionResult> Handle(CreateReservationCommand command, CancellationToken cancellationToken)
@@ -28,9 +33,11 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
         var reservationRequest = await _httpContentResolver.GetPayloadAsync<CreateReservationRequest>(command.Request);
 
         var reservationDao = _modelsResolver.GetDaoFromRequest(reservationRequest);
-        var createdReservationDao = await _reservationsRepository.CreateAsync(reservationDao);
+        reservationDao = await _reservationsRepository.CreateAsync(reservationDao);
 
-        var response = _modelsResolver.GetResponseFromDao(createdReservationDao);
+        await _notificationService.SendReservationNotification(reservationDao);
+
+        var response = _modelsResolver.GetResponseFromDao(reservationDao);
 
         return new CreatedAtRouteResult($"/reservations{reservationDao.Id}", response);
     }
