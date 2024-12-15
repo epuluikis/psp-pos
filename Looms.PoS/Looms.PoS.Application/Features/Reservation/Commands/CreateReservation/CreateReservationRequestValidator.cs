@@ -29,7 +29,8 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
                 var service = await servicesRepository.GetAsync(Guid.Parse(request.ServiceId));
                 var business = service.Business;
                 var appointmentTime = DateTimeHelper.ConvertToUtc(dateString);
-                return appointmentTime.Hour >= business.StartHour && appointmentTime.Hour < business.EndHour;
+                var endTime = appointmentTime.AddMinutes(service.DurationMin);
+                return appointmentTime.Hour >= business.StartHour && endTime.Hour < business.EndHour;
             })
             .Must(dateString =>
             {
@@ -49,7 +50,7 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
                 var existingReservation = existingReservations.FirstOrDefault();
                 return existingReservation is null;
             })
-            .WithMessage("An appointment for the same customer at the same time already exists.");
+            .WithMessage("An appointment for the same employee at the same time already exists.");
             
 
         RuleFor(x => x.ServiceId)
