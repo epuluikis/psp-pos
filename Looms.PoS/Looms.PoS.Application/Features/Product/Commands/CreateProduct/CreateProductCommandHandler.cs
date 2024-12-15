@@ -32,19 +32,17 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
     {
         var productRequest = await _httpContentResolver.GetPayloadAsync<CreateProductRequest>(command.Request);
 
-        ProductDao productDao;
+        TaxDao tax;
 
         if (productRequest.TaxId is null)
         {
-            var tax = await _taxesRepository.GetByTaxCategoryAsync(TaxCategory.Product);
-            productDao = _modelsResolver.GetDaoFromRequest(productRequest, tax);
-        }else{
-            var tax = await _taxesRepository.GetAsync(Guid.Parse(productRequest.TaxId));
-            productDao = _modelsResolver.GetDaoFromRequest(productRequest, tax);
+           tax = await _taxesRepository.GetByTaxCategoryAsync(TaxCategory.Product);
+        } else {
+           tax = await _taxesRepository.GetAsync(Guid.Parse(productRequest.TaxId));
         }
-        var createdProductDao = await _productsRepository.CreateAsync(productDao);
-        var response = _modelsResolver.GetResponseFromDao(createdProductDao);
+        
+        var productDao = _modelsResolver.GetDaoFromRequest(productRequest, tax);
 
-        return new CreatedAtRouteResult($"/products{createdProductDao.Id}", response);
+        return new CreatedAtRouteResult($"/products{productDao.Id}", productDao);
     }
 }
