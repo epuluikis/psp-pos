@@ -2,7 +2,6 @@ using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Service;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
-using Looms.PoS.Domain.Exceptions;
 
 namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
 

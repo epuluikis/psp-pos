@@ -3,7 +3,6 @@ using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Domain.Interfaces;
-using Looms.PoS.Domain.Exceptions;
 
 namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 
