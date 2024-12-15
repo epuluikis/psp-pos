@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Business.Queries.GetBusiness;
 
-public record GetBusinessQuery : LoomsHttpRequest, IRequest<IActionResult>
+public record GetBusinessQuery : GlobalLoomsHttpRequest, IRequest<IActionResult>
 {
     public string Id { get; init; }
 
