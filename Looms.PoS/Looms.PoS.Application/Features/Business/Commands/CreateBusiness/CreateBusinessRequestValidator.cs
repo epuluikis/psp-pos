@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Business;
 
 namespace Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
 

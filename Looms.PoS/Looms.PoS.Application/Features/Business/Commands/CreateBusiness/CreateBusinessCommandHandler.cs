@@ -1,6 +1,6 @@
 ﻿using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Business;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +32,6 @@ public class CreateBusinessCommandHandler : IRequestHandler<CreateBusinessComman
 
         var response = _modelsResolver.GetResponseFromDao(createdBusinessDao);
 
-        return new CreatedAtRouteResult($"/businesses{businessDao.Id}", response);
+        return new CreatedAtRouteResult($"/businesses/{businessDao.Id}", response);
     }
 }

@@ -1,0 +1,33 @@
+volumes:
+  postgres:
+
+services:
+  postgres:
+    image: postgres:14.13-alpine3.20
+    container_name: looms-pos-postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: default
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data:cached
+    healthcheck:
+      test: pg_isready -U user -d default
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  looms-pos:
+    build:
+      context: .
+      dockerfile: Looms.PoS/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      CUSTOMCONNSTR_DefaultConnection: "Host=host.docker.internal;Port=5432;Database=default;Username=user;Password=password"

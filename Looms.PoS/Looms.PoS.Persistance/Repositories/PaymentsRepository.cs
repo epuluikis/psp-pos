@@ -23,12 +23,44 @@ public class PaymentsRepository : IPaymentsRepository
 
     public async Task<IEnumerable<PaymentDao>> GetAllAsync()
     {
-        return await _context.Payments.ToListAsync();
+        return await _context.Payments.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<PaymentDao> GetAsync(Guid id)
     {
-        return await _context.Payments.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Payment not found");
+        var paymentDao = await _context.Payments.FindAsync(id);
+
+        if (paymentDao is null || paymentDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Payment not found");
+        }
+
+        return paymentDao;
+    }
+
+    public async Task<PaymentDao> GetAsyncByExternalId(string externalId)
+    {
+        var paymentDao = await _context.Payments.Where(x => x.ExternalId == externalId).FirstOrDefaultAsync();
+
+        if (paymentDao is null || paymentDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Payment not found");
+        }
+
+        return paymentDao;
+    }
+
+    public async Task<PaymentDao> UpdateAsync(PaymentDao paymentDao)
+    {
+        await RemoveAsync(paymentDao.Id);
+        _context.Payments.Update(paymentDao);
+        await _context.SaveChangesAsync();
+        return paymentDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var paymentDao = await _context.Payments.FindAsync(id);
+        _context.Payments.Remove(paymentDao!);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Looms.PoS.Application.Features.Payment.Commands.CreatePayment;
 using Looms.PoS.Application.Features.Payment.Queries.GetPayment;
 using Looms.PoS.Application.Features.Payment.Queries.GetPayments;
-using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Requests.Payment;
+using Looms.PoS.Application.Models.Responses.Payment;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,7 @@ public class PaymentsController : ControllerBase
 
     [HttpPost($"/{EntityName}")]
     [SwaggerRequestType(typeof(CreatePaymentRequest))]
-    [SwaggerResponse(StatusCodes.Status201Created, "Payment successfully created.", typeof(List<PaymentResponse>))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Payment successfully created.", typeof(PaymentResponse))]
     public async Task<IActionResult> CreatePayment()
     {
         var comnand = new CreatePaymentCommand(GetRequest());

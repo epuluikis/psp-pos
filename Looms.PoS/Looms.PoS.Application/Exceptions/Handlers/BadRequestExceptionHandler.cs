@@ -1,8 +1,8 @@
-﻿using Looms.PoS.Domain.Exceptions;
+﻿using FluentValidation;
+using Looms.PoS.Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace Looms.PoS.Application.Exceptions.Handlers;
 
@@ -10,7 +10,7 @@ public class BadRequestExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        if (exception is not LoomsBadRequestException and ValidationException)
+        if (exception is not LoomsBadRequestException or ValidationException)
         {
             return false;
         }

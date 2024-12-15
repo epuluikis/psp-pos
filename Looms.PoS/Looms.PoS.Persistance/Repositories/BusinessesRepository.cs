@@ -23,17 +23,31 @@ public class BusinessesRepository : IBusinessesRepository
 
     public async Task<IEnumerable<BusinessDao>> GetAllAsync()
     {
-        return await _context.Businesses.ToListAsync();
+        return await _context.Businesses.Where(x => !x.IsDeleted).ToListAsync();
     }
 
     public async Task<BusinessDao> GetAsync(Guid id)
     {
-        return await _context.Businesses.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Business not found");
+        var businessDao = await _context.Businesses.FindAsync(id);
+
+        if (businessDao is null || businessDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Business not found");
+        }
+        return businessDao;
     }
 
-    public void DeleteAsync(Guid id)
+    public async Task<BusinessDao> UpdateAsync(BusinessDao businessDao)
     {
-        throw new NotImplementedException();
+        await RemoveAsync(businessDao.Id);
+        _context.Businesses.Update(businessDao);
+        await _context.SaveChangesAsync();
+        return businessDao;
+    }
+
+    private async Task RemoveAsync(Guid id)
+    {
+        var businessDao = await _context.Businesses.FindAsync(id);
+        _context.Businesses.Remove(businessDao!);
     }
 }
