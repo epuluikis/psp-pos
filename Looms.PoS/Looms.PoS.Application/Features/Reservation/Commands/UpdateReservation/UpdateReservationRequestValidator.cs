@@ -9,10 +9,8 @@ namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 
 public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
-     private readonly IServicesRepository _servicesRepository;
     public UpdateReservationRequestValidator(IServicesRepository servicesRepository)
     {    
-        _servicesRepository = servicesRepository;
                    
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
@@ -30,7 +28,7 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
             .MustBeValidGuid()
             .MustAsync(async (serviceId, cancellation) => 
             {
-                return Guid.TryParse(serviceId, out var guid) && await _servicesRepository.GetAsync(guid) != null;
+                return await servicesRepository.GetAsync(new Guid(serviceId)) != null;
             })
             .WithMessage("Service does not exist.");
         

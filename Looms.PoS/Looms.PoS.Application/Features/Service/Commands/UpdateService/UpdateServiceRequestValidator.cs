@@ -1,6 +1,5 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Service;
-using Looms.PoS.Application.Utilities.Validators;
 
 namespace Looms.PoS.Application.Features.Service.Commands.UpdateService;
 
