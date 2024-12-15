@@ -1,5 +1,5 @@
 using Looms.PoS.Application.Models.Requests.Reservation;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Responses.Reservation;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Interfaces.ModelsResolvers;

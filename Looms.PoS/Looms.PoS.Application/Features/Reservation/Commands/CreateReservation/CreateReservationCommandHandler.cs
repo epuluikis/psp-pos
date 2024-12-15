@@ -32,6 +32,6 @@ public class CreateReservationCommandHandler : IRequestHandler<CreateReservation
 
         var response = _modelsResolver.GetResponseFromDao(createdReservationDao);
 
-        return new CreatedAtRouteResult($"/reservations{reservationDao.Id}", response);
+        return new CreatedAtRouteResult($"/reservations/{reservationDao.Id}", response);
     }
 }

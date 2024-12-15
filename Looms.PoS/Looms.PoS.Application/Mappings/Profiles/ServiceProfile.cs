@@ -1,6 +1,6 @@
 using AutoMapper;
 using Looms.PoS.Application.Models.Requests.Service;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Responses.Service;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.Profiles;

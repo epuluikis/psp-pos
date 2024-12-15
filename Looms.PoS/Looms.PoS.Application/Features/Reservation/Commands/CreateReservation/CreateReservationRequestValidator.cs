@@ -37,12 +37,10 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
         RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .MustAsync(async (serviceId, cancellation) => 
+            .CustomAsync(async (serviceId, context, cancellation) => 
             {
                 await servicesRepository.GetAsync(new Guid(serviceId));
-                return true;
-            })
-            .WithMessage("Invalid service ID.");
+            });
         
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)

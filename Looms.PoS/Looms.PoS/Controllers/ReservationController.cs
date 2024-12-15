@@ -1,8 +1,10 @@
 using Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
+using Looms.PoS.Application.Features.Reservation.Commands.DeleteReservation;
+using Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 using Looms.PoS.Application.Features.Reservation.Queries.GetReservation;
 using Looms.PoS.Application.Features.Reservation.Queries.GetReservations;
-using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Requests.Reservation;
+using Looms.PoS.Application.Models.Responses.Reservation;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +29,7 @@ public class ReservationsController : ControllerBase
 
     [HttpPost($"/{EntityName}")]
     [SwaggerRequestType(typeof(CreateReservationRequest))]
-    [SwaggerResponse(StatusCodes.Status201Created, "Reservation successfully created.", typeof(List<ReservationResponse>))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Reservation successfully created.", typeof(ReservationResponse))]
     public async Task<IActionResult> CreateReservation()
     {
         var comnand = new CreateReservationCommand(GetRequest());
@@ -49,6 +51,25 @@ public class ReservationsController : ControllerBase
     public async Task<IActionResult> GetReservation(string reservationId)
     {
         var query = new GetReservationQuery(GetRequest(), reservationId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpPut($"/{EntityName}/{{reservationId}}")]
+    [SwaggerRequestType(typeof(UpdateReservationRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Reservation successfully updated.", typeof(ReservationResponse))]
+    public async Task<IActionResult> UpdateReservation(string reservationId)
+    {
+        var query = new UpdateReservationCommand(GetRequest(), reservationId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpDelete($"/{EntityName}/{{reservationId}}")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Reservation successfully deleted.")]
+    public async Task<IActionResult> DeleteReservation(string reservationId)
+    {
+        var query = new DeleteReservationCommand(GetRequest(), reservationId);
 
         return await _mediator.Send(query);
     }

@@ -26,11 +26,9 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
         RuleFor(x => x.BusinessId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .MustAsync(async (businessId, cancellation) => 
+            .CustomAsync(async (businessId, context, cancellation) => 
             {
                 await businessesRepository.GetAsync(new Guid(businessId));
-                return true;
-            })
-            .WithMessage("Business does not exist.");
+            });
     }
 }

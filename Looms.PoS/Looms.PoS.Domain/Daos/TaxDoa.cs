@@ -11,4 +11,5 @@ public record TaxDao
     public DateTime StartDate { get; init; }
     public DateTime EndDate { get; init; }
     public bool IsDeleted { get; init; } = false;
+    public virtual ICollection<ServiceDao> Services { get; init; } = [];
 }

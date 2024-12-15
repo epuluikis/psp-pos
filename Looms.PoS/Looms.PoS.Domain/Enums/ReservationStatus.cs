@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace Looms.PoS.Domain.Enums;
 
-public enum ReservationStatus : byte
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ReservationStatus
 {
-    Booked = 0,
-    Ongoing = 1,
-    Finished = 2,
-    Cancelled = 3
+    Booked,
+    Ongoing,
+    Finished,
+    Cancelled
 }

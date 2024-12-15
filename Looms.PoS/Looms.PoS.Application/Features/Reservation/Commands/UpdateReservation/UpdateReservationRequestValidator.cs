@@ -24,12 +24,10 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .MustAsync(async (serviceId, cancellation) => 
+            .CustomAsync(async (serviceId, context, cancellation) => 
             {
                 await servicesRepository.GetAsync(new Guid(serviceId));
-                return true;
-            })
-            .WithMessage("Service does not exist.");
+            });
         
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)

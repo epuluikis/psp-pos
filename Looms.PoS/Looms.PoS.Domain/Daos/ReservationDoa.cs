@@ -14,4 +14,6 @@ public record ReservationDao
     public ReservationStatus Status { get; init; }
     public string Comment { get; init; } = string.Empty;
     public bool IsDeleted { get; init; } = false;
+    public virtual ServiceDao Service { get; init; } = null!;
+    public virtual UserDao Employee { get; init; } = null!;
 }

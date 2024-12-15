@@ -33,13 +33,9 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<RefundDao>().HasKey(x => x.Id);
         modelBuilder.Entity<PaymentDao>().HasKey(p => p.Id);
         modelBuilder.Entity<GiftCardDao>().HasKey(p => p.Id);
-        modelBuilder.Entity<ReservationDao>().HasKey(b => b.Id);
-        modelBuilder.Entity<ReservationDao>()
-            .HasOne<ServiceDao>()
-            .WithMany()
-            .HasForeignKey(r => r.ServiceId);
-        modelBuilder.Entity<ServiceDao>().HasKey(b => b.Id);
-        modelBuilder.Entity<TaxDao>().HasKey(x => x.Id);
+        modelBuilder.Entity<ReservationDao>().HasKey(r => r.Id);
+        modelBuilder.Entity<ServiceDao>().HasKey(s => s.Id);
+        modelBuilder.Entity<TaxDao>().HasKey(t => t.Id);
         modelBuilder.Entity<ProductDao>().HasKey(p => p.Id);
         modelBuilder.Entity<ProductVariationDao>().HasKey(p => p.Id);
         modelBuilder.Entity<PaymentProviderDao>().HasKey(p => p.Id);
@@ -75,6 +71,24 @@ public class AppDbContext : DbContext
                     .WithMany(gc => gc.Payments)
                     .HasForeignKey(p => p.GiftCardId)
                     .IsRequired(false);
+                    
+        modelBuilder.Entity<ReservationDao>()
+                    .HasOne(r => r.Service)
+                    .WithMany(s => s.Reservations)
+                    .HasForeignKey(r => r.ServiceId)
+                    .IsRequired();
+
+        modelBuilder.Entity<ReservationDao>()
+                    .HasOne(r => r.Employee)
+                    .WithMany(u => u.Reservations)
+                    .HasForeignKey(r => r.EmployeeId)
+                    .IsRequired();
+
+         modelBuilder.Entity<ServiceDao>()
+                    .HasOne(s => s.Tax)
+                    .WithMany(t => t.Services)
+                    .HasForeignKey(r => r.TaxId)
+                    .IsRequired();
     }
 
 }
