@@ -1,4 +1,4 @@
-namespace Looms.PoS.Application.Models.Responses.ProductVariation;
+namespace Looms.PoS.Application.Models.Responses.Product;
 
 public class ProductVariationResponse
 {

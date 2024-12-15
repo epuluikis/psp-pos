@@ -22,7 +22,7 @@ services:
   looms-pos:
     build:
       context: .
-      dockerfile: /Dockerfile
+      dockerfile: Looms.PoS/Dockerfile
     ports:
       - "8080:8080"
     depends_on:

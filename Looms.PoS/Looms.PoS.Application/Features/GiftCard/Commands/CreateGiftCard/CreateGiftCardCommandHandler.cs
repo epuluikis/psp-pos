@@ -33,6 +33,6 @@ public class CreateGiftCardCommandHandler : IRequestHandler<CreateGiftCardComman
 
         var response = _modelsResolver.GetResponseFromDao(createdGiftCardDao);
 
-        return new CreatedAtRouteResult($"/giftCards/{giftCardDao.Id}", response);
+        return new CreatedAtRouteResult($"/giftcards/{giftCardDao.Id}", response);
     }
 }

@@ -7,6 +7,8 @@ public record BusinessDao
     public string OwnerName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
-    public ICollection<UserDao> Users { get; } = [];
     public bool IsDeleted { get; init; } = false;
+
+    public virtual ICollection<UserDao> Users { get; } = [];
+    public virtual ICollection<PaymentProviderDao> PaymentProviders { get; init; } = [];
 }

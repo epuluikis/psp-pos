@@ -25,12 +25,13 @@ public class AuthenticationBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
         }
 
         if (!request.Request.Headers.TryGetValue(TokenConstants.TokenHeader, out var token)
-            || token.Count == 0)
+         || token.Count == 0)
         {
             throw new LoomsUnauthorizedException("Token not provided");
         }
 
         var tokenString = token[0]!;
+
         if (!tokenString.StartsWith(TokenPrefix) || !_tokenService.IsTokenValid(tokenString[TokenPrefix.Length..]))
         {
             throw new LoomsUnauthorizedException("Invalid token provided");

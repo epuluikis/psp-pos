@@ -21,7 +21,7 @@ public class UpdateTaxCommandValidator : AbstractValidator<UpdateTaxCommand>
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateTaxCommand>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateTaxRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
                 await Task.WhenAll(validationResults);

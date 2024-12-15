@@ -32,6 +32,6 @@ public class CreateTaxCommandHandler : IRequestHandler<CreateTaxCommand, IAction
 
         var response = _modelsResolver.GetResponseFromDao(createdTaxDao);
 
-        return new CreatedAtRouteResult($"/taxes{taxDao.Id}", response);
+        return new CreatedAtRouteResult($"/taxes/{taxDao.Id}", response);
     }
 }

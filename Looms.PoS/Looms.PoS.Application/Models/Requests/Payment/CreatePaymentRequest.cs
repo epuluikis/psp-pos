@@ -4,9 +4,10 @@ namespace Looms.PoS.Application.Models.Requests.Payment;
 
 public record CreatePaymentRequest
 {
-    public Guid OrderId { get; init; }
+    public string OrderId { get; init; } = string.Empty;
     public decimal Amount { get; init; }
     public PaymentMethod PaymentMethod { get; init; }
-    public Guid? GiftCardId { get; init; }
+    public string? GiftCardCode { get; init; }
     public decimal? Tip { get; init; }
+    public string? PaymentTerminalId { get; init; }
 }
