@@ -1,19 +1,26 @@
 ﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+using Looms.PoS.Application.Interfaces.RequestHandler;
+using Looms.PoS.Application.Interfaces.Services;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.User.Queries.GetUsers;
 
-public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, IActionResult>
+public class GetUsersQueryHandler : ILoomsRequestHandler<GetUsersQuery, IActionResult>
 {
     private readonly IUsersRepository _usersRepository;
     private readonly IUserModelsResolver _modelsResolver;
+    private readonly IPermissionService _permissionService;
 
-    public GetUsersQueryHandler(IUsersRepository usersRepository, IUserModelsResolver modelsResolver)
+    public GetUsersQueryHandler(
+        IUsersRepository usersRepository,
+        IUserModelsResolver modelsResolver,
+        IPermissionService permissionService)
     {
         _usersRepository = usersRepository;
         _modelsResolver = modelsResolver;
+        _permissionService = permissionService;
     }
 
     public async Task<IActionResult> Handle(GetUsersQuery query, CancellationToken cancellationToken)
@@ -23,5 +30,10 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, IActionResult
         var response = _modelsResolver.GetResponseFromDao(userDaos);
 
         return new OkObjectResult(response);
+    }
+
+    public void ValidatePermissions(GetUsersQuery query)
+    {
+        _permissionService.CheckPermissions(query.Request, [UserRole.SuperAdmin, UserRole.BusinessOwner]);
     }
 }

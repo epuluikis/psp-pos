@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Business.Commands.CreateBusiness;
 
-public record CreateBusinessCommand : LoomsHttpRequest, IRequest<IActionResult>
+public record CreateBusinessCommand : GlobalLoomsHttpRequest, IRequest<IActionResult>
 {
     public CreateBusinessCommand(HttpRequest request) : base(request)
     {

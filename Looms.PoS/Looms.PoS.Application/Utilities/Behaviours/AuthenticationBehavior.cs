@@ -10,7 +10,6 @@ public class AuthenticationBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
     where TRequest : LoomsHttpRequest, IRequest<TResponse>
 {
     private readonly ITokenService _tokenService;
-    private const string TokenPrefix = "Bearer ";
 
     public AuthenticationBehavior(ITokenService tokenService)
     {
@@ -32,7 +31,7 @@ public class AuthenticationBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 
         var tokenString = token[0]!;
 
-        if (!tokenString.StartsWith(TokenPrefix) || !_tokenService.IsTokenValid(tokenString[TokenPrefix.Length..]))
+        if (!tokenString.StartsWith(TokenConstants.TokenPrefix) || !_tokenService.IsTokenValid(tokenString[TokenConstants.TokenPrefix.Length..]))
         {
             throw new LoomsUnauthorizedException("Invalid token provided");
         }

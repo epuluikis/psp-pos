@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Business.Commands.DeleteBusiness;
 
-public record DeleteBusinessCommand : LoomsHttpRequest, IRequest<IActionResult>
+public record DeleteBusinessCommand : GlobalLoomsHttpRequest, IRequest<IActionResult>
 {
     public string Id { get; init; }
 
