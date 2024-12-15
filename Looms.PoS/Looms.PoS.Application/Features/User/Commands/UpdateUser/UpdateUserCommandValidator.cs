@@ -10,7 +10,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
     public UpdateUserCommandValidator(
         IHttpContentResolver httpContentResolver,
-        IEnumerable<IValidator<CreateUserRequest>> validators,
+        IEnumerable<IValidator<UpdateUserRequest>> validators,
         IUsersRepository usersRepository)
     {
         RuleFor(x => x.Id)
@@ -21,7 +21,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<CreateUserRequest>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateUserRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);

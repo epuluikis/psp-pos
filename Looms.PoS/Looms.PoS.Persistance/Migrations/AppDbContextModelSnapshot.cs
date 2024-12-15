@@ -18,6 +18,9 @@ namespace Looms.PoS.Persistance.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -212,6 +215,9 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("GiftCardId")
                         .HasColumnType("uuid");
 
@@ -224,6 +230,12 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("PaymentTerminalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Tip")
                         .HasColumnType("numeric");
 
@@ -233,9 +245,74 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.HasIndex("OrderId");
 
+                    b.HasIndex("PaymentTerminalId");
+
                     b.ToTable("Payments");
                 });
+                
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentProviderDao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
+                    b.Property<string>("ApiSecret")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("BusinessId")
+                        .HasColumnType("uuid");
+                        
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WebhookSecret")
+                        .IsRequired()
+                        .HasColumnType("text");
+                        
+                    b.HasKey("Id");
+
+                    b.HasIndex("BusinessId");
+
+                    b.ToTable("PaymentProviders");
+                });
+                
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentTerminalDao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PaymentProviderId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+                    
+                    b.HasIndex("PaymentProviderId");
+
+                    b.ToTable("PaymentTerminals");
+                });
+                
             modelBuilder.Entity("Looms.PoS.Domain.Daos.ProductDao", b =>
                 {
                     b.Property<Guid>("Id")
@@ -266,9 +343,9 @@ namespace Looms.PoS.Persistance.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
+                    
                     b.HasIndex("TaxId");
-
+                    
                     b.ToTable("Products");
                 });
 
@@ -473,9 +550,13 @@ namespace Looms.PoS.Persistance.Migrations
             modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentDao", b =>
                 {
                     b.HasOne("Looms.PoS.Domain.Daos.GiftCardDao", "GiftCard")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("GiftCardId");
-
+                        
+                    b.HasOne("Looms.PoS.Domain.Daos.PaymentTerminalDao", "PaymentTerminal")
+                        .WithMany("Payments")
+                        .HasForeignKey("PaymentTerminalId");
+                        
                     b.HasOne("Looms.PoS.Domain.Daos.OrderDao", "Order")
                         .WithMany("Payments")
                         .HasForeignKey("OrderId")
@@ -484,7 +565,31 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.Navigation("GiftCard");
 
+                    b.Navigation("PaymentTerminal");
+                    
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentProviderDao", b =>
+                {
+                    b.HasOne("Looms.PoS.Domain.Daos.BusinessDao", "Business")
+                        .WithMany("PaymentProviders")
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Business");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentTerminalDao", b =>
+                {
+                    b.HasOne("Looms.PoS.Domain.Daos.PaymentProviderDao", "PaymentProvider")
+                        .WithMany("PaymentTerminals")
+                        .HasForeignKey("PaymentProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentProvider");
                 });
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.ProductDao", b =>
@@ -520,8 +625,11 @@ namespace Looms.PoS.Persistance.Migrations
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.BusinessDao", b =>
                 {
+                    b.Navigation("PaymentProviders");
+
                     b.Navigation("Users");
                 });
+
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.OrderDao", b =>
                 {
@@ -530,6 +638,20 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Navigation("Payments");
 
                     b.Navigation("Refunds");
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.GiftCardDao", b =>
+                {
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentProviderDao", b =>
+                {
+                    b.Navigation("PaymentTerminals");
+                });
+
+            modelBuilder.Entity("Looms.PoS.Domain.Daos.PaymentTerminalDao", b =>
+                {
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

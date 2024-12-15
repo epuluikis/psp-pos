@@ -1,5 +1,4 @@
-﻿
-using Looms.PoS.Domain.Interfaces;
+﻿using Looms.PoS.Domain.Interfaces;
 using Looms.PoS.Persistance.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +9,7 @@ public static class ServiceExtensions
 {
     public static void AddPersistanceLayer(this IServiceCollection services, string? connectionString)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Scoped);
+        services.AddDbContext<AppDbContext>(options => options.UseLazyLoadingProxies().UseNpgsql(connectionString));
 
         services.AddScoped<IBusinessesRepository, BusinessesRepository>();
         services.AddScoped<IUsersRepository, UsersRepository>();
@@ -23,5 +22,7 @@ public static class ServiceExtensions
         services.AddScoped<ITaxesRepository, TaxesRepository>();
         services.AddScoped<IProductsRepository, ProductsRepository>();
         services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
+        services.AddScoped<IPaymentProvidersRepository, PaymentProvidersRepository>();
+        services.AddScoped<IPaymentTerminalsRepository, PaymentTerminalsRepository>();
     }
 }

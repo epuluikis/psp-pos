@@ -45,6 +45,6 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         var createdProductDao = await _productsRepository.CreateAsync(productDao);
         var response = _modelsResolver.GetResponseFromDao(createdProductDao);
 
-        return new CreatedAtRouteResult($"/products{createdProductDao.Id}", response);
+        return new CreatedAtRouteResult($"/products/{createdProductDao.Id}", response);
     }
 }

@@ -21,7 +21,7 @@ public class UpdateProductVariationCommandValidator : AbstractValidator<UpdatePr
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateProductVariationCommand>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateProductVariationRequest>(request);
 
                 var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
                 await Task.WhenAll(validationResults);

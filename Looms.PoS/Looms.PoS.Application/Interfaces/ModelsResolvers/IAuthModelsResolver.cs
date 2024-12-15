@@ -5,5 +5,5 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 
 public interface IAuthModelsResolver
 {
-    LoginResponse GetResponse(string token, DateTime expires, UserRole role);
+    LoginResponse GetResponse(string token, DateTime expires, UserRole role, Guid businessId);
 }

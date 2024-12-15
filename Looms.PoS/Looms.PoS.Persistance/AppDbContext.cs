@@ -16,6 +16,8 @@ public class AppDbContext : DbContext
     public DbSet<ProductDao> Products { get; set; }
     public DbSet<ProductVariationDao> ProductVariations { get; set; }
     public DbSet<TaxDao> Taxes { get; set; }
+    public DbSet<PaymentProviderDao> PaymentProviders { get; set; }
+    public DbSet<PaymentTerminalDao> PaymentTerminals { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -34,13 +36,21 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TaxDao>().HasKey(x => x.Id);
         modelBuilder.Entity<ProductDao>().HasKey(p => p.Id);
         modelBuilder.Entity<ProductVariationDao>().HasKey(p => p.Id);
-        
+        modelBuilder.Entity<PaymentProviderDao>().HasKey(p => p.Id);
+        modelBuilder.Entity<PaymentTerminalDao>().HasKey(p => p.Id);
+
         // Relationships
         modelBuilder.Entity<BusinessDao>()
-            .HasMany(b => b.Users)
-            .WithOne(u => u.Business)
-            .HasForeignKey(u => u.BusinessId)
-            .IsRequired();
+                    .HasMany(b => b.Users)
+                    .WithOne(u => u.Business)
+                    .HasForeignKey(u => u.BusinessId)
+                    .IsRequired();
+
+        modelBuilder.Entity<PaymentProviderDao>()
+                    .HasOne(pp => pp.Business)
+                    .WithMany(b => b.PaymentProviders)
+                    .HasForeignKey(pp => pp.BusinessId)
+                    .IsRequired();
 
         modelBuilder.Entity<ProductDao>()
             .HasOne(p => p.Tax)
@@ -103,7 +113,7 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-// TODO: Uncomment the following lines after ProductDao, VariationDao, and ServiceDao classes are in the project
+// TODO: Uncomment the following lines after ServiceDao classes are in the project
 /* 
             x.HasOne(oi => oi.Service)
                 .WithMany()
@@ -112,5 +122,22 @@ public class AppDbContext : DbContext
                 .IsRequired(false); */
         });
 
+        modelBuilder.Entity<PaymentTerminalDao>()
+                    .HasOne(pt => pt.PaymentProvider)
+                    .WithMany(pp => pp.PaymentTerminals)
+                    .HasForeignKey(pt => pt.PaymentProviderId)
+                    .IsRequired();
+
+        modelBuilder.Entity<PaymentDao>()
+                    .HasOne(p => p.PaymentTerminal)
+                    .WithMany(pt => pt.Payments)
+                    .HasForeignKey(p => p.PaymentTerminalId)
+                    .IsRequired(false);
+
+        modelBuilder.Entity<PaymentDao>()
+                    .HasOne(p => p.GiftCard)
+                    .WithMany(gc => gc.Payments)
+                    .HasForeignKey(p => p.GiftCardId)
+                    .IsRequired(false);
     }
 }

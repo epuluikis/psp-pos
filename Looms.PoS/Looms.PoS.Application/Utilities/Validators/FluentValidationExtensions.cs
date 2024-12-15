@@ -1,4 +1,4 @@
-﻿﻿using FluentValidation;
+﻿using FluentValidation;
 
 namespace Looms.PoS.Application.Utilities.Validators;
 
@@ -28,6 +28,7 @@ public static class FluentValidationExtensions
                       })
                       .WithMessage("{PropertyName} is not a valid DateTime");
     }
+    
     public static IRuleBuilder<T, string> MustBeWithinBusinessHours<T>(this IRuleBuilder<T, string> builder)
     {
         int businessStartHour = 9;
