@@ -52,15 +52,7 @@ public class OrdersRepository : LoomsException, IOrdersRepository
         var query = _context.Orders
             .Where(x => !x.IsDeleted);
 
-        if(filter.Status is not null)
-        {
-            query = query.Where(x => x.Status == Enum.Parse<OrderStatus>(filter.Status));
-        }
-
-        if(filter.UserId is not null)
-        {
-            query = query.Where(x => x.UserId == Guid.Parse(filter.UserId));
-        }
+        query = query.Where(x => x.Status == Enum.Parse<OrderStatus>(filter.Status) && x.UserId == Guid.Parse(filter.UserId));
 
         query = query.Include(x => x.Discount)
             .Include(x => x.Payments)
