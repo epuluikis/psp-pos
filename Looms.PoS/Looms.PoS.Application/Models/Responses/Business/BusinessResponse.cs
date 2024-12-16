@@ -1,6 +1,6 @@
 ﻿namespace Looms.PoS.Application.Models.Responses.Business;
 
-public class BusinessResponse
+public record BusinessResponse
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;

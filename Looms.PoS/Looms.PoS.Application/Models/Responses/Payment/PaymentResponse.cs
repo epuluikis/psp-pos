@@ -2,7 +2,7 @@
 
 namespace Looms.PoS.Application.Models.Responses.Payment;
 
-public class PaymentResponse
+public record PaymentResponse
 {
     public Guid Id { get; init; }
     public Guid OrderId { get; init; }

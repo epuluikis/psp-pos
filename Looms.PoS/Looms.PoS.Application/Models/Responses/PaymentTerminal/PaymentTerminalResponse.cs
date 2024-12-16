@@ -1,6 +1,6 @@
 ﻿namespace Looms.PoS.Application.Models.Responses.PaymentTerminal;
 
-public class PaymentTerminalResponse
+public record PaymentTerminalResponse
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;
