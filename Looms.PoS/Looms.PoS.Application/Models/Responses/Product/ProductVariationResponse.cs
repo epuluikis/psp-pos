@@ -1,6 +1,6 @@
 namespace Looms.PoS.Application.Models.Responses.Product;
 
-public class ProductVariationResponse
+public record ProductVariationResponse
 {
     public Guid Id { get; init; }
     public Guid ProductId { get; init; }

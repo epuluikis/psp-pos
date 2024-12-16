@@ -33,4 +33,13 @@ public static class DateTimeHelper
     {
         return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc).ToLocalTime().ToString();
     }
+    public static bool TryConvertToUtc(string dateString, out DateTime utcDateTime)
+    {
+        return DateTime.TryParseExact(
+            dateString,
+            "dd-MM-yyyy HH:mm:ss",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AssumeLocal | DateTimeStyles.AdjustToUniversal,
+            out utcDateTime);
+    }
 }

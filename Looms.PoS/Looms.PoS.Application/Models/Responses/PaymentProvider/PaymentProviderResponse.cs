@@ -2,7 +2,7 @@
 
 namespace Looms.PoS.Application.Models.Responses.PaymentProvider;
 
-public class PaymentProviderResponse
+public record PaymentProviderResponse
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;

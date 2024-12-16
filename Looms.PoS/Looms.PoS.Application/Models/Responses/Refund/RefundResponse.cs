@@ -2,7 +2,7 @@ using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Models.Responses;
 
-public class RefundResponse
+public record RefundResponse
 {
     public Guid Id { get; init; }
     public Guid OrderId { get; init; }

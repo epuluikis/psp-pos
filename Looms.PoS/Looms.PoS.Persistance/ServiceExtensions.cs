@@ -19,6 +19,8 @@ public static class ServiceExtensions
         services.AddScoped<IGiftCardsRepository, GiftCardsRepository>();
         services.AddScoped<IOrdersRepository, OrdersRepository>();
         services.AddScoped<IOrderItemsRepository, OrderItemsRepository>();
+        services.AddScoped<IServicesRepository, ServicesRepository>();
+        services.AddScoped<IReservationsRepository, ReservationsRepository>();
         services.AddScoped<ITaxesRepository, TaxesRepository>();
         services.AddScoped<IProductsRepository, ProductsRepository>();
         services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
