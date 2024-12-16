@@ -1,6 +1,6 @@
 ﻿namespace Looms.PoS.Application.Models.Responses.GiftCard;
 
-public class GiftCardResponse
+public record GiftCardResponse
 {
     public Guid Id { get; init; }
     public string Code { get; init; } = string.Empty;
