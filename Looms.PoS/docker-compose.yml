@@ -3,7 +3,7 @@ volumes:
 
 services:
   postgres:
-    image: postgres:14.3-alpine
+    image: postgres:14.13-alpine3.20
     container_name: looms-pos-postgres
     environment:
       POSTGRES_USER: user

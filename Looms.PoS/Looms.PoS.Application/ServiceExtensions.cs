@@ -57,6 +57,8 @@ public static class ServiceExtensions
         services.AddSingleton<IDiscountModelsResolver, DiscountModelsResolver>();
         services.AddSingleton<IRefundModelsResolver, RefundModelsResolver>();
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
+        services.AddSingleton<IServiceModelsResolver, ServiceModelsResolver>();
+        services.AddSingleton<IReservationModelsResolver, ReservationModelsResolver>();
         services.AddSingleton<ITaxModelsResolver, TaxModelsResolver>();
         services.AddSingleton<IGiftCardModelsResolver, GiftCardModelsResolver>();
         services.AddSingleton<IProductModelsResolver, ProductModelsResolver>();
