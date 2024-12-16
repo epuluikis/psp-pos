@@ -1,0 +1,1777 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: API Contracts
+  description: This section describes the API contracts for the backend endpoints. Each endpoint corresponds to a core entity in the system, such as Business, User, Order, Product, Reservation, Service, Tax, etc. Each API definition includes HTTP requests, possible parameters, responses, and error codes.
+
+tags:
+  - name: Business
+    description: Handles business-related operations, including creating, modifying, retrieving, and deleting businesses. Each business has an owner, contact details, and other metadata.
+  - name: User
+    description: Handles user-related operations, including creating, modifying, retrieving, and deleting users. Users can have different roles, such as Employee, Business Owner, or SuperAdmin.
+  - name: Order
+    description: Handles all operations related to order management, including creating, modifying, retrieving, and deleting orders. Each order can have multiple items, payment details, and can be associated with a customer.
+  - name: Product
+    description: Handles product-related operations, including creating, modifying, retrieving, and deleting products. Products can include items for sale, services, and can have variations (e.g., sizes or types).
+  - name: OrderItem
+    description: Handles all operations related to managing items within an order. This includes adding, modifying, and removing items from an order. Each order item represents a specific product within the order.
+  - name: Tax
+    description: Handles all operations related to tax management, including creating, modifying, retrieving, and deleting taxes. Taxes can be applied to products and services, and they can vary by percentage and category (e.g., VAT, service tax).
+  - name: Discount
+    description: Handles all operations related to discount management, including creating, modifying, retrieving, and deleting discounts. Discounts can be applied to specific products or entire orders and can have different valid periods.
+  - name: Reservation
+    description: Handles all operations related to reservation management, including creating, modifying, retrieving, and canceling reservations. Each reservation can be linked to a customer, a service, an employee, and an appointment time.
+  - name: Service
+    description: Handles all operations related to managing services, including creating, modifying, retrieving, and deleting services. Services are activities or tasks that businesses offer to customers (e.g., haircut, massage), and each service can have an associated duration and price.
+  - name: Payment
+    description: Handles all operations related to payment management, including creating, retrieving, and modifying payments. Payments are linked to orders and can be made using various methods such as cash, credit card, or gift card.
+  - name: Authentication
+    description: Handles authentication operations tied to user management, including generating and validating bearer tokens for users. Tokens are based on user credentials.
+
+  
+paths:
+  /api/businesses:
+    post:
+      summary: Create a new business
+      description: Creates a new business with the provided details.
+      operationId: createBusiness
+      tags:
+        - Business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                owner:
+                  type: string
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+              required:
+                - name
+                - owner
+                - email
+      responses:
+        "201":
+          description: Business successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    get:
+      summary: Retrieve a list of businesses
+      description: Returns a list of businesses. Optional filters can be applied based on owner ID or business name.
+      operationId: getBusinesses
+      tags:
+        - Business
+      parameters:
+        - name: owner
+          in: query
+          description: Filter businesses by owner ID
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Filter businesses by business name
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of businesses returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/businesses/{businessId}:
+    get:
+      summary: Retrieve a specific business by ID
+      description: Returns the details of a specific business identified by its ID.
+      operationId: getBusinessById
+      tags:
+        - Business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          description: ID of the business to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Business details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Business not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing business
+      description: Updates the details of an existing business identified by its ID.
+      operationId: updateBusiness
+      tags:
+        - Business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          description: ID of the business to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+              required:
+                - name
+                - email
+      responses:
+        "200":
+          description: Business successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Business not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a business
+      description: Deletes a specific business identified by its ID.
+      operationId: deleteBusiness
+      tags:
+        - Business
+      parameters:
+        - name: businessId
+          in: path
+          required: true
+          description: ID of the business to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Business successfully deleted.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Business not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/users:
+    post:
+      summary: Create a new user
+      description: Creates a new user with the provided details.
+      operationId: createUser
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                role:
+                  type: string
+                  enum: [Employee, BusinessOwner, SuperAdmin]
+                password:
+                  type: string
+                businessId:
+                  type: integer
+                  nullable: true
+              required:
+                - name
+                - role
+                - password
+      responses:
+        "201":
+          description: User successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    get:
+      summary: Retrieve a list of users
+      description: Returns a list of users. Optional filters can be applied based on role or business ID.
+      operationId: getUsers
+      tags:
+        - User
+      parameters:
+        - name: role
+          in: query
+          description: Filter users by their role (e.g., Employee, BusinessOwner, SuperAdmin)
+          required: false
+          schema:
+            type: string
+            enum: [Employee, BusinessOwner, SuperAdmin]
+        - name: businessId
+          in: query
+          description: Filter users by business ID
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of users returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/users/{userId}:
+    get:
+      summary: Retrieve a specific user by ID
+      description: Returns the details of a specific user identified by their ID.
+      operationId: getUserById
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: User not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing user
+      description: Updates the details of an existing user identified by their ID.
+      operationId: updateUser
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                role:
+                  type: string
+                  enum: [Employee, BusinessOwner, SuperAdmin]
+                password:
+                  type: string
+                  nullable: true
+                businessId:
+                  type: integer
+                  nullable: true
+              required:
+                - name
+                - role
+      responses:
+        "200":
+          description: User successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: User not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a user
+      description: Deletes a specific user identified by their ID.
+      operationId: deleteUser
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User successfully deleted.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: User not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/orders:
+    post:
+      summary: Create a new order
+      description: Creates a new order with the provided customer and item details.
+      operationId: createOrder
+      tags:
+        - Order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                      price:
+                        type: number
+                paymentMethod:
+                  type: string
+                  enum: [cash, gift_card, credit_card]
+                tip:
+                  type: number
+                discountId:
+                  type: string
+                  nullable: true
+              required:
+                - customerId
+                - items
+                - paymentMethod
+      responses:
+        "201":
+          description: Order successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    get:
+      summary: Retrieve a list of orders
+      description: Returns a list of orders. Optional filters can be applied based on status or customer ID.
+      operationId: getOrders
+      tags:
+        - Order
+      parameters:
+        - name: status
+          in: query
+          description: Filter orders by status (e.g., open, closed)
+          required: false
+          schema:
+            type: string
+        - name: customerId
+          in: query
+          description: Filter orders by customer ID
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of orders returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/orders/{orderId}:
+    get:
+      summary: Retrieve a specific order by ID
+      description: Returns the details of a specific order identified by its ID.
+      operationId: getOrderById
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Order not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing order
+      description: Updates the details of an existing order identified by its ID.
+      operationId: updateOrder
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                      price:
+                        type: number
+                paymentMethod:
+                  type: string
+                  enum: [cash, gift_card, credit_card]
+                tip:
+                  type: number
+                discountId:
+                  type: string
+                  nullable: true
+              required:
+                - items
+                - paymentMethod
+      responses:
+        "200":
+          description: Order successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "403":
+          description: Modification not allowed (e.g., order is closed).
+        "404":
+          description: Order not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Cancel an order
+      description: Cancels a specific order identified by its ID.
+      operationId: deleteOrder
+      tags:
+        - Order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to cancel
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order successfully canceled.
+        "401":
+          description: Authentication failed.
+        "403":
+          description: Cancellation not allowed (e.g., order is closed).
+        "404":
+          description: Order not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/products:
+    post:
+      summary: Create a new product
+      description: Creates a new product with details such as name, category, price, stock quantity, and optional variations.
+      operationId: createProduct
+      tags:
+        - Product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                price:
+                  type: number
+                quantityInStock:
+                  type: integer
+                description:
+                  type: string
+                variations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      price:
+                        type: number
+                        nullable: true
+              required:
+                - name
+                - category
+                - price
+                - quantityInStock
+      responses:
+        "201":
+          description: Product successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    get:
+      summary: Retrieve a list of products
+      description: Returns a list of products. Optional filters can be applied based on category or name.
+      operationId: getProducts
+      tags:
+        - Product
+      parameters:
+        - name: category
+          in: query
+          description: Filter products by category (e.g., food, services)
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Filter products by name
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of products returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/products/{productId}:
+    get:
+      summary: Retrieve a specific product by ID
+      description: Returns the details of a specific product identified by its ID.
+      operationId: getProductById
+      tags:
+        - Product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Product not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing product
+      description: Updates the details of an existing product identified by its ID.
+      operationId: updateProduct
+      tags:
+        - Product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                price:
+                  type: number
+                quantityInStock:
+                  type: integer
+                description:
+                  type: string
+                variations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      price:
+                        type: number
+                        nullable: true
+              required:
+                - name
+                - category
+                - price
+                - quantityInStock
+      responses:
+        "200":
+          description: Product successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Product not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a product
+      description: Deletes a specific product identified by its ID.
+      operationId: deleteProduct
+      tags:
+        - Product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product successfully deleted.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Product not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/orderitems:
+    post:
+      summary: Add an item to an order
+      description: Adds a new item to an existing order with details such as product ID, quantity, and price.
+      operationId: addOrderItem
+      tags:
+        - OrderItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+                price:
+                  type: number
+              required:
+                - orderId
+                - productId
+                - quantity
+                - price
+      responses:
+        "201":
+          description: Order item successfully added to the order.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Order or product not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/orderitems/{itemId}:
+    put:
+      summary: Modify an existing order item
+      description: Updates the details of a specific order item identified by its ID, such as quantity and price.
+      operationId: updateOrderItem
+      tags:
+        - OrderItem
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          description: ID of the order item to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                price:
+                  type: number
+              required:
+                - quantity
+                - price
+      responses:
+        "200":
+          description: Order item successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Order item not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    delete:
+      summary: Remove an item from an order
+      description: Deletes a specific order item from an order.
+      operationId: deleteOrderItem
+      tags:
+        - OrderItem
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          description: ID of the order item to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order item successfully removed.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Order item not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/taxes:
+    post:
+      summary: Create a new tax
+      description: Creates a new tax with details such as percentage, category, and optional start and end dates.
+      operationId: createTax
+      tags:
+        - Tax
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                percentage:
+                  type: number
+                category:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required:
+                - percentage
+                - category
+                - startDate
+      responses:
+        "201":
+          description: Tax successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    get:
+      summary: Retrieve a list of taxes
+      description: Returns a list of taxes. Optional filters can be applied based on category.
+      operationId: getTaxes
+      tags:
+        - Tax
+      parameters:
+        - name: category
+          in: query
+          description: Filter taxes by category (e.g., VAT, service)
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of taxes returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/taxes/{taxId}:
+    get:
+      summary: Retrieve a specific tax by ID
+      description: Returns the details of a specific tax identified by its ID.
+      operationId: getTaxById
+      tags:
+        - Tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          description: ID of the tax to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tax details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Tax not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    put:
+      summary: Modify an existing tax
+      description: Updates the details of an existing tax identified by its ID.
+      operationId: updateTax
+      tags:
+        - Tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          description: ID of the tax to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                percentage:
+                  type: number
+                category:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                  nullable: true
+              required:
+                - percentage
+                - category
+                - startDate
+      responses:
+        "200":
+          description: Tax successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Tax not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a tax
+      description: Deletes a specific tax identified by its ID.
+      operationId: deleteTax
+      tags:
+        - Tax
+      parameters:
+        - name: taxId
+          in: path
+          required: true
+          description: ID of the tax to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tax successfully deleted.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Tax not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/discounts:
+    post:
+      summary: Create a new discount
+      description: Creates a new discount with details such as name, value, validity period, and whether it applies to an order or a product.
+      operationId: createDiscount
+      tags:
+        - Discount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: number
+                validFrom:
+                  type: string
+                  format: date-time
+                validUntil:
+                  type: string
+                  format: date-time
+                isForOrder:
+                  type: boolean
+                description:
+                  type: string
+                  nullable: true
+              required:
+                - name
+                - value
+                - validFrom
+                - validUntil
+                - isForOrder
+      responses:
+        "201":
+          description: Discount successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    get:
+      summary: Retrieve a list of discounts
+      description: Returns a list of discounts. Optional filters can be applied based on whether the discount is for an order or a product, and by name.
+      operationId: getDiscounts
+      tags:
+        - Discount
+      parameters:
+        - name: isForOrder
+          in: query
+          description: Filter discounts by whether they are applied to an order or product
+          required: false
+          schema:
+            type: boolean
+        - name: name
+          in: query
+          description: Filter discounts by name
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of discounts returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/discounts/{discountId}:
+    get:
+      summary: Retrieve a specific discount by ID
+      description: Returns the details of a specific discount identified by its ID.
+      operationId: getDiscountById
+      tags:
+        - Discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          description: ID of the discount to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Discount details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Discount not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing discount
+      description: Updates the details of an existing discount identified by its ID.
+      operationId: updateDiscount
+      tags:
+        - Discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          description: ID of the discount to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: number
+                validFrom:
+                  type: string
+                  format: date-time
+                validUntil:
+                  type: string
+                  format: date-time
+                isForOrder:
+                  type: boolean
+                description:
+                  type: string
+                  nullable: true
+              required:
+                - name
+                - value
+                - validFrom
+                - validUntil
+                - isForOrder
+      responses:
+        "200":
+          description: Discount successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Discount not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a discount
+      description: Deletes a specific discount identified by its ID.
+      operationId: deleteDiscount
+      tags:
+        - Discount
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          description: ID of the discount to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Discount successfully deleted.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Discount not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/reservations:
+    post:
+      summary: Create a new reservation
+      description: Creates a new reservation, linking it to a customer, service, employee (optional), and appointment time.
+      operationId: createReservation
+      tags:
+        - Reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customerId:
+                  type: string
+                appointmentTime:
+                  type: string
+                  format: date-time
+                serviceId:
+                  type: string
+                employeeId:
+                  type: string
+                  nullable: true
+                contactInfo:
+                  type: object
+                  properties:
+                    phone:
+                      type: string
+                    email:
+                      type: string
+              required:
+                - customerId
+                - appointmentTime
+                - serviceId
+                - contactInfo
+      responses:
+        "201":
+          description: Reservation successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    get:
+      summary: Retrieve a list of reservations
+      description: Returns a list of reservations. Optional filters can be applied based on appointment date and employee ID.
+      operationId: getReservations
+      tags:
+        - Reservation
+      parameters:
+        - name: date
+          in: query
+          description: Filter reservations by appointment date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: employeeId
+          in: query
+          description: Filter reservations by employee ID
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of reservations returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/reservations/{reservationId}:
+    get:
+      summary: Retrieve a specific reservation by ID
+      description: Returns the details of a specific reservation identified by its ID.
+      operationId: getReservationById
+      tags:
+        - Reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          description: ID of the reservation to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservation details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Reservation not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing reservation
+      description: Updates the details of an existing reservation identified by its ID.
+      operationId: updateReservation
+      tags:
+        - Reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          description: ID of the reservation to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                appointmentTime:
+                  type: string
+                  format: date-time
+                serviceId:
+                  type: string
+                employeeId:
+                  type: string
+                  nullable: true
+                contactInfo:
+                  type: object
+                  properties:
+                    phone:
+                      type: string
+                    email:
+                      type: string
+              required:
+                - appointmentTime
+                - serviceId
+                - contactInfo
+      responses:
+        "200":
+          description: Reservation successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Reservation not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Cancel a reservation
+      description: Deletes a specific reservation identified by its ID.
+      operationId: deleteReservation
+      tags:
+        - Reservation
+      parameters:
+        - name: reservationId
+          in: path
+          required: true
+          description: ID of the reservation to cancel
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reservation successfully canceled.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Reservation not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/services:
+    post:
+      summary: Create a new service
+      description: Creates a new service with details such as name, category, duration, and price.
+      operationId: createService
+      tags:
+        - Service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                durationMinutes:
+                  type: integer
+                price:
+                  type: number
+                description:
+                  type: string
+                  nullable: true
+              required:
+                - name
+                - category
+                - durationMinutes
+                - price
+      responses:
+        "201":
+          description: Service successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    get:
+      summary: Retrieve a list of services
+      description: Returns a list of services. Optional filters can be applied based on name and category.
+      operationId: getServices
+      tags:
+        - Service
+      parameters:
+        - name: name
+          in: query
+          description: Filter services by name
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter services by category
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of services returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/services/{serviceId}:
+    get:
+      summary: Retrieve a specific service by ID
+      description: Returns the details of a specific service identified by its ID.
+      operationId: getServiceById
+      tags:
+        - Service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          description: ID of the service to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Service details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Service not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    put:
+      summary: Modify an existing service
+      description: Updates the details of an existing service identified by its ID.
+      operationId: updateService
+      tags:
+        - Service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          description: ID of the service to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                durationMinutes:
+                  type: integer
+                price:
+                  type: number
+                description:
+                  type: string
+                  nullable: true
+              required:
+                - name
+                - category
+                - durationMinutes
+                - price
+      responses:
+        "200":
+          description: Service successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Service not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Delete a service
+      description: Deletes a specific service identified by its ID.
+      operationId: deleteService
+      tags:
+        - Service
+      parameters:
+        - name: serviceId
+          in: path
+          required: true
+          description: ID of the service to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Service successfully deleted.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Service not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+
+  /api/payments:
+    post:
+      summary: Create a new payment
+      description: Creates a new payment, linking it to an order and specifying the payment amount, tip, and method.
+      operationId: createPayment
+      tags:
+        - Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                amount:
+                  type: number
+                tip:
+                  type: number
+                paymentMethod:
+                  type: string
+                  enum: [cash, credit_card, gift_card]
+              required:
+                - orderId
+                - amount
+                - paymentMethod
+      responses:
+        "201":
+          description: Payment successfully created.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Order not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+    get:
+      summary: Retrieve a list of payments
+      description: Returns a list of payments. Optional filters can be applied based on order ID and payment method.
+      operationId: getPayments
+      tags:
+        - Payment
+      parameters:
+        - name: orderId
+          in: query
+          description: Filter payments by the associated order ID
+          required: false
+          schema:
+            type: string
+        - name: paymentMethod
+          in: query
+          description: Filter payments by payment method (e.g., cash, credit card, gift card)
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of payments returned successfully.
+        "401":
+          description: Authentication failed.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+
+  /api/payments/{paymentId}:
+    get:
+      summary: Retrieve a specific payment by ID
+      description: Returns the details of a specific payment identified by its ID.
+      operationId: getPaymentById
+      tags:
+        - Payment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: ID of the payment to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payment details returned successfully.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Payment not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+    
+    put:
+      summary: Modify an existing payment
+      description: Updates the details of an existing payment identified by its ID.
+      operationId: updatePayment
+      tags:
+        - Payment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: ID of the payment to modify
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                tip:
+                  type: number
+                paymentMethod:
+                  type: string
+                  enum: [cash, credit_card, gift_card]
+              required:
+                - amount
+                - paymentMethod
+      responses:
+        "200":
+          description: Payment successfully updated.
+        "400":
+          description: Invalid input data.
+        "401":
+          description: Authentication failed.
+        "404":
+          description: Payment not found.
+        "500":
+          description: Internal server error.
+      security:
+        - bearerAuth: []
+        
+  /api/auth/generate-token:
+    post:
+      summary: Generate a bearer token for a specific user
+      description: Generates a JWT token for authentication based on user credentials.
+      operationId: generateToken
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Token successfully generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  expires:
+                    type: string
+                    format: date-time
+                  role:
+                    type: string
+        '400':
+          description: Invalid input data
+        '401':
+          description: Authentication failed
+        '500':
+          description: Internal server error
+  /api/auth/validate-token:
+    post:
+      summary: Validate an existing bearer token
+      description: Validates the provided JWT token to check if it is still valid and returns user information.
+      operationId: validateToken
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                  userId:
+                    type: string
+                  role:
+                    type: string
+                  expires:
+                    type: string
+                    format: date-time
+        '401':
+          description: Invalid token or authentication failed
+        '500':
+          description: Internal server error      
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

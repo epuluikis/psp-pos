@@ -16,9 +16,12 @@ public class ReservationsRepository : IReservationsRepository
 
     public async Task<ReservationDao> CreateAsync(ReservationDao reservationDao)
     {
-        var entityEntry = await _context.AddAsync(reservationDao);
+        reservationDao = _context.CreateProxy<ReservationDao>(reservationDao);
+
+        await _context.AddAsync(reservationDao);
         await _context.SaveChangesAsync();
-        return entityEntry.Entity;
+
+        return reservationDao;
     }
 
     public async Task<IEnumerable<ReservationDao>> GetAllAsync()
@@ -52,19 +55,6 @@ public class ReservationsRepository : IReservationsRepository
         _context.Reservations.Remove(reservationDao!);
     }
 
-    public async Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(
-        string customerName,
-        string email,
-        DateTime appointmentTime)
-    {
-        return await _context.Reservations
-                             .Where(r => r.CustomerName == customerName
-                                      && r.Email == email
-                                      && r.AppointmentTime == appointmentTime
-                                      && !r.IsDeleted)
-                             .ToListAsync();
-    }
-
     public async Task<bool> ExistsWithTimeOverlapAndCustomer(DateTime start, DateTime end, string customerName, string email)
     {
         return await _context.Reservations.AnyAsync(r
@@ -78,12 +68,5 @@ public class ReservationsRepository : IReservationsRepository
     {
         return await _context.Reservations.AnyAsync(r
             => r.EmployeeId == employeeId && start < r.AppointmentTime.AddMinutes(r.Service.DurationMin) && r.AppointmentTime < end);
-    }
-
-    public async Task<IEnumerable<ReservationDao>> GetReservationsByEmployeeAndTimeAsync(Guid employeeId, DateTime appointmentTime)
-    {
-        return await _context.Reservations
-                             .Where(r => r.EmployeeId == employeeId && r.AppointmentTime == appointmentTime && !r.IsDeleted)
-                             .ToListAsync();
     }
 }
