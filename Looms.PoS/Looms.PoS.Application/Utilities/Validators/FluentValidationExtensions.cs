@@ -4,7 +4,6 @@ namespace Looms.PoS.Application.Utilities.Validators;
 
 public static class FluentValidationExtensions
 {
-    private static readonly BusinessHours businessHours = new BusinessHours();
     public static IRuleBuilder<T, string> MustBeValidGuid<T>(this IRuleBuilder<T, string> builder)
     {
         return builder.NotEmpty()
