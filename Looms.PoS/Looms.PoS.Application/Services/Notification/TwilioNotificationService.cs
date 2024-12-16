@@ -22,7 +22,7 @@ public class TwilioNotificationService : INotificationService
     {
         await MessageResource.CreateAsync(
             body:
-            $"Hello {reservationDao.CustomerName}, your reservation at {reservationDao.Service.Business.Name} for {reservationDao.Service.Name} with {reservationDao.Employee.Name} is confirmed for {reservationDao.AppointmentTime:MM-dd-yyyy HH:mm}. We look forward to seeing you!",
+            $"Hello {reservationDao.CustomerName}, your reservation at {reservationDao.Service.Business.Name} for {reservationDao.Service.Name} with {reservationDao.Employee.Name} is confirmed for {reservationDao.AppointmentTime:YYYY-MM-DD HH:mm}. We look forward to seeing you!",
             from: new Twilio.Types.PhoneNumber(_options.FromNumber),
             to: new Twilio.Types.PhoneNumber(reservationDao.PhoneNumber)
         );
