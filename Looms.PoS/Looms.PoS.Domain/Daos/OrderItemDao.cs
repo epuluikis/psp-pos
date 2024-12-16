@@ -12,7 +12,7 @@ public record OrderItemDao
 
     public Guid? ProductVariationId { get; init; }
 
-    public Guid? ReservationId { get; init; }
+    public Guid? ServiceId { get; init; }
 
     public Guid? DiscountId { get; init; }
 
@@ -33,7 +33,7 @@ public record OrderItemDao
 
     public virtual ProductVariationDao? ProductVariation { get; init; }
 
-    public virtual ReservationDao? Reservation { get; init; }
+    public virtual ServiceDao? Service { get; init; }
     
     public virtual DiscountDao? Discount { get; init; }
 

@@ -11,7 +11,7 @@ public class OrderItemResponse {
 
     public string? VariationName { get; init; } = string.Empty;
     
-    public Guid? ReservationId { get; init; }
+    public Guid? ServiceId { get; init; }
     
     public string? ServiceName { get; init; } = string.Empty;
         
@@ -20,6 +20,4 @@ public class OrderItemResponse {
     public decimal Price { get; init; }
     
     public decimal Tax { get; init; }
-    
-    public decimal Total { get; init; }
 }

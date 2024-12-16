@@ -14,22 +14,16 @@ public class DeleteOrderItemCommandHandler : IRequestHandler<DeleteOrderItemComm
     private readonly IOrderItemModelsResolver _modelsResolver;
     private readonly IProductUpdatesService _productUpdatesService;
     private readonly IProductVariationUpdatesService _productVariationUpdatesService;
-    private readonly IReservationModelsResolver _reservationModelsResolver;
-    private readonly IReservationsRepository _reservationsRepository;
-
+    
     public DeleteOrderItemCommandHandler(IOrderItemsRepository orderItemsRepository, 
         IOrderItemModelsResolver modelsResolver,
         IProductUpdatesService productUpdatesService,
-        IProductVariationUpdatesService productVariationUpdatesService,
-        IReservationModelsResolver reservationModelsResolver,
-        IReservationsRepository reservationsRepository)
+        IProductVariationUpdatesService productVariationUpdatesService)
     {
         _orderItemsRepository = orderItemsRepository;
         _modelsResolver = modelsResolver;
         _productUpdatesService = productUpdatesService;
         _productVariationUpdatesService = productVariationUpdatesService;
-        _reservationModelsResolver = reservationModelsResolver;
-        _reservationsRepository = reservationsRepository;
     }
 
     public async Task<IActionResult> Handle(DeleteOrderItemCommand request, CancellationToken cancellationToken)

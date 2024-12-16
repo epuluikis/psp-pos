@@ -17,7 +17,7 @@ public class OrderItemTotalsService : IOrderItemTotalsService
         var price = orderItemDao.Price;
         if(orderItemDao.Quantity != quantity)
         {
-            price = CalculateOrderItemPrice(orderItemDao.Product, orderItemDao.ProductVariation, orderItemDao.Reservation, quantity);
+            price = CalculateOrderItemPrice(orderItemDao.Product, orderItemDao.ProductVariation, orderItemDao.Service, quantity);
         }
 
         if(discountDao is not null)
@@ -27,13 +27,13 @@ public class OrderItemTotalsService : IOrderItemTotalsService
         return price;
     }
 
-    public decimal CalculateOrderItemPrice(ProductDao? productDao, ProductVariationDao? productVariationDao, ReservationDao? reservationDao, int quantity)
+    public decimal CalculateOrderItemPrice(ProductDao? productDao, ProductVariationDao? productVariationDao, ServiceDao? serviceDao, int quantity)
     {
         decimal price = 0;
 
-        if(reservationDao is not null)
+        if(serviceDao is not null)
         {
-            return reservationDao.Service.Price * quantity;
+            return serviceDao.Price * quantity;
         }
 
         if(productDao is not null)

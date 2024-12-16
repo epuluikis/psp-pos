@@ -25,8 +25,7 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
     private readonly IProductVariationRepository _variationsRepository;
     private readonly IProductUpdatesService _productUpdatesService;
     private readonly IProductVariationUpdatesService _productVariationUpdatesService;
-    private readonly IReservationsRepository _reservationsRepository;
-    private readonly IReservationModelsResolver _reservationModelsResolver;
+    private readonly IServicesRepository _servicesRepository;
 
     public CreateOrderItemsCommandHandler(IHttpContentResolver httpContentResolver,
         IOrderItemsRepository orderItemsRepository,
@@ -37,8 +36,7 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         IProductVariationRepository variationsRepository,
         IProductUpdatesService productUpdatesService,
         IProductVariationUpdatesService productVariationUpdatesService,
-        IReservationsRepository reservationsRepository,
-        IReservationModelsResolver reservationModelsResolver)
+        IServicesRepository servicesRepository)
     {
         _httpContentResolver = httpContentResolver;
         _orderItemsRepository = orderItemsRepository;
@@ -49,8 +47,7 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         _variationsRepository = variationsRepository;
         _productUpdatesService = productUpdatesService;
         _productVariationUpdatesService = productVariationUpdatesService;
-        _reservationsRepository = reservationsRepository;
-        _reservationModelsResolver = reservationModelsResolver;
+        _servicesRepository = servicesRepository;
     }
 
     public async Task<IActionResult> Handle(CreateOrderItemsCommand command, CancellationToken cancellationToken)
@@ -60,11 +57,11 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
 
         var product = orderItemRequest.ProductId is null ? null : await _productsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductId));
         var productVariation = orderItemRequest.ProductVariationId is null ? null : await _variationsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductVariationId));
-        var reservation = orderItemRequest.ReservationId is null ? null : await _reservationsRepository.GetAsync(Guid.Parse(orderItemRequest.ReservationId));
+        var service = orderItemRequest.ServiceId is null ? null : await _servicesRepository.GetAsync(Guid.Parse(orderItemRequest.ServiceId));
         
-        var orderItemDao = _modelsResolver.GetDaoFromRequest(orderId, orderItemRequest, product, productVariation, reservation);
+        var orderItemDao = _modelsResolver.GetDaoFromRequest(orderId, orderItemRequest, product, productVariation, service);
 
-        await CompleteTransaction(product, productVariation, reservation, orderItemDao, orderItemRequest.Quantity);
+        await CompleteTransaction(product, productVariation, orderItemDao, orderItemRequest.Quantity);
 
         var orderDao = await _ordersRepository.GetAsync(orderId);
         var response = _orderModelsResolver.GetResponseFromDao(orderDao);
@@ -72,7 +69,7 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         return new OkObjectResult(response); 
     }
 
-    private async Task CompleteTransaction(ProductDao product, ProductVariationDao productVariation, ReservationDao reservationDao, OrderItemDao orderItemDao ,int quantity)
+    private async Task CompleteTransaction(ProductDao product, ProductVariationDao productVariation, OrderItemDao orderItemDao ,int quantity)
     {
         using TransactionScope tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         if (product is not null)
@@ -82,11 +79,6 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         if (productVariation is not null)
         {
             await _productVariationUpdatesService.UpdateProductVariationStock(productVariation, quantity);
-        }
-        if(reservationDao is not null)
-        {
-            var reservation = _reservationModelsResolver.GetUpdatedStatusDao(reservationDao, ReservationStatus.Ongoing);
-            await _reservationsRepository.UpdateAsync(reservationDao);
         }
         await _orderItemsRepository.CreateAsync(orderItemDao);
         tran.Complete();

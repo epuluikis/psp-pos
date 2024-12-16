@@ -38,9 +38,7 @@ public class OrderItemsRepository : LoomsException, IOrderItemsRepository
         var orderItem = await _context.OrderItems
             .Include(x => x.ProductVariation)
             .Include(x => x.Discount)
-            .Include(x => x.Reservation)
-                .ThenInclude(r => r.Service)
-                    .ThenInclude(s => s.Tax)
+            .Include(x => x.Service)
             .Include(x => x.Product)
                 .ThenInclude(p => p.Tax)
             .FirstOrDefaultAsync(x => x.Id == id);

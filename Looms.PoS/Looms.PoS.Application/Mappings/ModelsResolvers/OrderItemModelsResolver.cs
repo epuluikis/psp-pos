@@ -23,7 +23,7 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
     public OrderItemDao GetDaoFromDaoAndRequest(OrderItemDao orderItemDao, UpdateOrderItemRequest updateOrderItemRequest, DiscountDao? discountDao)
     {
         var price = _orderItemTotalsService.CalculateOrderItemPrice(orderItemDao, discountDao, orderItemDao.Quantity);
-        var taxDao = orderItemDao.Product is not null ? orderItemDao.Product.Tax : orderItemDao.Reservation?.Service?.Tax;
+        var taxDao = orderItemDao.Product is not null ? orderItemDao.Product.Tax : orderItemDao.Service?.Tax;
         var tax = _orderItemTotalsService.CalculateOrderItemTax(taxDao, price);
 
         return _mapper.Map(updateOrderItemRequest, orderItemDao) with
@@ -35,10 +35,10 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
         };    
     }
 
-    public OrderItemDao GetDaoFromRequest(Guid orderId, CreateOrderItemRequest createOrderItemRequest, ProductDao? productDao, ProductVariationDao? productVariationDao, ReservationDao? reservationDao)
+    public OrderItemDao GetDaoFromRequest(Guid orderId, CreateOrderItemRequest createOrderItemRequest, ProductDao? productDao, ProductVariationDao? productVariationDao, ServiceDao? serviceDao)
     {
-        var price = _orderItemTotalsService.CalculateOrderItemPrice(productDao, productVariationDao, reservationDao, createOrderItemRequest.Quantity);
-        var taxDao = productDao is not null ? productDao.Tax : reservationDao?.Service?.Tax;
+        var price = _orderItemTotalsService.CalculateOrderItemPrice(productDao, productVariationDao, serviceDao, createOrderItemRequest.Quantity);
+        var taxDao = productDao is not null ? productDao.Tax : serviceDao?.Tax;
         var tax = _orderItemTotalsService.CalculateOrderItemTax(taxDao, price);
 
         return _mapper.Map<OrderItemDao>(createOrderItemRequest) with
@@ -48,8 +48,8 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
             ProductId = productDao?.Id,
             ProductVariation = productVariationDao,
             ProductVariationId = productVariationDao?.Id,
-            Reservation = reservationDao,
-            ReservationId = reservationDao?.Id,
+            Service = serviceDao,
+            ServiceId = serviceDao?.Id,
             Price = price,
             Tax = tax
         };    
@@ -66,8 +66,8 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
     {
         return originalDao with
         {
-            Reservation = null,
-            ReservationId = null,
+            Service = null,
+            ServiceId = null,
             IsDeleted = true
         };
     }

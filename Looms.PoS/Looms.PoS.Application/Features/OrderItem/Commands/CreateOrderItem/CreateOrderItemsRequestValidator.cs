@@ -3,6 +3,7 @@ using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 
@@ -12,26 +13,19 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
         IDiscountsRepository discountsRepository,
         IProductVariationRepository variationRepository,
         IProductsRepository productsRepository,
-        IReservationsRepository reservationsRepository)
+        IServicesRepository servicesRepository)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x)
-            .Must(x => x.ReservationId is not null || x.ProductId is not null)
+            .Must(x => x.ServiceId is not null || x.ProductId is not null)
             .WithMessage("ReservationId or ProductId is required.");
 
-        RuleFor(x => x.ReservationId!)
+        RuleFor(x => x.ServiceId!)
             .MustBeValidGuid()
-            .CustomAsync(async (reservationId, context, cancellationToken) => 
-            {
-                var reservation = await reservationsRepository.GetAsync(Guid.Parse(reservationId));
-
-                if(reservation!.Status != ReservationStatus.Booked)
-                {
-                    context.AddFailure("Reservation is not available.");
-                }
-            })
-            .When(x => x.ReservationId is not null);
+            .CustomAsync(async (serviceId, context, cancellationToken) => 
+                await servicesRepository.GetAsync(Guid.Parse(serviceId)))
+            .When(x => x.ServiceId is not null);
 
         RuleFor(x => x.ProductId!)
             .MustBeValidGuid()
@@ -45,7 +39,7 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
                 }
 
             })
-            .When(x => x.ReservationId is null && x.ProductId is not null);
+            .When(x => x.ServiceId is null && x.ProductId is not null);
 
         RuleFor(x => x.ProductVariationId!)
             .MustBeValidGuid()
@@ -58,7 +52,7 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
                     context.AddFailure("Variation quantity is too low.");
                 }
             })
-            .When(x => x.ReservationId is null && x.ProductId is not null && x.ProductVariationId is not null);
+            .When(x => x.ServiceId is null && x.ProductId is not null && x.ProductVariationId is not null);
 
         RuleFor(x => x.DiscountId!)
             .MustBeValidGuid()
@@ -74,7 +68,7 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
                 {
                     context.AddFailure("Discount cannot be applied to product item.");
                 }
-                else if(context.InstanceToValidate.ReservationId is not null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ReservationId))
+                else if(context.InstanceToValidate.ServiceId is not null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ServiceId))
                 {
                     context.AddFailure("Discount cannot be applied to service item.");
                 }

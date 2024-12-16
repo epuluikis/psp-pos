@@ -15,6 +15,6 @@ public class OrderItemProfile : Profile
             .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember is not null));
 
         CreateMap<OrderItemDao, OrderItemResponse>()
-                .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Reservation != null ? src.Reservation.Service.Name : null));
+                .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service != null ? src.Service.Name : null));
     }
 }

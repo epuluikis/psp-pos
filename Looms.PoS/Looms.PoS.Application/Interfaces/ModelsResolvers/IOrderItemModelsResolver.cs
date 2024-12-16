@@ -6,7 +6,7 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 
 public interface IOrderItemModelsResolver
 {
-    OrderItemDao GetDaoFromRequest(Guid orderId, CreateOrderItemRequest createOrderItemRequest, ProductDao? productDao, ProductVariationDao? productVariationDao, ReservationDao? reservationDao);
+    OrderItemDao GetDaoFromRequest(Guid orderId, CreateOrderItemRequest createOrderItemRequest, ProductDao? productDao, ProductVariationDao? productVariationDao, ServiceDao? serviceDao);
     OrderItemDao GetDaoFromDaoAndRequest(OrderItemDao orderItemDao, UpdateOrderItemRequest updateOrderItemRequest, DiscountDao? discountDao);
     OrderItemResponse GetResponseFromDao(OrderItemDao orderItemDao);
     IEnumerable<OrderItemResponse> GetResponseFromDao(IEnumerable<OrderItemDao> orderItemDao);

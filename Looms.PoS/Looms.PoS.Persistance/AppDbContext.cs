@@ -129,9 +129,9 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-            x.HasOne(oi => oi.Reservation)
+            x.HasOne(oi => oi.Service)
                 .WithMany()
-                .HasForeignKey(oi => oi.ReservationId)
+                .HasForeignKey(oi => oi.ServiceId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false); 
         });
