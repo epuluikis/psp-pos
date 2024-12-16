@@ -1,4 +1,5 @@
 using Looms.PoS.Application;
+using Looms.PoS.Application.Options;
 using Looms.PoS.Persistance;
 using Looms.PoS.Swagger.Filters;
 using Microsoft.OpenApi.Models;
@@ -11,7 +12,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        builder.Services.Configure<TwilioOptions>(builder.Configuration.GetSection("Twilio"));
 
         builder.Services.AddControllers();
 

@@ -3,6 +3,7 @@ using System;
 using Looms.PoS.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Looms.PoS.Persistance.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241216161017_AddServiceAndReservation")]
+    partial class AddServiceAndReservation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,10 +281,6 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BusinessId");
-
-                    b.HasIndex("TaxId");
-
                     b.ToTable("Products");
                 });
 
@@ -308,8 +307,6 @@ namespace Looms.PoS.Persistance.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductVariations");
                 });

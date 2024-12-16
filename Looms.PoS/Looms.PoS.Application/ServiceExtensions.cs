@@ -7,6 +7,7 @@ using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Mappings.ModelsResolvers;
 using Looms.PoS.Application.Services;
+using Looms.PoS.Application.Services.Notification;
 using Looms.PoS.Application.Services.PaymentHandler;
 using Looms.PoS.Application.Services.PaymentProvider;
 using Looms.PoS.Application.Utilities;
@@ -30,6 +31,7 @@ public static class ServiceExtensions
         services.AddSingleton<IHttpContentResolver, HttpContentResolver>();
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IPermissionService, PermissionService>();
+        services.AddSingleton<INotificationService, TwilioNotificationService>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
         services.AddValidatorsFromAssembly(typeof(ServiceExtensions).Assembly);
