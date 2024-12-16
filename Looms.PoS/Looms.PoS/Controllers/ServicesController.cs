@@ -1,8 +1,10 @@
 using Looms.PoS.Application.Features.Service.Commands.CreateService;
+using Looms.PoS.Application.Features.Service.Commands.DeleteService;
+using Looms.PoS.Application.Features.Service.Commands.UpdateService;
 using Looms.PoS.Application.Features.Service.Queries.GetService;
 using Looms.PoS.Application.Features.Service.Queries.GetServices;
 using Looms.PoS.Application.Models.Requests.Service;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Responses.Service;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +29,7 @@ public class ServicesController : ControllerBase
 
     [HttpPost($"/{EntityName}")]
     [SwaggerRequestType(typeof(CreateServiceRequest))]
-    [SwaggerResponse(StatusCodes.Status201Created, "Service successfully created.", typeof(List<ServiceResponse>))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Service successfully created.", typeof(ServiceResponse))]
     public async Task<IActionResult> CreateService()
     {
         var command = new CreateServiceCommand(GetRequest());
@@ -49,6 +51,25 @@ public class ServicesController : ControllerBase
     public async Task<IActionResult> GetService(string serviceId)
     {
         var query = new GetServiceQuery(GetRequest(), serviceId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpPut($"/{EntityName}/{{serviceId}}")]
+    [SwaggerRequestType(typeof(UpdateServiceRequest))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Service successfully updated.", typeof(ServiceResponse))]
+    public async Task<IActionResult> UpdateService(string serviceId)
+    {
+        var query = new UpdateServiceCommand(GetRequest(), serviceId);
+
+        return await _mediator.Send(query);
+    }
+
+    [HttpDelete($"/{EntityName}/{{serviceId}}")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "Service successfully deleted.")]
+    public async Task<IActionResult> DeleteService(string serviceId)
+    {
+        var query = new DeleteServiceCommand(GetRequest(), serviceId);
 
         return await _mediator.Send(query);
     }

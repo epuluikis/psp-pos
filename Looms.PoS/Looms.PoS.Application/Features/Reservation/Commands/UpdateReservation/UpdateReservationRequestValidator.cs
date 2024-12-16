@@ -9,12 +9,17 @@ namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
     public UpdateReservationRequestValidator(IServicesRepository servicesRepository)
-    {    
-                   
+    {              
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
-            .MustBeWithinBusinessHours()
+            .MustAsync(async (request, dateString, cancellation) =>
+            {
+                var service = await servicesRepository.GetAsync(Guid.Parse(request.ServiceId));
+                var business = service.Business;
+                var appointmentTime = DateTimeHelper.ConvertToUtc(dateString);
+                return appointmentTime.Hour >= business.StartHour && appointmentTime.Hour < business.EndHour;
+            })
             .Must(dateString =>
             {
                 var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
@@ -25,11 +30,10 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .MustAsync(async (serviceId, cancellation) => 
+            .CustomAsync(async (serviceId, context, cancellation) => 
             {
-                return await servicesRepository.GetAsync(new Guid(serviceId)) != null;
-            })
-            .WithMessage("Service does not exist.");
+                await servicesRepository.GetAsync(new Guid(serviceId));
+            });
         
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)

@@ -51,10 +51,16 @@ public class ReservationsRepository : IReservationsRepository
         _context.Reservations.Remove(reservationDao!);
     }
 
-    public async Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(Guid customerId, DateTime appointmentTime)
+    public async Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(string customerName, string email, DateTime appointmentTime)
     {
         return await _context.Reservations
-            .Where(r => r.CustomerId == customerId && r.AppointmentTime == appointmentTime && !r.IsDeleted)
+            .Where(r => r.CustomerName == customerName && r.Email == email && r.AppointmentTime == appointmentTime && !r.IsDeleted)
+            .ToListAsync();
+    }
+    public async Task<IEnumerable<ReservationDao>> GetReservationsByEmployeeAndTimeAsync(Guid employeeId, DateTime appointmentTime)
+    {
+        return await _context.Reservations
+            .Where(r => r.EmployeeId == employeeId && r.AppointmentTime == appointmentTime && !r.IsDeleted)
             .ToListAsync();
     }
 }

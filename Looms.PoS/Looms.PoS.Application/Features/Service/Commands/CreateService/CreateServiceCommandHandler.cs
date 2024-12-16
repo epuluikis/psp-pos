@@ -32,6 +32,6 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
 
         var response = _modelsResolver.GetResponseFromDao(createdServiceDao);
 
-        return new CreatedAtRouteResult($"/services{serviceDao.Id}", response);
+        return new CreatedAtRouteResult($"/services/{serviceDao.Id}", response);
     }
 }

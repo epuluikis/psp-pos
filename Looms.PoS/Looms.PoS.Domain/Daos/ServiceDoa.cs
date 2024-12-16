@@ -15,4 +15,7 @@ public record ServiceDao
     public Guid BusinessId { get; init; }
     public Guid TaxId { get; init; }
     public bool IsDeleted { get; init; } = false;
+    public virtual BusinessDao Business { get; init; } = null!;
+    public virtual TaxDao Tax { get; init; } = null!;
+    public virtual ICollection<ReservationDao> Reservations { get; init; } = [];
 }

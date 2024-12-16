@@ -22,12 +22,15 @@ public static class ServiceExtensions
     public static void AddApplicationLayer(this IServiceCollection services)
     {
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthenticationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(HttpContextBehaviour<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PermissionBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
         services.AddHttpContextAccessor();
 
         services.AddSingleton<IHttpContentResolver, HttpContentResolver>();
         services.AddSingleton<ITokenService, TokenService>();
+        services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<INotificationService, TwilioNotificationService>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));

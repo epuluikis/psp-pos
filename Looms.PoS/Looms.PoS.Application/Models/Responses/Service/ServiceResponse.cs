@@ -1,4 +1,4 @@
-namespace Looms.PoS.Application.Models.Responses;
+namespace Looms.PoS.Application.Models.Responses.Service;
 
 public record ServiceResponse
 {

@@ -20,4 +20,5 @@ public record UserDao
     public bool IsDeleted { get; init; }
 
     public virtual BusinessDao Business { get; init; } = null!;
+    public virtual ICollection<ReservationDao> Reservations { get; init; } = [];
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Business.Queries.GetBusinesses;
 
-public record GetBusinessesQuery : LoomsHttpRequest, IRequest<IActionResult>
+public record GetBusinessesQuery : GlobalLoomsHttpRequest, IRequest<IActionResult>
 {
     public GetBusinessesQuery(HttpRequest request) : base(request)
     {
