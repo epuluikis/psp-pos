@@ -58,6 +58,18 @@ public class AppDbContext : DbContext
             .HasForeignKey(p => p.TaxId)
             .IsRequired(true);
 
+        modelBuilder.Entity<ProductDao>()
+            .HasOne(p => p.Business)
+            .WithMany()
+            .HasForeignKey(p => p.BusinessId)
+            .IsRequired(true);
+
+        modelBuilder.Entity<ProductVariationDao>()
+            .HasOne(pv => pv.Product)
+            .WithMany()
+            .HasForeignKey(pv => pv.ProductId)
+            .IsRequired(true);
+
         modelBuilder.Entity<OrderDao>(x => {
             x.HasKey(o => o.Id);
 

@@ -49,7 +49,7 @@ public class ProductVariationsController : ControllerBase
 
     [HttpGet($"/product/{{productId}}/{EntityName}")]
     [SwaggerResponse(StatusCodes.Status200OK, "Product variations successfully retrieved.", typeof(IEnumerable<ProductVariationResponse>))]
-    public async Task<IActionResult> GetProductVariations(string productId)
+    public async Task<IActionResult> GetProductVariationsFor(string productId)
     {
         var query = new GetProductVariationForProductQuery(GetRequest(), productId);
         return await _mediator.Send(query);

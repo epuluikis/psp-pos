@@ -1,12 +1,19 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests.ProductVariation;
+using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.Product.Commands.UpdateProductVariation;
 
 public class UpdateProductVariationRequestValidator : AbstractValidator<UpdateProductVariationRequest>
 {
-    public UpdateProductVariationRequestValidator()
+    public UpdateProductVariationRequestValidator(IProductsRepository productsRepository)
     {
+        RuleFor(x => x.ProductId)
+            .MustBeValidGuid()
+            .CustomAsync(async (productId, context, cancellationToken) =>
+                await productsRepository.GetAsync(Guid.Parse(productId)));
+
         RuleFor(x => x.Name)
             .NotEmpty();
 

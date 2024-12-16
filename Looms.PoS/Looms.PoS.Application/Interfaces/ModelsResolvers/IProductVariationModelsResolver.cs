@@ -8,6 +8,7 @@ public interface IProductVariationModelsResolver
 {
     ProductVariationDao GetDaoFromRequest(CreateProductVariationRequest createProductVariationRequest);
     ProductVariationDao GetDaoFromDaoAndRequest(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest);
+    ProductVariationDao GetDaoFromDaoAndRequest(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest, ProductDao productDao);
     ProductVariationDao GetDeletedDao(ProductVariationDao originalDao);
     ProductVariationResponse GetResponseFromDao(ProductVariationDao productDao);
     IEnumerable<ProductVariationResponse> GetResponseFromDao(IEnumerable<ProductVariationDao> productVariationDao);

@@ -14,5 +14,10 @@ public class ProductVariationProfile : Profile
             .ForMember(dest => dest.VariationName, opt => opt.MapFrom(src => src.Name));
 
         CreateMap<ProductVariationDao, ProductVariationResponse>();
+
+        CreateMap<UpdateProductVariationRequest, ProductVariationDao>(MemberList.Source)
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.QuantityInStock))
+            .ForMember(dest => dest.VariationName, opt => opt.MapFrom(src => src.Name))
+            .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember is not null));
     }
 }

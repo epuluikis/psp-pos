@@ -3,6 +3,7 @@ using System;
 using Looms.PoS.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Looms.PoS.Persistance.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241216052947_AddBusinessToProduct")]
+    partial class AddBusinessToProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -383,8 +386,6 @@ namespace Looms.PoS.Persistance.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("ProductVariations");
                 });
 
@@ -621,17 +622,6 @@ namespace Looms.PoS.Persistance.Migrations
                     b.Navigation("Business");
 
                     b.Navigation("Tax");
-                });
-
-            modelBuilder.Entity("Looms.PoS.Domain.Daos.ProductVariationDao", b =>
-                {
-                    b.HasOne("Looms.PoS.Domain.Daos.ProductDao", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Looms.PoS.Domain.Daos.RefundDao", b =>

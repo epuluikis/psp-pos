@@ -30,14 +30,24 @@ public class ProductVariationModelsResolver : IProductVariationModelsResolver
         return _mapper.Map<IEnumerable<ProductVariationResponse>>(productVariationDao);
     }
 
-    ProductVariationDao IProductVariationModelsResolver.GetDaoFromDaoAndRequest(
+    public ProductVariationDao GetDaoFromDaoAndRequest(
         ProductVariationDao originalDao,
         UpdateProductVariationRequest updateProductVariationRequest)
     {
         return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with { Id = originalDao.Id };
     }
 
-    ProductVariationDao IProductVariationModelsResolver.GetDeletedDao(ProductVariationDao originalDao)
+    public ProductVariationDao GetDaoFromDaoAndRequest(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest, ProductDao productDao)
+    {
+        return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with 
+        { 
+            Id = originalDao.Id,
+            ProductId = productDao.Id,
+            Product = productDao
+        };
+    }
+
+    public ProductVariationDao GetDeletedDao(ProductVariationDao originalDao)
     {
         return originalDao with { IsDeleted = true };
     }

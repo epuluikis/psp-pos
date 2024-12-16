@@ -15,10 +15,12 @@ public class ProductModelsResolver : IProductModelsResolver
         _mapper = mapper;
     }
 
-    public ProductDao GetDaoFromRequest(CreateProductRequest createProductRequest, TaxDao taxDao)
+    public ProductDao GetDaoFromRequest(CreateProductRequest createProductRequest, BusinessDao businessDao, TaxDao taxDao)
     {
         return _mapper.Map<ProductDao>(createProductRequest) with
         {
+            BusinessId = businessDao.Id,
+            Business = businessDao,
             TaxId = taxDao.Id,
             Tax = taxDao
         };

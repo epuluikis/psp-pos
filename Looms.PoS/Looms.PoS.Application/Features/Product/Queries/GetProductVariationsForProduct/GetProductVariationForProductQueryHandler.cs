@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -5,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.Product.Queries.GetProductVariation;
 
-public class GetProductVariationForProductQueryHandler : IRequestHandler<GetProductVariationQuery, IActionResult>
+public class GetProductVariationForProductQueryHandler : IRequestHandler<GetProductVariationForProductQuery, IActionResult>
 {
     private readonly IProductVariationRepository _productVariationRepository;
     private readonly IProductVariationModelsResolver _modelsResolver;
@@ -16,7 +17,7 @@ public class GetProductVariationForProductQueryHandler : IRequestHandler<GetProd
         _modelsResolver = modelsResolver;
     }
 
-    public async Task<IActionResult> Handle(GetProductVariationQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetProductVariationForProductQuery request, CancellationToken cancellationToken)
     {
         var productVariationDao = await _productVariationRepository.GetAllAsync(Guid.Parse(request.Id));
 
