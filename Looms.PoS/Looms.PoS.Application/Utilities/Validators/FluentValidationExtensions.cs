@@ -17,4 +17,11 @@ public static class FluentValidationExtensions
                       .Must(date => DateTimeHelper.TryConvertToUtc(date, out _))
                       .WithMessage("{PropertyName} is not a valid DateTime");
     }
+
+    public static IRuleBuilder<T, string> MustBeValidPhoneNumber<T>(this IRuleBuilder<T, string> builder)
+    {
+        return builder.NotEmpty()
+                      .Matches(@"^\+?\d{1,3}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$")
+                      .WithMessage("{PropertyName} is not a valid phone number");
+    }
 }
