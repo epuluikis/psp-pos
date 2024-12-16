@@ -13,4 +13,8 @@ public record ProductDao
     public Guid TaxId { get; init; }
     public Guid BusinessId { get; init; }
     public bool IsDeleted { get; init; }
+    
+    public virtual TaxDao Tax { get; init; } = null!;
+    public virtual BusinessDao Business { get; init; } = null!;
+    public virtual ICollection<ProductVariationDao> ProductVariations { get; init; } = [];
 }

@@ -10,4 +10,6 @@ public record ProductVariationDao
     public int Quantity { get; init; } = 0;
     public string VariationName { get; init; } = string.Empty;
     public bool IsDeleted { get; init; }
+    
+    public virtual ProductDao Product { get; init; } = null!;
 }

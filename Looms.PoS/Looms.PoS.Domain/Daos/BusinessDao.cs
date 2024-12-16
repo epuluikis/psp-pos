@@ -14,4 +14,5 @@ public record BusinessDao
     public virtual ICollection<UserDao> Users { get; } = [];
     public virtual ICollection<PaymentProviderDao> PaymentProviders { get; init; } = [];
     public virtual ICollection<ServiceDao> Services { get; init; } = [];
+    public virtual ICollection<ProductDao> Products { get; init; } = [];
 }

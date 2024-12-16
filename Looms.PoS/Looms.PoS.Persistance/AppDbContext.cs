@@ -95,6 +95,24 @@ public class AppDbContext : DbContext
                     .WithMany(b => b.Services)
                     .HasForeignKey(s => s.BusinessId)
                     .IsRequired();
+
+        modelBuilder.Entity<ProductVariationDao>()
+                    .HasOne(s => s.Product)
+                    .WithMany(b => b.ProductVariations)
+                    .HasForeignKey(s => s.ProductId)
+                    .IsRequired();
+        
+        modelBuilder.Entity<ProductDao>()
+                    .HasOne(s => s.Tax)
+                    .WithMany(b => b.Products)
+                    .HasForeignKey(s => s.TaxId)
+                    .IsRequired();
+        
+        modelBuilder.Entity<ProductDao>()
+                    .HasOne(s => s.Business)
+                    .WithMany(b => b.Products)
+                    .HasForeignKey(s => s.BusinessId)
+                    .IsRequired();
     }
 
 }
