@@ -7,6 +7,7 @@ using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Mappings.ModelsResolvers;
 using Looms.PoS.Application.Services;
+using Looms.PoS.Application.Services.Notification;
 using Looms.PoS.Application.Services.PaymentHandler;
 using Looms.PoS.Application.Services.PaymentProvider;
 using Looms.PoS.Application.Utilities;
@@ -35,6 +36,7 @@ public static class ServiceExtensions
         services.AddSingleton<IRefundsTotalsService, RefundsTotalsService>();
         services.AddSingleton<IPaymentTotalsService, PaymentsTotalsService>();
         services.AddSingleton<IPermissionService, PermissionService>();
+        services.AddSingleton<INotificationService, TwilioNotificationService>();
 
         services.AddScoped<IProductUpdatesService, ProductUpdatesService>();
         services.AddScoped<IProductVariationUpdatesService, ProductVariationUpdatesService>();
