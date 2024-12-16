@@ -11,7 +11,7 @@ public class OrderItemResponse {
 
     public string? VariationName { get; init; } = string.Empty;
     
-    public Guid? ServiceId { get; init; }
+    public Guid? ReservationId { get; init; }
     
     public string? ServiceName { get; init; } = string.Empty;
         

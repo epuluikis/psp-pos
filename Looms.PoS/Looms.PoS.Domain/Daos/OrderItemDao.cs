@@ -2,8 +2,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Looms.PoS.Domain.Daos;
 
-// TODO: Uncomment for reliationships between OrderItemDao and other Daos
-
 public record OrderItemDao
 {
     public Guid Id { get; init; }
@@ -14,9 +12,7 @@ public record OrderItemDao
 
     public Guid? ProductVariationId { get; init; }
 
-    public Guid? ServiceId { get; init; }
-
-    //public ServiceDao? Service { get; init; }
+    public Guid? ReservationId { get; init; }
 
     public Guid? DiscountId { get; init; }
 
@@ -36,6 +32,8 @@ public record OrderItemDao
     public virtual ProductDao? Product { get; init; }
 
     public virtual ProductVariationDao? ProductVariation { get; init; }
+
+    public virtual ReservationDao? Reservation { get; init; }
     
     public virtual DiscountDao? Discount { get; init; }
 

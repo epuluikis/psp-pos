@@ -3,6 +3,7 @@ using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Models.Responses.Reservation;
 using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 
@@ -31,6 +32,14 @@ public class ReservationModelsResolver : IReservationModelsResolver
         return originalDao with
         {
             IsDeleted = true
+        };
+    }
+
+    public ReservationDao GetUpdatedStatusDao (ReservationDao originalDao, ReservationStatus status)
+    {
+        return originalDao with
+        {
+            Status = status
         };
     }
 

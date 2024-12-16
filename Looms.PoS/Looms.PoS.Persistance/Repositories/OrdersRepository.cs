@@ -38,6 +38,10 @@ public class OrdersRepository : LoomsException, IOrdersRepository
             .Include(x => x.Refunds)
             .Include(x => x.Business)
             .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
+                .ThenInclude(oi => oi.Reservation)
+                    .ThenInclude(r => r.Service)
+                        .ThenInclude(s => s.Tax)
+            .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
                 .ThenInclude(oi => oi.ProductVariation)
             .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
                 .ThenInclude(oi => oi.Discount)
@@ -52,12 +56,21 @@ public class OrdersRepository : LoomsException, IOrdersRepository
         var query = _context.Orders
             .Where(x => !x.IsDeleted);
 
-        query = query.Where(x => x.Status == Enum.Parse<OrderStatus>(filter.Status) && x.UserId == Guid.Parse(filter.UserId));
+        if(filter.Status is not null){
+            query = query.Where(x => x.Status == Enum.Parse<OrderStatus>(filter.Status));
+        }
+        if(filter.UserId is not null){
+            query = query.Where(x => x.UserId == Guid.Parse(filter.UserId));
+        }
 
         query = query.Include(x => x.Discount)
             .Include(x => x.Payments)
             .Include(x => x.Refunds)
             .Include(x => x.Business)
+            .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
+                .ThenInclude(oi => oi.Reservation)
+                    .ThenInclude(r => r.Service)
+                        .ThenInclude(s => s.Tax)
             .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
                 .ThenInclude(oi => oi.ProductVariation)
             .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
@@ -79,6 +92,10 @@ public class OrdersRepository : LoomsException, IOrdersRepository
         .Include(x => x.Business)
         .Include(x => x.OrderItems)
             .Where(x => x.IsDeleted == false)
+        .Include(x => x.OrderItems.Where(oi => !oi.IsDeleted))
+            .ThenInclude(oi => oi.Reservation)
+                .ThenInclude(r => r.Service)
+                    .ThenInclude(s => s.Tax)
         .Include(x => x.OrderItems.Where(x => x.IsDeleted == false))
             .ThenInclude(oi => oi.ProductVariation)
         .Include(x => x.OrderItems.Where(x => x.IsDeleted == false))
@@ -104,17 +121,6 @@ public class OrdersRepository : LoomsException, IOrdersRepository
         await _context.SaveChangesAsync();
         return existingOrder;
     }
-
-    // public async Task<OrderDao> UpdateAsync(OrderDao order)
-    // {
-    //     ValidateOrder(order);
-
-    //     await RemoveAsync(order.Id);
-    //     _context.Orders.Update(order);
-    //     await _context.SaveChangesAsync();
-
-    //     return order;
-    // }
 
     private void ValidateOrder(OrderDao order)
     {

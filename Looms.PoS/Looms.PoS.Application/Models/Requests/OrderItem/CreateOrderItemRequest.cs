@@ -6,7 +6,7 @@ public record CreateOrderItemRequest
     
     public string? ProductVariationId { get; init; }
     
-    public string? ServiceId { get; init; }
+    public string? ReservationId { get; init; }
     
     public int Quantity { get; init; }
 

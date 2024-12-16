@@ -129,13 +129,11 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-// TODO: Uncomment the following lines after ServiceDao classes are in the project
-/* 
-            x.HasOne(oi => oi.Service)
+            x.HasOne(oi => oi.Reservation)
                 .WithMany()
-                .HasForeignKey(oi => oi.ServiceId)
+                .HasForeignKey(oi => oi.ReservationId)
                 .OnDelete(DeleteBehavior.SetNull)
-                .IsRequired(false); */
+                .IsRequired(false); 
         });
 
         modelBuilder.Entity<PaymentTerminalDao>()

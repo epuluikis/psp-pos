@@ -7,10 +7,10 @@ namespace Looms.PoS.Application.Features.Order.Queries.GetOrders;
 
 public record GetOrdersQuery : LoomsHttpRequest, IRequest<IActionResult>
 {
-    public string Status { get; init; }
-    public string UserId { get; init; }
+    public string? Status { get; init; }
+    public string? UserId { get; init; }
 
-    public GetOrdersQuery(HttpRequest request, string status, string userId) : base(request)
+    public GetOrdersQuery(HttpRequest request, string? status, string? userId) : base(request)
     {
         Status = status;
         UserId = userId;
