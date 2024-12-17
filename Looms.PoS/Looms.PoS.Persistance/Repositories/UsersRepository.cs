@@ -24,14 +24,16 @@ public class UsersRepository : IUsersRepository
         return entityEntry.Entity;
     }
 
-    public async Task<IEnumerable<UserDao>> GetAllAsync()
+    public async Task<IEnumerable<UserDao>> GetAllByBusinessAsync(Guid businessId)
     {
-        return await _context.Users.Where(x => !x.IsDeleted).ToListAsync();
+        return await _context.Users.Where(x => x.BusinessId == businessId && !x.IsDeleted).ToListAsync();
     }
 
-    public async Task<UserDao> GetAsync(Guid id)
+    public async Task<UserDao> GetByBusinessAsync(Guid id, Guid businessId)
     {
-        var userDao = await _context.Users.FindAsync(id);
+        var userDao = _context.ChangeTracker.Entries<UserDao>().FirstOrDefault(x => x.Entity.Id == id && x.Entity.BusinessId == businessId)?.Entity;
+
+        userDao ??= await _context.Users.FirstOrDefaultAsync(x => x.Id == id && x.BusinessId == businessId);
 
         if (userDao is null || userDao.IsDeleted)
         {
@@ -45,10 +47,7 @@ public class UsersRepository : IUsersRepository
     {
         var userDao = _context.ChangeTracker.Entries<UserDao>().FirstOrDefault(x => x.Entity.Email == email && !x.Entity.IsDeleted)?.Entity;
 
-        if (userDao is null)
-        {
-            userDao = await _context.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted);
-        }
+        userDao ??= await _context.Users.FirstOrDefaultAsync(x => x.Email == email && !x.IsDeleted);
 
         if (userDao is null || userDao.IsDeleted)
         {
