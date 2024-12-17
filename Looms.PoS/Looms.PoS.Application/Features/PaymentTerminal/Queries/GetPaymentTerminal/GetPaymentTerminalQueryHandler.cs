@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,10 @@ public class GetPaymentTerminalQueryHandler : IRequestHandler<GetPaymentTerminal
 
     public async Task<IActionResult> Handle(GetPaymentTerminalQuery request, CancellationToken cancellationToken)
     {
-        var paymentTerminalDao = await _paymentTerminalsRepository.GetAsync(Guid.Parse(request.Id));
+        var paymentTerminalDao = await _paymentTerminalsRepository.GetAsyncByIdAndBusinessId(
+            Guid.Parse(request.Id),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(request.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(paymentTerminalDao);
 

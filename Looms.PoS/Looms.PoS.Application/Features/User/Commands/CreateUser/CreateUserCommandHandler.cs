@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.RequestHandler;
 using Looms.PoS.Application.Interfaces.Services;
@@ -31,8 +32,9 @@ public class CreateUserCommandHandler : ILoomsRequestHandler<CreateUserCommand, 
     public async Task<IActionResult> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         var userRequest = await _httpContentResolver.GetPayloadAsync<CreateUserRequest>(command.Request);
+        var businessId = HttpContextHelper.GetHeaderBusinessId(command.Request);
 
-        var userDao = _modelsResolver.GetDaoFromRequest(userRequest);
+        var userDao = _modelsResolver.GetDaoFromRequest(userRequest, Guid.Parse(businessId));
         var createdUserDao = await _usersRepository.CreateAsync(userDao);
 
         var response = _modelsResolver.GetResponseFromDao(createdUserDao);

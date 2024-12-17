@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests.PaymentTerminal;
 using Looms.PoS.Application.Utilities.Validators;
@@ -16,20 +17,21 @@ public class UpdatePaymentTerminalCommandValidator : AbstractValidator<UpdatePay
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, _, _) => await paymentTerminalsRepository.GetAsync(Guid.Parse(id)));
+            .CustomAsync(async (id, context, _) 
+                => await paymentTerminalsRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(id!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                ));
 
-        RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+        RuleFor(x => x)
+            .CustomAsync(async (command, context, _) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdatePaymentTerminalRequest>(request);
+                context.RootContextData["Id"] = command.Id;
 
-                var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
+                var body = await httpContentResolver.GetPayloadAsync<UpdatePaymentTerminalRequest>(command.Request);
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+                
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

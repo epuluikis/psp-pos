@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.RequestHandler;
 using Looms.PoS.Application.Interfaces.Services;
@@ -31,7 +32,9 @@ public class UpdateUserCommandHandler : ILoomsRequestHandler<UpdateUserCommand, 
     public async Task<IActionResult> Handle(UpdateUserCommand command, CancellationToken cancellationToken)
     {
         var updateUserRequest = await _httpContentResolver.GetPayloadAsync<UpdateUserRequest>(command.Request);
-        var originalDao = await _usersRepository.GetAsync(Guid.Parse(command.Id));
+        var businessId = HttpContextHelper.GetHeaderBusinessId(command.Request);
+
+        var originalDao = await _usersRepository.GetByBusinessAsync(Guid.Parse(command.Id), Guid.Parse(businessId));
 
         var userDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, updateUserRequest);
         var updatedUserDao = await _usersRepository.UpdateAsync(userDao);
