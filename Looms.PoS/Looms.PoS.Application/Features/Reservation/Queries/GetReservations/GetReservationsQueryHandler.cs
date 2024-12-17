@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -18,7 +19,9 @@ public class GetReservationsQueryHandler : IRequestHandler<GetReservationsQuery,
 
     public async Task<IActionResult> Handle(GetReservationsQuery request, CancellationToken cancellationToken)
     {
-        var ReservationDaos = await _reservationsRepository.GetAllAsync();
+        var ReservationDaos = await _reservationsRepository.GetALlAsyncByBusinessId(
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(request.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(ReservationDaos);
 

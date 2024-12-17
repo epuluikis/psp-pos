@@ -1,4 +1,5 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Application.Utilities.Validators;
@@ -60,10 +61,12 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
         RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (serviceId, _, _) =>
-            {
-                await servicesRepository.GetAsync(Guid.Parse(serviceId));
-            });
+            .CustomAsync(async (serviceId, context, _) 
+                => await servicesRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(serviceId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                )
+            );
 
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)
