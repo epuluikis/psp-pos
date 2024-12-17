@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests.GiftCard;
-using Looms.PoS.Application.Utilities;
+using Looms.PoS.Application.Utilities.Helpers;
 
 namespace Looms.PoS.Application.Features.GiftCard.Commands.CreateGiftCard;
 

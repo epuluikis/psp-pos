@@ -1,6 +1,6 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Utilities;
+using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;

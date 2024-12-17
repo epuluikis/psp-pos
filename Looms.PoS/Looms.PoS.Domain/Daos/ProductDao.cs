@@ -11,8 +11,8 @@ public record ProductDao
     public decimal? Price { get; init; }
     public int Quantity { get; init; } = 0;
     public Guid TaxId { get; init; }
-    public virtual TaxDao Tax { get; init; }
+    public virtual TaxDao Tax { get; init; } = null!;
     public Guid BusinessId { get; init; }
-    public virtual BusinessDao Business { get; init; }
+    public virtual BusinessDao Business { get; init; } = null!;
     public bool IsDeleted { get; init; }
 }

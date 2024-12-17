@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Models.Requests.ProductVariation;
+﻿using Looms.PoS.Application.Models.Requests.Product;
+using Looms.PoS.Application.Models.Requests.ProductVariation;
 using Looms.PoS.Application.Models.Responses.Product;
 using Looms.PoS.Domain.Daos;
 

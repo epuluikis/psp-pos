@@ -41,6 +41,8 @@ public class ProductModelsResolver : IProductModelsResolver
         return _mapper.Map<ProductDao>(updateProductRequest) with
         {
             Id = originalDao.Id,
+            TaxId = originalDao.TaxId,
+            BusinessId = originalDao.BusinessId,
         };
     }
 

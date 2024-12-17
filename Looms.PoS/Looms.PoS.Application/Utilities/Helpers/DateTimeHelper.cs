@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Looms.PoS.Application.Utilities;
+namespace Looms.PoS.Application.Utilities.Helpers;
 
 
 public static class DateTimeHelper
@@ -13,7 +13,7 @@ public static class DateTimeHelper
             dateString,
             DateFormat,
             CultureInfo.InvariantCulture,
-            DateTimeStyles.AssumeLocal | DateTimeStyles.AdjustToUniversal); 
+            DateTimeStyles.AssumeLocal | DateTimeStyles.AdjustToUniversal);
     }
 
     public static bool TryConvertToUtc(string dateString)
@@ -37,7 +37,7 @@ public static class DateTimeHelper
     {
         return DateTime.TryParseExact(
             dateString,
-            "dd-MM-yyyy HH:mm:ss",
+            DateFormat,
             CultureInfo.InvariantCulture,
             DateTimeStyles.AssumeLocal | DateTimeStyles.AdjustToUniversal,
             out utcDateTime);

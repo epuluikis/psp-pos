@@ -23,7 +23,7 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
             {
                 var body = await httpContentResolver.GetPayloadAsync<UpdateProductRequest>(request);
 
-                var validationResults = validators.Select(x => x.ValidateAsync((IValidationContext)body));
+                var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);
 
                 foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))

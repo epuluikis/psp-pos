@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Interfaces;
-using Looms.PoS.Application.Models.Requests.ProductVariation;
+using Looms.PoS.Application.Models.Requests.Product;
 
 namespace Looms.PoS.Application.Features.Product.Commands.CreateProductVariation;
 
