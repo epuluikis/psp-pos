@@ -27,17 +27,12 @@ public class UpdateGiftCardCommandValidator : AbstractValidator<UpdateGiftCardCo
         RuleFor(x => x)
             .CustomAsync(async (command, context, _) =>
             {
+                context.RootContextData["Id"] = command.Id;
+
                 var body = await httpContentResolver.GetPayloadAsync<UpdateGiftCardRequest>(command.Request);
-                var validationContext = (IValidationContext)body;
-                validationContext.RootContextData["Id"] = command.Id;
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
-                var validationResults = validators.Select(x => x.ValidateAsync(validationContext));
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

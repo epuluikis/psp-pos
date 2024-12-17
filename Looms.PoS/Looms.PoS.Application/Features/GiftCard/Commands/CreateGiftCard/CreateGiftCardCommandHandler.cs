@@ -29,9 +29,10 @@ public class CreateGiftCardCommandHandler : IRequestHandler<CreateGiftCardComman
     {
         var giftCardRequest = await _httpContentResolver.GetPayloadAsync<CreateGiftCardRequest>(command.Request);
 
-        var giftCardDao = _giftCardModelsResolver.GetDaoFromRequestAndBusinessId(
+        var giftCardDao = _giftCardModelsResolver.GetDaoFromRequest(
             giftCardRequest,
-            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request)),
+            Guid.Parse(HttpContextHelper.GetUserId(command.Request))
         );
 
         giftCardDao = await _giftCardsRepository.CreateAsync(giftCardDao);

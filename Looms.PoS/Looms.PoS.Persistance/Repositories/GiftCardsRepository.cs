@@ -29,6 +29,11 @@ public class GiftCardsRepository : IGiftCardsRepository
         return await _context.GiftCards.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<GiftCardDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.GiftCards.Where(x => !x.IsDeleted && x.BusinessId == businessId).ToListAsync();
+    }
+
     public async Task<GiftCardDao> GetAsync(Guid id)
     {
         var giftCardDao = await _context.GiftCards.FindAsync(id);
@@ -43,7 +48,7 @@ public class GiftCardsRepository : IGiftCardsRepository
 
     public async Task<GiftCardDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
     {
-        var giftCardDao = await _context.GiftCards.Where(x => x.Id == id && x.BusinessId == businessId).FirstAsync();
+        var giftCardDao = await _context.GiftCards.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
 
         if (giftCardDao is null || giftCardDao.IsDeleted)
         {
@@ -55,7 +60,7 @@ public class GiftCardsRepository : IGiftCardsRepository
 
     public async Task<GiftCardDao> GetAsyncByBusinessIdAndCode(Guid businessId, string code)
     {
-        var giftCardDao = await _context.GiftCards.Where(x => x.BusinessId == businessId && x.Code == code).FirstAsync();
+        var giftCardDao = await _context.GiftCards.Where(x => x.BusinessId == businessId && x.Code == code).FirstOrDefaultAsync();
 
         if (giftCardDao is null || giftCardDao.IsDeleted)
         {

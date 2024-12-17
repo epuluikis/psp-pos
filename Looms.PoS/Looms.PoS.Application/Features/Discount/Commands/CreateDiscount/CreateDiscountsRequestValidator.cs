@@ -15,7 +15,7 @@ public class CreateDiscountsRequestValidator : AbstractValidator<CreateDiscountR
         RuleLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.DiscountTarget)
-            .NotEmpty()
+            .NotNull()
             .IsInEnum();
 
         When(x => x.DiscountTarget == DiscountTarget.Product, () =>
@@ -33,7 +33,7 @@ public class CreateDiscountsRequestValidator : AbstractValidator<CreateDiscountR
         When(x => x.DiscountTarget != DiscountTarget.Product, () =>
         {
             RuleFor(x => x.ProductId)
-                .Empty()
+                .Null()
                 .WithMessage("ProductId must be empty when discount isn't for product.");
         });
 

@@ -1,7 +1,6 @@
 using FluentValidation;
 using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces;
-using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Requests.Discount;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
@@ -26,18 +25,15 @@ public class UpdateDiscountCommandValidator : AbstractValidator<UpdateDiscountCo
                 )
             );
 
-        RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, _) =>
+        RuleFor(x => x)
+            .CustomAsync(async (command, context, _) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateDiscountRequest>(request);
+                context.RootContextData["Id"] = command.Id;
 
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
+                var body = await httpContentResolver.GetPayloadAsync<UpdateDiscountCommand>(command.Request);
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

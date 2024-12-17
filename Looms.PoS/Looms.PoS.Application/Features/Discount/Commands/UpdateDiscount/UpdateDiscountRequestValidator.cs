@@ -33,7 +33,7 @@ public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRe
         When(x => x.DiscountTarget != DiscountTarget.Product, () =>
         {
             RuleFor(x => x.ProductId)
-                .Empty()
+                .Null()
                 .WithMessage("ProductId must be empty when discount isn't for product.");
         });
 

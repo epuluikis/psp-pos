@@ -6,6 +6,7 @@ public interface IGiftCardsRepository
 {
     Task<GiftCardDao> CreateAsync(GiftCardDao giftCardDao);
     Task<IEnumerable<GiftCardDao>> GetAllAsync();
+    Task<IEnumerable<GiftCardDao>> GetAllAsyncByBusinessId(Guid businessId);
     Task<GiftCardDao> GetAsync(Guid id);
     Task<GiftCardDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId);
     Task<GiftCardDao> GetAsyncByBusinessIdAndCode(Guid businessId, string code);
