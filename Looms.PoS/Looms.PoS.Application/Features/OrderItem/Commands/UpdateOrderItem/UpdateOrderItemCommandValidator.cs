@@ -41,10 +41,12 @@ public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItem
                     );
             });
 
-        RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, _) =>
+        RuleFor(x => x)
+            .CustomAsync(async (command, context, _) =>
                 {
-                    var body = await httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(request);
+                    context.RootContextData["Id"] = command.Id;
+
+                    var body = await httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(command.Request);
                     var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
                     await Task.WhenAll(validationResults);

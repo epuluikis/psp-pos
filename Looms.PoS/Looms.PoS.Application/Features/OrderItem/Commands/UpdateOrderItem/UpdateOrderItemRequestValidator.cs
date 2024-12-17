@@ -13,7 +13,8 @@ public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItem
         IDiscountsRepository discountsRepository,
         IProductVariationRepository variationRepository,
         IProductsRepository productsRepository,
-        IServicesRepository servicesRepository
+        IServicesRepository servicesRepository,
+        IOrderItemsRepository orderItemsRepository
     )
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
@@ -35,12 +36,13 @@ public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItem
             .MustBeValidGuid()
             .CustomAsync(async (productId, context, _) =>
             {
+                var orderItemDao = await orderItemsRepository.GetAsync(Guid.Parse((string)context.RootContextData["Id"]));
                 var productDao = await productsRepository.GetAsyncByIdAndBusinessId(
                     Guid.Parse(productId!),
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
                 );
 
-                if (productDao.Quantity < context.InstanceToValidate.Quantity)
+                if (productDao.Quantity + orderItemDao.Quantity < context.InstanceToValidate.Quantity)
                 {
                     context.AddFailure("Product quantity is too low.");
                 }
@@ -56,12 +58,13 @@ public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItem
             .MustBeValidGuid()
             .CustomAsync(async (variationId, context, _) =>
             {
+                var orderItemDao = await orderItemsRepository.GetAsync(Guid.Parse((string)context.RootContextData["Id"]));
                 var variation = await variationRepository.GetAsyncByIdAndProductId(
                     Guid.Parse(variationId!),
                     Guid.Parse(context.InstanceToValidate.ProductId!)
                 );
 
-                if (variation.Quantity < context.InstanceToValidate.Quantity)
+                if (variation.Quantity + orderItemDao.Quantity < context.InstanceToValidate.Quantity)
                 {
                     context.AddFailure("Variation quantity is too low.");
                 }

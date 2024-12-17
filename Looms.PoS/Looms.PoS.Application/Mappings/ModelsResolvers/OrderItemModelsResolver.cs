@@ -85,7 +85,8 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
 
         return _mapper.Map<OrderItemDao>(updateOrderItemRequest) with
         {
-            OrderId = orderItemDao.Id,
+            Id = orderItemDao.Id,
+            OrderId = orderItemDao.OrderId,
             Product = productDao,
             ProductId = productDao?.Id,
             ProductVariation = productVariationDao,
