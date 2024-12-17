@@ -7,6 +7,7 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 public interface ITaxModelsResolver
 {
     TaxDao GetDaoFromRequest(CreateTaxRequest createTaxRequest);
+    TaxDao GetDaoFromRequestAndBusinessId(CreateTaxRequest createTaxRequest, Guid businessId);
     TaxDao GetDaoFromDaoAndRequest(TaxDao originalDao, UpdateTaxRequest updateTaxRequest);
     TaxDao GetDeletedDao(TaxDao originalDao);
     TaxResponse GetResponseFromDao(TaxDao TaxDao);

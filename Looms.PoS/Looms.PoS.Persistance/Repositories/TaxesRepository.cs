@@ -18,8 +18,11 @@ public class TaxesRepository : ITaxesRepository
 
     public async Task<TaxDao> CreateAsync(TaxDao taxDao)
     {
+        taxDao = _context.CreateProxy<TaxDao>(taxDao);
+
         var entityEntry = await _context.AddAsync(taxDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -36,6 +39,7 @@ public class TaxesRepository : ITaxesRepository
         {
             throw new LoomsNotFoundException("Tax not found");
         }
+
         return taxDao;
     }
 
@@ -47,6 +51,7 @@ public class TaxesRepository : ITaxesRepository
         {
             throw new LoomsNotFoundException("Tax not found");
         }
+
         return taxDao;
     }
 
@@ -55,6 +60,7 @@ public class TaxesRepository : ITaxesRepository
         await RemoveAsync(taxDao.Id);
         _context.Taxes.Update(taxDao);
         await _context.SaveChangesAsync();
+
         return taxDao;
     }
 

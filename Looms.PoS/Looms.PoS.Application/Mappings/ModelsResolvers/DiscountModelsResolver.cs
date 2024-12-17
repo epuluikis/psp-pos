@@ -9,32 +9,39 @@ namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 public class DiscountModelsResolver : IDiscountModelsResolver
 {
     private readonly IMapper _mapper;
+
     public DiscountModelsResolver(IMapper mapper)
     {
         _mapper = mapper;
     }
 
     public DiscountDao GetDaoFromRequest(CreateDiscountRequest createDiscountRequest)
-        => _mapper.Map<DiscountDao>(createDiscountRequest);
+    {
+        return _mapper.Map<DiscountDao>(createDiscountRequest);
+    }
+
+    public DiscountDao GetDaoFromRequestAndBusinessId(CreateDiscountRequest createDiscountRequest, Guid businessId)
+    {
+        return _mapper.Map<DiscountDao>(createDiscountRequest) with { BusinessId = businessId };
+    }
 
     public DiscountDao GetDaoFromDaoAndRequest(DiscountDao discountDao, UpdateDiscountRequest updateDiscountRequest)
     {
-        return _mapper.Map<DiscountDao>(updateDiscountRequest) with
-        {
-            Id = discountDao.Id
-        };
+        return _mapper.Map<DiscountDao>(updateDiscountRequest) with { Id = discountDao.Id, BusinessId = discountDao.BusinessId };
     }
 
     public DiscountResponse GetResponseFromDao(DiscountDao discountDao)
-        => _mapper.Map<DiscountResponse>(discountDao);
+    {
+        return _mapper.Map<DiscountResponse>(discountDao);
+    }
 
     public IEnumerable<DiscountResponse> GetResponseFromDao(IEnumerable<DiscountDao> discountDao)
-        => _mapper.Map<IEnumerable<DiscountResponse>>(discountDao);
-        
-    public DiscountDao GetDeletedDao(DiscountDao originalDao){
-        return originalDao with
-        {
-            IsDeleted = true
-        };
+    {
+        return _mapper.Map<IEnumerable<DiscountResponse>>(discountDao);
+    }
+
+    public DiscountDao GetDeletedDao(DiscountDao originalDao)
+    {
+        return originalDao with { IsDeleted = true };
     }
 }

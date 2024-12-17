@@ -11,5 +11,4 @@ public interface IOrdersRepository
     Task<IEnumerable<OrderDao>> GetAllAsync();
     Task<IEnumerable<OrderDao>> GetAllAsync(GetAllOrdersFilter filter);
     Task<OrderDao> GetAsync(Guid id);
-    Task RemoveAsync(Guid id);
 }
