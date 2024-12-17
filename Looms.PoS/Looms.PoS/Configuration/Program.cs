@@ -63,8 +63,11 @@ public class Program
         {
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<AppDbContext>();
-            var dataSeeder = new DataSeeder(context);
-            dataSeeder.Seed();
+            if(!context.Businesses.Any())
+            {
+                var dataSeeder = new DataSeeder(context);
+                dataSeeder.Seed();
+            }
         }
 
         // Configure the HTTP request pipeline.
