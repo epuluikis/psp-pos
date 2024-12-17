@@ -5,7 +5,7 @@ namespace Looms.PoS.Application.Services;
 
 public class RefundService : IRefundService
 {
-    public decimal CalculateRefundTotal(IEnumerable<RefundDao> refunds)
+    public decimal CalculateTotal(IEnumerable<RefundDao> refunds)
     {
         var total = 0m;
 

@@ -8,11 +8,13 @@ public class OrderService : IOrderService
 {
     private readonly IOrderItemService _orderItemService;
     private readonly IDiscountService _discountService;
+    private readonly IPaymentService _paymentService;
 
-    public OrderService(IOrderItemService orderItemService, IDiscountService discountService)
+    public OrderService(IOrderItemService orderItemService, IDiscountService discountService, IPaymentService paymentService)
     {
         _orderItemService = orderItemService;
         _discountService = discountService;
+        _paymentService = paymentService;
     }
 
     public decimal CalculateTotal(OrderDao order)
@@ -77,6 +79,11 @@ public class OrderService : IOrderService
         return totalTax;
     }
 
+    public decimal CalculatePayableAmount(OrderDao orderDao)
+    {
+        return Math.Max(0, CalculateTotal(orderDao) - _paymentService.CalculateTotalWithoutTips(orderDao.Payments));
+    }
+
     public async Task SetQuantity(OrderDao orderDao)
     {
         List<Task> tasks = [];
@@ -87,12 +94,6 @@ public class OrderService : IOrderService
         }
 
         await Task.WhenAll(tasks);
-    }
-
-    public Task RecalculateQuantity(OrderDao newOrderDao, OrderDao oldOrderDao)
-    {
-        // TODO
-        throw new NotImplementedException();
     }
 
     public async Task ResetQuantity(OrderDao orderDao)

@@ -23,11 +23,10 @@ public class CashPaymentHandlerService : IPaymentHandlerService
         _paymentModelsResolver = paymentModelsResolver;
     }
 
-    public async Task<PaymentResponse> HandlePayment(PaymentDao paymentDao)
+    public async Task<PaymentDao> HandlePayment(PaymentDao paymentDao)
     {
         paymentDao = _paymentModelsResolver.GetDaoFromDaoAndStatus(paymentDao, PaymentStatus.Succeeded);
-        paymentDao = await _paymentsRepository.CreateAsync(paymentDao);
 
-        return _paymentModelsResolver.GetResponseFromDao(paymentDao);
+        return await _paymentsRepository.CreateAsync(paymentDao);
     }
 }

@@ -4,5 +4,5 @@ namespace Looms.PoS.Application.Interfaces.Services;
 
 public interface IRefundService
 {
-    decimal CalculateRefundTotal(IEnumerable<RefundDao> refunds);
+    decimal CalculateTotal(IEnumerable<RefundDao> refunds);
 }

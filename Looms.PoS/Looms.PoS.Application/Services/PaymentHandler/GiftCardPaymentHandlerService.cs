@@ -31,7 +31,7 @@ public class GiftCardPaymentHandlerService : IPaymentHandlerService
         _giftCardModelsResolver = giftCardModelsResolver;
     }
 
-    public async Task<PaymentResponse> HandlePayment(PaymentDao paymentDao)
+    public async Task<PaymentDao> HandlePayment(PaymentDao paymentDao)
     {
         var giftCardDao = await _giftCardsRepository.GetAsync(paymentDao.GiftCardId.GetValueOrDefault());
 
@@ -59,8 +59,7 @@ public class GiftCardPaymentHandlerService : IPaymentHandlerService
         await _giftCardsRepository.UpdateAsync(giftCardDao);
 
         paymentDao = _paymentModelsResolver.GetDaoFromDaoAndStatus(paymentDao, PaymentStatus.Succeeded);
-        paymentDao = await _paymentsRepository.CreateAsync(paymentDao);
 
-        return _paymentModelsResolver.GetResponseFromDao(paymentDao);
+        return await _paymentsRepository.CreateAsync(paymentDao);
     }
 }

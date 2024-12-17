@@ -41,6 +41,20 @@ public class PaymentTerminalsRepository : IPaymentTerminalsRepository
         return paymentTerminalDao;
     }
 
+    public async Task<PaymentTerminalDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var paymentTerminalDao = await _context.PaymentTerminals
+                                               .Where(x => x.Id == id && x.PaymentProvider.BusinessId == businessId)
+                                               .FirstOrDefaultAsync();
+
+        if (paymentTerminalDao is null || paymentTerminalDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("PaymentTerminal not found");
+        }
+
+        return paymentTerminalDao;
+    }
+
     public async Task<PaymentTerminalDao> UpdateAsync(PaymentTerminalDao paymentTerminalDao)
     {
         await RemoveAsync(paymentTerminalDao.Id);

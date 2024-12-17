@@ -34,7 +34,7 @@ public static class ServiceExtensions
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IOrderItemService, OrderItemService>();
         services.AddSingleton<IRefundService, RefundService>();
-        services.AddSingleton<IPaymentTotalsService, PaymentsTotalsService>();
+        services.AddSingleton<IPaymentService, PaymentService>();
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<INotificationService, TwilioNotificationService>();
         services.AddScoped<IProductService, ProductService>();
