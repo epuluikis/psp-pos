@@ -1,6 +1,6 @@
 ﻿using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
-using Looms.PoS.Application.Models.Requests.ProductVariation;
+using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -41,12 +41,13 @@ public class UpdateProductVariationCommandHandler : IRequestHandler<UpdateProduc
         return new OkObjectResult(response);
     }
 
-    private async Task<ProductVariationDao> GetUpdateProductVariationDaoAsync(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest)
+    private async Task<ProductVariationDao> GetUpdateProductVariationDaoAsync(
+        ProductVariationDao originalDao,
+        UpdateProductVariationRequest updateProductVariationRequest)
     {
-        if(originalDao.ProductId != Guid.Parse(updateProductVariationRequest.ProductId))
+        if (originalDao.ProductId != Guid.Parse(updateProductVariationRequest.ProductId))
         {
             return _modelsResolver.GetDaoFromDaoAndRequest(originalDao, updateProductVariationRequest);
-
         }
         else
         {

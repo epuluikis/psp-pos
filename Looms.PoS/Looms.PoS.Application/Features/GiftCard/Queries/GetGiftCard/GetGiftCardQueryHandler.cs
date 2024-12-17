@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,12 @@ public class GetGiftCardQueryHandler : IRequestHandler<GetGiftCardQuery, IAction
         _modelsResolver = modelsResolver;
     }
 
-    public async Task<IActionResult> Handle(GetGiftCardQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetGiftCardQuery query, CancellationToken cancellationToken)
     {
-        var giftCardDao = await _giftCardsRepository.GetAsync(Guid.Parse(request.Id));
+        var giftCardDao = await _giftCardsRepository.GetAsyncByIdAndBusinessId(
+            Guid.Parse(query.Id),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(giftCardDao);
 

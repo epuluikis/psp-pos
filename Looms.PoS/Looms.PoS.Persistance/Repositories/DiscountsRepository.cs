@@ -32,10 +32,33 @@ public class DiscountsRepository : IDiscountsRepository
         return await _context.Discounts.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<DiscountDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.Discounts.Where(x => !x.IsDeleted && x.BusinessId == businessId).ToListAsync();
+    }
+
     public async Task<DiscountDao> GetAsync(Guid id)
     {
-        return await _context.Discounts.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Discount not found");
+        var discountDao = await _context.Discounts.FindAsync(id);
+
+        if (discountDao is null || discountDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Discount not found");
+        }
+
+        return discountDao;
+    }
+
+    public async Task<DiscountDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var discountDao = await _context.Discounts.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
+
+        if (discountDao is null || discountDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Discount not found");
+        }
+
+        return discountDao;
     }
 
     public async Task<DiscountDao> UpdateAsync(DiscountDao discountDao)

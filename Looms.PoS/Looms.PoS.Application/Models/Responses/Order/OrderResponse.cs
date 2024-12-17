@@ -1,8 +1,10 @@
+using Looms.PoS.Application.Models.Responses.OrderItem;
 using Looms.PoS.Application.Models.Responses.Payment;
+using Looms.PoS.Application.Models.Responses.Refund;
 using Looms.PoS.Domain.Enums;
 using System.Text.Json.Serialization;
 
-namespace Looms.PoS.Application.Models.Responses;
+namespace Looms.PoS.Application.Models.Responses.Order;
 
 public record OrderResponse
 {
@@ -16,9 +18,9 @@ public record OrderResponse
     public IEnumerable<OrderItemResponse> OrderItems { get; init; } = new List<OrderItemResponse>();
 
     public IEnumerable<PaymentResponse> Payments { get; init; } = new List<PaymentResponse>();
-    
-    public IEnumerable<RefundResponse>? Refunds { get; init; }  = new List<RefundResponse>();
-    
+
+    public IEnumerable<RefundResponse>? Refunds { get; init; } = new List<RefundResponse>();
+
     public Guid? DiscountId { get; init; } = null;
 
     public decimal TaxAmount { get; init; }
@@ -29,6 +31,6 @@ public record OrderResponse
     public decimal AmountPaid { get; init; }
 
     public decimal AmountDue => TotalAmount - AmountPaid;
-    
+
     public decimal AmountRefunded { get; init; }
 }

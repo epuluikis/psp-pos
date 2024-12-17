@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.Product;
-using Looms.PoS.Application.Models.Requests.ProductVariation;
 using Looms.PoS.Application.Models.Responses.Product;
 using Looms.PoS.Domain.Daos;
 
@@ -38,13 +37,14 @@ public class ProductVariationModelsResolver : IProductVariationModelsResolver
         return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with { Id = originalDao.Id };
     }
 
-    public ProductVariationDao GetDaoFromDaoAndRequest(ProductVariationDao originalDao, UpdateProductVariationRequest updateProductVariationRequest, ProductDao productDao)
+    public ProductVariationDao GetDaoFromDaoAndRequest(
+        ProductVariationDao originalDao,
+        UpdateProductVariationRequest updateProductVariationRequest,
+        ProductDao productDao)
     {
-        return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with 
-        { 
-            Id = originalDao.Id,
-            ProductId = productDao.Id,
-            Product = productDao
+        return _mapper.Map<ProductVariationDao>(updateProductVariationRequest) with
+        {
+            Id = originalDao.Id, ProductId = productDao.Id, Product = productDao
         };
     }
 
@@ -55,9 +55,6 @@ public class ProductVariationModelsResolver : IProductVariationModelsResolver
 
     public ProductVariationDao GetUpdatedQuantityDao(ProductVariationDao originalDao, int quantity)
     {
-        return originalDao with
-        {
-            Quantity = originalDao.Quantity - quantity
-        };
+        return originalDao with { Quantity = originalDao.Quantity - quantity };
     }
 }

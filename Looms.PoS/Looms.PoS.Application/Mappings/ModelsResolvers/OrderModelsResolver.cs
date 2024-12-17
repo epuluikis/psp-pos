@@ -3,7 +3,9 @@ using Looms.PoS.Application.Features.Order.Queries.GetOrders;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Responses.Order;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Filters.Order;
 
@@ -19,7 +21,8 @@ public class OrderModelsResolver : IOrderModelsResolver
     private readonly IRefundsTotalsService _refundsTotalsService;
     private readonly IPaymentTotalsService _paymentTotalsService;
 
-    public OrderModelsResolver(IMapper mapper,
+    public OrderModelsResolver(
+        IMapper mapper,
         IPaymentModelsResolver paymentModelsResolver,
         IOrderItemModelsResolver orderItemModelsResolver,
         IRefundModelsResolver refundModelsResolver,
@@ -43,21 +46,12 @@ public class OrderModelsResolver : IOrderModelsResolver
 
     public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest, BusinessDao businessDao, UserDao userDao)
     {
-        return _mapper.Map<OrderDao>(createOrderRequest) with 
-        {
-            Business = businessDao,
-            User = userDao
-        };
+        return _mapper.Map<OrderDao>(createOrderRequest) with { Business = businessDao, User = userDao };
     }
 
     public OrderDao GetDaoFromDaoAndRequest(OrderDao orderDao, UpdateOrderRequest updateOrderRequest, DiscountDao? discountDao)
     {
-        return _mapper.Map(updateOrderRequest, orderDao) with
-        {
-            Id = orderDao.Id,
-            Discount = discountDao,
-            OrderItems = orderDao.OrderItems
-        };
+        return _mapper.Map(updateOrderRequest, orderDao) with { Id = orderDao.Id, Discount = discountDao, OrderItems = orderDao.OrderItems };
     }
 
     public OrderResponse GetResponseFromDao(OrderDao orderDao)
@@ -80,10 +74,8 @@ public class OrderModelsResolver : IOrderModelsResolver
         return orderDaos.Select(orderDao => GetResponseFromDao(orderDao));
     }
 
-    public OrderDao GetDeletedDao(OrderDao originalDao){
-        return originalDao with
-        {
-            IsDeleted = true
-        };
+    public OrderDao GetDeletedDao(OrderDao originalDao)
+    {
+        return originalDao with { IsDeleted = true };
     }
 }

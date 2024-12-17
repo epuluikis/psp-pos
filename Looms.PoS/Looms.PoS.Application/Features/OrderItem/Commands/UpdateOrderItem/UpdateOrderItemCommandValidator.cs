@@ -1,6 +1,7 @@
 using FluentValidation;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 
@@ -8,21 +9,23 @@ namespace Looms.PoS.Application.Features.OrderItem.Commands.UpdateOrderItem;
 
 public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItemCommand>
 {
-    public UpdateOrderItemCommandValidator(IHttpContentResolver httpContentResolver, 
+    public UpdateOrderItemCommandValidator(
+        IHttpContentResolver httpContentResolver,
         IEnumerable<IValidator<UpdateOrderItemRequest>> validators,
         IOrderItemsRepository orderItemsRepository)
     {
         RuleFor(x => x.OrderId)
-        .Cascade(CascadeMode.Stop)
-        .MustBeValidGuid();
+            .Cascade(CascadeMode.Stop)
+            .MustBeValidGuid();
 
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, context, cancellationToken) => {
+            .CustomAsync(async (id, context, cancellationToken) =>
+            {
                 var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(id));
-                
-                if(orderItem.OrderId != Guid.Parse(context.InstanceToValidate.OrderId))
+
+                if (orderItem.OrderId != Guid.Parse(context.InstanceToValidate.OrderId))
                 {
                     context.AddFailure("Order item does not belong to the order.");
                 }
@@ -42,6 +45,7 @@ public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItem
                     {
                         context.AddFailure("Product quantity is too low.");
                     }
+
                     if (orderItem.ProductVariation is not null && orderItem.ProductVariation.Quantity < deltaQuantity)
                     {
                         context.AddFailure("Product variation quantity is too low.");

@@ -1,10 +1,8 @@
-using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Domain.Daos;
-using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +25,8 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
     private readonly IProductVariationUpdatesService _productVariationUpdatesService;
     private readonly IServicesRepository _servicesRepository;
 
-    public CreateOrderItemsCommandHandler(IHttpContentResolver httpContentResolver,
+    public CreateOrderItemsCommandHandler(
+        IHttpContentResolver httpContentResolver,
         IOrderItemsRepository orderItemsRepository,
         IOrderItemModelsResolver modelsResolver,
         IOrderModelsResolver orderModelsResolver,
@@ -56,9 +55,12 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         var orderId = Guid.Parse(command.OrderId);
 
         var product = orderItemRequest.ProductId is null ? null : await _productsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductId));
-        var productVariation = orderItemRequest.ProductVariationId is null ? null : await _variationsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductVariationId));
+        var productVariation = orderItemRequest.ProductVariationId is null
+            ? null
+            : await _variationsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductVariationId));
+
         var service = orderItemRequest.ServiceId is null ? null : await _servicesRepository.GetAsync(Guid.Parse(orderItemRequest.ServiceId));
-        
+
         var orderItemDao = _modelsResolver.GetDaoFromRequest(orderId, orderItemRequest, product, productVariation, service);
 
         await CompleteTransaction(product, productVariation, orderItemDao, orderItemRequest.Quantity);
@@ -66,20 +68,23 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         var orderDao = await _ordersRepository.GetAsync(orderId);
         var response = _orderModelsResolver.GetResponseFromDao(orderDao);
 
-        return new OkObjectResult(response); 
+        return new OkObjectResult(response);
     }
 
-    private async Task CompleteTransaction(ProductDao product, ProductVariationDao productVariation, OrderItemDao orderItemDao ,int quantity)
+    private async Task CompleteTransaction(ProductDao product, ProductVariationDao productVariation, OrderItemDao orderItemDao, int quantity)
     {
-        using TransactionScope tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        using var tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
         if (product is not null)
         {
             await _productUpdatesService.UpdateProductStock(product, quantity);
         }
+
         if (productVariation is not null)
         {
             await _productVariationUpdatesService.UpdateProductVariationStock(productVariation, quantity);
         }
+
         await _orderItemsRepository.CreateAsync(orderItemDao);
         tran.Complete();
     }

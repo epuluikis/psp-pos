@@ -1,4 +1,4 @@
-namespace Looms.PoS.Application.Models.Requests;
+namespace Looms.PoS.Application.Models.Requests.Order;
 
 public record UpdateOrderRequest
 {

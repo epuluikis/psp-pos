@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Discount.Queries;
+namespace Looms.PoS.Application.Features.Discount.Queries.GetDiscounts;
 
 public record GetDiscountsQuery : LoomsHttpRequest, IRequest<IActionResult>
 {

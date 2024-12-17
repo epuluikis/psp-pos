@@ -8,18 +8,13 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
     public LoginCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<LoginRequest>> validators)
     {
-        RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+        RuleFor(x => x)
+            .CustomAsync(async (command, context, _) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<LoginRequest>(request);
+                var body = await httpContentResolver.GetPayloadAsync<LoginRequest>(command.Request);
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

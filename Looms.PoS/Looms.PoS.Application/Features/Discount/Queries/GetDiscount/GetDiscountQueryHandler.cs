@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -16,9 +17,12 @@ public class GetDiscountQueryHandler : IRequestHandler<GetDiscountQuery, IAction
         _modelsResolver = modelsResolver;
     }
 
-    public async Task<IActionResult> Handle(GetDiscountQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetDiscountQuery query, CancellationToken cancellationToken)
     {
-        var businessDao = await _discountsRepository.GetAsync(Guid.Parse(request.Id));
+        var businessDao = await _discountsRepository.GetAsyncByIdAndBusinessId(
+            Guid.Parse(query.Id),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(businessDao);
 

@@ -38,9 +38,17 @@ public class ProductsRepository : IProductsRepository
             throw new LoomsNotFoundException("Product not found");
         }
 
-        await _context.Entry(productDao)
-                      .Reference(p => p.Tax)
-                      .LoadAsync();
+        return productDao;
+    }
+
+    public async Task<ProductDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var productDao = await _context.Products.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
+
+        if (productDao is null || productDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Product not found");
+        }
 
         return productDao;
     }

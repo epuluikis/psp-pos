@@ -6,12 +6,11 @@ namespace Looms.PoS.Application.Features.Business.Commands.DeleteBusiness;
 
 public class DeleteBusinessCommandValidator : AbstractValidator<DeleteBusinessCommand>
 {
-    public DeleteBusinessCommandValidator(
-        IBusinessesRepository businessesRepository)
+    public DeleteBusinessCommandValidator(IBusinessesRepository businessesRepository)
     {
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, _, cancellationToken) => await businessesRepository.GetAsync(Guid.Parse(id)));
+            .CustomAsync(async (id, _, _) => await businessesRepository.GetAsync(Guid.Parse(id!)));
     }
 }

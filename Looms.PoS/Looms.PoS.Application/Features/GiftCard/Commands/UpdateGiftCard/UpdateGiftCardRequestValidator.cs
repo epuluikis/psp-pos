@@ -1,16 +1,25 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.GiftCard;
 using Looms.PoS.Application.Utilities.Helpers;
+using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.GiftCard.Commands.UpdateGiftCard;
 
 public class UpdateGiftCardRequestValidator : AbstractValidator<UpdateGiftCardRequest>
 {
-    public UpdateGiftCardRequestValidator()
+    public UpdateGiftCardRequestValidator(IGiftCardsRepository giftCardsRepository)
     {
-        // TODO: validate code uniqueness per business
         RuleFor(x => x.Code)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync(async (_, code, context, _) =>
+                !await giftCardsRepository.ExistsAsyncWithCodeAndBusinessIdExcludingId(
+                    code,
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader]),
+                    Guid.Parse((string)context.RootContextData["Id"])
+                )
+            );
 
         RuleFor(x => x.CurrentBalance)
             .NotEmpty()
@@ -18,13 +27,7 @@ public class UpdateGiftCardRequestValidator : AbstractValidator<UpdateGiftCardRe
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.ExpiryDate)
-            .NotEmpty()
-            .Must(dateString =>
-            {
-                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
-                return parsedDate >= DateTime.UtcNow;
-            })
-            .WithMessage("Start date must be a valid future date.");
+            .MustBeValidDateTime();
 
         RuleFor(x => x.IsActive)
             .NotEmpty();

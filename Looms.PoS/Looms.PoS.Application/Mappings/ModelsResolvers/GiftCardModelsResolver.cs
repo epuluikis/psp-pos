@@ -15,9 +15,12 @@ public class GiftCardModelsResolver : IGiftCardModelsResolver
         _mapper = mapper;
     }
 
-    public GiftCardDao GetDaoFromRequest(CreateGiftCardRequest createGiftCardRequest)
+    public GiftCardDao GetDaoFromRequest(CreateGiftCardRequest createGiftCardRequest, Guid businessId, Guid issuedById)
     {
-        return _mapper.Map<GiftCardDao>(createGiftCardRequest);
+        return _mapper.Map<GiftCardDao>(createGiftCardRequest) with
+        {
+            CurrentBalance = createGiftCardRequest.InitialBalance, BusinessId = businessId, IssuedById = issuedById
+        };
     }
 
     public GiftCardDao GetDaoFromDaoAndRequest(GiftCardDao originalDao, UpdateGiftCardRequest updateGiftCardRequest)

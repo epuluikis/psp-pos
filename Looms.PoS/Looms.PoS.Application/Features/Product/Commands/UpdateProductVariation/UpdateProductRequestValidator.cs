@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Looms.PoS.Application.Models.Requests.ProductVariation;
+using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 
@@ -20,7 +20,7 @@ public class UpdateProductVariationRequestValidator : AbstractValidator<UpdatePr
         RuleFor(x => x.Price)
             .PrecisionScale(10, 2, false)
             .GreaterThanOrEqualTo(0);
-        
+
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0);
     }

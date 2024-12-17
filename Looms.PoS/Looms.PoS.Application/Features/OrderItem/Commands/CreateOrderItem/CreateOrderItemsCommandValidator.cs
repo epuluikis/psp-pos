@@ -1,15 +1,15 @@
 using FluentValidation;
 using Looms.PoS.Application.Interfaces;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
-using System.Data;
 
-namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+namespace Looms.PoS.Application.Features.OrderItem.Commands.CreateOrderItem;
 
 public class CreateOrderItemsCommandValidator : AbstractValidator<CreateOrderItemsCommand>
 {
-    public CreateOrderItemsCommandValidator(IHttpContentResolver httpContentResolver, 
+    public CreateOrderItemsCommandValidator(
+        IHttpContentResolver httpContentResolver,
         IEnumerable<IValidator<CreateOrderItemRequest>> validators,
         IOrdersRepository ordersRepository)
     {

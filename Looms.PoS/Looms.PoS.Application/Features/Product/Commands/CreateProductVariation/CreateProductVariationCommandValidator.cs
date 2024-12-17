@@ -6,7 +6,9 @@ namespace Looms.PoS.Application.Features.Product.Commands.CreateProductVariation
 
 public class CreateProductVariationCommandValidator : AbstractValidator<CreateProductVariationCommand>
 {
-    public CreateProductVariationCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateProductVariationRequest>> validators)
+    public CreateProductVariationCommandValidator(
+        IHttpContentResolver httpContentResolver,
+        IEnumerable<IValidator<CreateProductVariationRequest>> validators)
     {
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>

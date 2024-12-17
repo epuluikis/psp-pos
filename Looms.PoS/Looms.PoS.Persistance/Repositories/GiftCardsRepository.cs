@@ -29,6 +29,11 @@ public class GiftCardsRepository : IGiftCardsRepository
         return await _context.GiftCards.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<GiftCardDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.GiftCards.Where(x => !x.IsDeleted && x.BusinessId == businessId).ToListAsync();
+    }
+
     public async Task<GiftCardDao> GetAsync(Guid id)
     {
         var giftCardDao = await _context.GiftCards.FindAsync(id);
@@ -41,9 +46,9 @@ public class GiftCardsRepository : IGiftCardsRepository
         return giftCardDao;
     }
 
-    public async Task<GiftCardDao> GetAsyncByBusinessIdAndCode(Guid businessId, string code)
+    public async Task<GiftCardDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
     {
-        var giftCardDao = await _context.GiftCards.Where(x => x.BusinessId == businessId && x.Code == code).FirstAsync();
+        var giftCardDao = await _context.GiftCards.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
 
         if (giftCardDao is null || giftCardDao.IsDeleted)
         {
@@ -51,6 +56,28 @@ public class GiftCardsRepository : IGiftCardsRepository
         }
 
         return giftCardDao;
+    }
+
+    public async Task<GiftCardDao> GetAsyncByBusinessIdAndCode(Guid businessId, string code)
+    {
+        var giftCardDao = await _context.GiftCards.Where(x => x.BusinessId == businessId && x.Code == code).FirstOrDefaultAsync();
+
+        if (giftCardDao is null || giftCardDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("GiftCard not found");
+        }
+
+        return giftCardDao;
+    }
+
+    public async Task<bool> ExistsAsyncWithCodeAndBusinessId(string code, Guid businessId)
+    {
+        return await _context.GiftCards.AnyAsync(x => !x.IsDeleted && x.BusinessId == businessId && x.Code == code);
+    }
+
+    public async Task<bool> ExistsAsyncWithCodeAndBusinessIdExcludingId(string code, Guid businessId, Guid excludeId)
+    {
+        return await _context.GiftCards.AnyAsync(x => !x.IsDeleted && x.BusinessId == businessId && x.Code == code && x.Id != excludeId);
     }
 
     public async Task<GiftCardDao> UpdateAsync(GiftCardDao giftCardDao)

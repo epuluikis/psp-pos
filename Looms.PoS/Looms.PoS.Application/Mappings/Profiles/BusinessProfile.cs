@@ -11,6 +11,7 @@ public class BusinessProfile : Profile
     {
         CreateMap<CreateBusinessRequest, BusinessDao>(MemberList.Source)
             .ForMember(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Owner));
+
         CreateMap<UpdateBusinessRequest, BusinessDao>(MemberList.Source);
 
         CreateMap<BusinessDao, BusinessResponse>()

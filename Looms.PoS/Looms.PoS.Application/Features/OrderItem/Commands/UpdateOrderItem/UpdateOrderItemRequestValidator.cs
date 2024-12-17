@@ -1,10 +1,10 @@
 using FluentValidation;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
-namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+namespace Looms.PoS.Application.Features.OrderItem.Commands.UpdateOrderItem;
 
 public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItemRequest>
 {
@@ -36,6 +36,7 @@ public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItem
             .CustomAsync(async (variationId, context, cancellationToken) =>
             {
                 var variation = await variationsRepository.GetAsync(Guid.Parse(variationId));
+
                 if (variation.Quantity < context.InstanceToValidate.Quantity)
                 {
                     context.AddFailure("Product variation quantity is too low.");

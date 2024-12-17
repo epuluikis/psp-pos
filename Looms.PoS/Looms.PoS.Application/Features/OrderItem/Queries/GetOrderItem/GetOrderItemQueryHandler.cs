@@ -3,7 +3,7 @@ using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.OrderItem.Queries;
+namespace Looms.PoS.Application.Features.OrderItem.Queries.GetOrderItem;
 
 public class GetOrderItemQueryHandler : IRequestHandler<GetOrderItemQuery, IActionResult>
 {
@@ -15,7 +15,7 @@ public class GetOrderItemQueryHandler : IRequestHandler<GetOrderItemQuery, IActi
         _orderItemsRepository = orderItemsRepository;
         _modelsResolver = modelsResolver;
     }
-    
+
     public async Task<IActionResult> Handle(GetOrderItemQuery request, CancellationToken cancellationToken)
     {
         var orderItemDao = await _orderItemsRepository.GetAsync(Guid.Parse(request.Id));

@@ -1,16 +1,22 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.GiftCard;
-using Looms.PoS.Application.Utilities.Helpers;
+using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.GiftCard.Commands.CreateGiftCard;
 
 public class CreateGiftCardRequestValidator : AbstractValidator<CreateGiftCardRequest>
 {
-    public CreateGiftCardRequestValidator()
+    public CreateGiftCardRequestValidator(IGiftCardsRepository giftCardsRepository)
     {
-        // TODO: validate code uniqueness per business
         RuleFor(x => x.Code)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync(async (_, code, context, _) =>
+                !await giftCardsRepository.ExistsAsyncWithCodeAndBusinessId(code,
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                )
+            );
 
         RuleFor(x => x.InitialBalance)
             .NotEmpty()
@@ -18,13 +24,7 @@ public class CreateGiftCardRequestValidator : AbstractValidator<CreateGiftCardRe
             .GreaterThanOrEqualTo(0);
 
         RuleFor(x => x.ExpiryDate)
-            .NotEmpty()
-            .Must(dateString =>
-            {
-                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
-                return parsedDate >= DateTime.UtcNow;
-            })
-            .WithMessage("Start date must be a valid future date.");
+            .MustBeValidDateTime();
 
         RuleFor(x => x.IsActive)
             .NotEmpty();

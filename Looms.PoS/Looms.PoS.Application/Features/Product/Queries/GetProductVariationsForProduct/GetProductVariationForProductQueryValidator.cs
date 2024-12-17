@@ -2,7 +2,7 @@ using FluentValidation;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 
-namespace Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
+namespace Looms.PoS.Application.Features.Product.Queries.GetProductVariationsForProduct;
 
 public class GetProductVariationForProductQueryValidator : AbstractValidator<GetProductVariationForProductQuery>
 {
@@ -10,7 +10,7 @@ public class GetProductVariationForProductQueryValidator : AbstractValidator<Get
     {
         RuleFor(x => x.Id)
             .MustBeValidGuid()
-            .CustomAsync(async (id, context, cancellationToken) => 
+            .CustomAsync(async (id, context, cancellationToken) =>
                 await productsRepository.GetAsync(Guid.Parse(id)));
     }
 }

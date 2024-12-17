@@ -1,6 +1,7 @@
 using FluentValidation;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Order;
 
 namespace Looms.PoS.Application.Features.Order.Commands.CreateOrder;
 

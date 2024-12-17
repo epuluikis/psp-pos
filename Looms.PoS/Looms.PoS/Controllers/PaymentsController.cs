@@ -35,7 +35,6 @@ public class PaymentsController : ControllerBase
         return await _mediator.Send(comnand);
     }
 
-    // TODO: scope to business
     [HttpGet($"/{EntityName}")]
     [SwaggerResponse(StatusCodes.Status200OK, "List of payments returned successfully.", typeof(List<PaymentResponse>))]
     public async Task<IActionResult> GetPayments()
@@ -45,7 +44,6 @@ public class PaymentsController : ControllerBase
         return await _mediator.Send(query);
     }
 
-    // TODO: scope to business
     [HttpGet($"/{EntityName}/{{paymentId}}")]
     [SwaggerResponse(StatusCodes.Status200OK, "Payment details returned successfully.", typeof(PaymentResponse))]
     public async Task<IActionResult> GetPayment(string paymentId)

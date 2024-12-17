@@ -11,25 +11,21 @@ public class UpdateBusinessCommandValidator : AbstractValidator<UpdateBusinessCo
     public UpdateBusinessCommandValidator(
         IHttpContentResolver httpContentResolver,
         IEnumerable<IValidator<UpdateBusinessRequest>> validators,
-        IBusinessesRepository businessesRepository)
+        IBusinessesRepository businessesRepository
+    )
     {
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, _, cancellationToken) => await businessesRepository.GetAsync(Guid.Parse(id)));
+            .CustomAsync(async (id, _, _) => await businessesRepository.GetAsync(Guid.Parse(id)));
 
-        RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+        RuleFor(x => x)
+            .CustomAsync(async (command, context, _) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateBusinessRequest>(request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateBusinessRequest>(command.Request);
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

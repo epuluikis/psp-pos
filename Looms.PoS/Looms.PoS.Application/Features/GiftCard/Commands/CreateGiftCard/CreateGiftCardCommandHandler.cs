@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.GiftCard;
 using Looms.PoS.Domain.Interfaces;
@@ -11,27 +12,32 @@ public class CreateGiftCardCommandHandler : IRequestHandler<CreateGiftCardComman
 {
     private readonly IGiftCardsRepository _giftCardsRepository;
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly IGiftCardModelsResolver _modelsResolver;
+    private readonly IGiftCardModelsResolver _giftCardModelsResolver;
 
     public CreateGiftCardCommandHandler(
         IGiftCardsRepository giftCardsRepository,
         IHttpContentResolver httpContentResolver,
-        IGiftCardModelsResolver modelsResolver)
+        IGiftCardModelsResolver giftCardModelsResolver
+    )
     {
         _giftCardsRepository = giftCardsRepository;
         _httpContentResolver = httpContentResolver;
-        _modelsResolver = modelsResolver;
+        _giftCardModelsResolver = giftCardModelsResolver;
     }
 
     public async Task<IActionResult> Handle(CreateGiftCardCommand command, CancellationToken cancellationToken)
     {
         var giftCardRequest = await _httpContentResolver.GetPayloadAsync<CreateGiftCardRequest>(command.Request);
 
-        // TODO: add businessId
-        var giftCardDao = _modelsResolver.GetDaoFromRequest(giftCardRequest);
-        var createdGiftCardDao = await _giftCardsRepository.CreateAsync(giftCardDao);
+        var giftCardDao = _giftCardModelsResolver.GetDaoFromRequest(
+            giftCardRequest,
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request)),
+            Guid.Parse(HttpContextHelper.GetUserId(command.Request))
+        );
 
-        var response = _modelsResolver.GetResponseFromDao(createdGiftCardDao);
+        giftCardDao = await _giftCardsRepository.CreateAsync(giftCardDao);
+
+        var response = _giftCardModelsResolver.GetResponseFromDao(giftCardDao);
 
         return new CreatedAtRouteResult($"/giftcards/{giftCardDao.Id}", response);
     }

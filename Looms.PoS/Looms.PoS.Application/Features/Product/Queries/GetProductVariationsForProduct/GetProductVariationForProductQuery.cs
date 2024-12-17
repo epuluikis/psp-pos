@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
+namespace Looms.PoS.Application.Features.Product.Queries.GetProductVariationsForProduct;
 
 public record GetProductVariationForProductQuery : LoomsHttpRequest, IRequest<IActionResult>
 {

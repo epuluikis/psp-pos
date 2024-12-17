@@ -1,5 +1,6 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 
@@ -15,7 +16,7 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
 
         RuleFor(x => x.BusinessId)
             .MustBeValidGuid()
-            .CustomAsync(async (businessId, _, cancellationToken) => 
+            .CustomAsync(async (businessId, _, cancellationToken) =>
                 await businessesRepository.GetAsync(Guid.Parse(businessId)));
 
         RuleFor(x => x.UserId)
