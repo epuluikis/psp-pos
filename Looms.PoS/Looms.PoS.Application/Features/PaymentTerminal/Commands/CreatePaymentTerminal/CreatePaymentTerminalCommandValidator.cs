@@ -14,14 +14,9 @@ public class CreatePaymentTerminalCommandValidator : AbstractValidator<CreatePay
             .CustomAsync(async (request, context, cancellationToken) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreatePaymentTerminalRequest>(request);
-
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+                
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

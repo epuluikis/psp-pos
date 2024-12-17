@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces.Factories;
 using Looms.PoS.Application.Models.Requests.PaymentTerminal;
 using Looms.PoS.Application.Utilities.Validators;
@@ -10,13 +11,21 @@ public class UpdatePaymentTerminalRequestValidator : AbstractValidator<UpdatePay
 {
     public UpdatePaymentTerminalRequestValidator(
         IPaymentProvidersRepository paymentProvidersRepository,
-        IPaymentProviderServiceFactory paymentProviderServiceFactory)
+        IPaymentProviderServiceFactory paymentProviderServiceFactory,
+        IPaymentTerminalsRepository paymentTerminalsRepository)
     {
         RuleFor(x => x.Name)
             .NotEmpty();
 
         RuleFor(x => x.ExternalId)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync(async (_, externalId, context, _) => 
+            !await paymentTerminalsRepository.ExistsWithExternalIdAndBusinessIdExcludingId(
+                externalId,
+                Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader]),
+                Guid.Parse((string)context.RootContextData["Id"])
+            )
+        );
 
         RuleFor(x => x.PaymentProviderId)
             .Cascade(CascadeMode.Stop)

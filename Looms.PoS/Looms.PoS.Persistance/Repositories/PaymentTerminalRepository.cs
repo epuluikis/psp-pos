@@ -29,6 +29,13 @@ public class PaymentTerminalsRepository : IPaymentTerminalsRepository
         return await _context.PaymentTerminals.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<PaymentTerminalDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.PaymentTerminals
+            .Where(x => !x.IsDeleted && x.PaymentProvider.Business.Id == businessId)
+            .ToListAsync();
+    }
+
     public async Task<PaymentTerminalDao> GetAsync(Guid id)
     {
         var paymentTerminalDao = await _context.PaymentTerminals.FindAsync(id);
@@ -39,6 +46,32 @@ public class PaymentTerminalsRepository : IPaymentTerminalsRepository
         }
 
         return paymentTerminalDao;
+    }
+
+    public async Task<PaymentTerminalDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var paymentTerminalDao = await _context.PaymentTerminals
+            .Where(x => x.Id == id && x.PaymentProvider.Business.Id == businessId)
+            .FirstAsync();
+        
+        if(paymentTerminalDao is null || paymentTerminalDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("PaymentTerminal not found");
+        }
+
+        return paymentTerminalDao;
+    }
+
+    public async Task<bool> ExistsWithExternalIdAndBusinessId(string externalId, Guid businessId)
+    {
+        return await _context.PaymentTerminals
+            .AnyAsync(x => x.ExternalId == externalId && x.PaymentProvider.Business.Id == businessId);
+    }
+
+    public async Task<bool> ExistsWithExternalIdAndBusinessIdExcludingId(string externalId, Guid businessId, Guid excludeId)
+    {
+        return await _context.PaymentTerminals
+            .AnyAsync(x => x.ExternalId == externalId && x.PaymentProvider.Business.Id == businessId && x.Id != excludeId);
     }
 
     public async Task<PaymentTerminalDao> UpdateAsync(PaymentTerminalDao paymentTerminalDao)
