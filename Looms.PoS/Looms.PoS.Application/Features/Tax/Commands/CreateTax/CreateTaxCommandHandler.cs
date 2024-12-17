@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.Tax;
@@ -11,26 +12,31 @@ public class CreateTaxCommandHandler : IRequestHandler<CreateTaxCommand, IAction
 {
     private readonly ITaxesRepository _taxesRepository;
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly ITaxModelsResolver _modelsResolver;
+    private readonly ITaxModelsResolver _taxModelsResolver;
 
     public CreateTaxCommandHandler(
         ITaxesRepository taxesRepository,
         IHttpContentResolver httpContentResolver,
-        ITaxModelsResolver modelsResolver)
+        ITaxModelsResolver taxModelsResolver
+    )
     {
         _taxesRepository = taxesRepository;
         _httpContentResolver = httpContentResolver;
-        _modelsResolver = modelsResolver;
+        _taxModelsResolver = taxModelsResolver;
     }
 
     public async Task<IActionResult> Handle(CreateTaxCommand command, CancellationToken cancellationToken)
     {
         var taxRequest = await _httpContentResolver.GetPayloadAsync<CreateTaxRequest>(command.Request);
 
-        var taxDao = _modelsResolver.GetDaoFromRequest(taxRequest);
-        var createdTaxDao = await _taxesRepository.CreateAsync(taxDao);
+        var taxDao = _taxModelsResolver.GetDaoFromRequestAndBusinessId(
+            taxRequest,
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
+        );
 
-        var response = _modelsResolver.GetResponseFromDao(createdTaxDao);
+        taxDao = await _taxesRepository.CreateAsync(taxDao);
+
+        var response = _taxModelsResolver.GetResponseFromDao(taxDao);
 
         return new CreatedAtRouteResult($"/taxes/{taxDao.Id}", response);
     }

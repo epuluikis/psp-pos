@@ -16,8 +16,11 @@ public class ProductsRepository : IProductsRepository
 
     public async Task<ProductDao> CreateAsync(ProductDao productDao)
     {
+        productDao = _context.CreateProxy<ProductDao>(productDao);
+
         var entityEntry = await _context.AddAsync(productDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -36,19 +39,11 @@ public class ProductsRepository : IProductsRepository
         }
 
         await _context.Entry(productDao)
-            .Reference(p => p.Tax)
-            .LoadAsync();
+                      .Reference(p => p.Tax)
+                      .LoadAsync();
 
         return productDao;
     }
-
-/*     public async Task<ProductDao> UpdateAsync(ProductDao productDao)
-    {
-        await RemoveAsync(productDao.Id);
-        _context.Products.Update(productDao);
-        await _context.SaveChangesAsync();
-        return productDao;
-    } */
 
     public async Task<ProductDao> UpdateAsync(ProductDao productDao)
     {
@@ -62,15 +57,8 @@ public class ProductsRepository : IProductsRepository
 
         // Update the properties of the existing entity
         _context.Entry(existingProduct).CurrentValues.SetValues(productDao);
-
-
         await _context.SaveChangesAsync();
-        return existingProduct;
-    }
 
-    private async Task RemoveAsync(Guid id)
-    {
-        var productDao = await _context.Products.FindAsync(id);
-        _context.Products.Remove(productDao!);
+        return existingProduct;
     }
 }

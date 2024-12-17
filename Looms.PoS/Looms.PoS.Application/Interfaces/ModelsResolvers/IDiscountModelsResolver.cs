@@ -7,6 +7,7 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 public interface IDiscountModelsResolver
 {
     DiscountDao GetDaoFromRequest(CreateDiscountRequest createDiscountRequest);
+    DiscountDao GetDaoFromRequestAndBusinessId(CreateDiscountRequest createDiscountRequest, Guid businessId);
     DiscountDao GetDaoFromDaoAndRequest(DiscountDao discountDao, UpdateDiscountRequest updateDiscountRequest);
     DiscountResponse GetResponseFromDao(DiscountDao discountDao);
     IEnumerable<DiscountResponse> GetResponseFromDao(IEnumerable<DiscountDao> discountDao);

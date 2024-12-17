@@ -16,27 +16,32 @@ public class TaxModelsResolver : ITaxModelsResolver
     }
 
     public TaxDao GetDaoFromRequest(CreateTaxRequest createTaxRequest)
-        => _mapper.Map<TaxDao>(createTaxRequest);
+    {
+        return _mapper.Map<TaxDao>(createTaxRequest);
+    }
+
+    public TaxDao GetDaoFromRequestAndBusinessId(CreateTaxRequest createTaxRequest, Guid businessId)
+    {
+        return _mapper.Map<TaxDao>(createTaxRequest) with { BusinessId = businessId };
+    }
 
     public TaxDao GetDaoFromDaoAndRequest(TaxDao originalDao, UpdateTaxRequest updateTaxRequest)
     {
-        return _mapper.Map<TaxDao>(updateTaxRequest) with
-        {
-            Id = originalDao.Id
-        };
+        return _mapper.Map<TaxDao>(updateTaxRequest) with { Id = originalDao.Id, BusinessId = originalDao.BusinessId };
     }
 
     public TaxDao GetDeletedDao(TaxDao originalDao)
     {
-        return originalDao with
-        {
-            IsDeleted = true
-        };
+        return originalDao with { IsDeleted = true };
     }
 
     public TaxResponse GetResponseFromDao(TaxDao taxDao)
-        => _mapper.Map<TaxResponse>(taxDao);
+    {
+        return _mapper.Map<TaxResponse>(taxDao);
+    }
 
     public IEnumerable<TaxResponse> GetResponseFromDao(IEnumerable<TaxDao> taxDao)
-        => _mapper.Map<IEnumerable<TaxResponse>>(taxDao);
+    {
+        return _mapper.Map<IEnumerable<TaxResponse>>(taxDao);
+    }
 }

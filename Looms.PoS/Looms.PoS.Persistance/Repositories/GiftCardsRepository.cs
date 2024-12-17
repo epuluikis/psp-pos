@@ -16,8 +16,11 @@ public class GiftCardsRepository : IGiftCardsRepository
 
     public async Task<GiftCardDao> CreateAsync(GiftCardDao giftCardDao)
     {
+        giftCardDao = _context.CreateProxy<GiftCardDao>(giftCardDao);
+
         var entityEntry = await _context.AddAsync(giftCardDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -55,6 +58,7 @@ public class GiftCardsRepository : IGiftCardsRepository
         await RemoveAsync(giftCardDao.Id);
         _context.GiftCards.Update(giftCardDao);
         await _context.SaveChangesAsync();
+
         return giftCardDao;
     }
 

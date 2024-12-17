@@ -16,8 +16,11 @@ public class ServicesRepository : IServicesRepository
 
     public async Task<ServiceDao> CreateAsync(ServiceDao serviceDao)
     {
+        serviceDao = _context.CreateProxy<ServiceDao>(serviceDao);
+
         var entityEntry = await _context.AddAsync(serviceDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -34,6 +37,7 @@ public class ServicesRepository : IServicesRepository
         {
             throw new LoomsNotFoundException("Service not found");
         }
+
         return serviceDao;
     }
 
@@ -42,6 +46,7 @@ public class ServicesRepository : IServicesRepository
         await RemoveAsync(serviceDao.Id);
         _context.Services.Update(serviceDao);
         await _context.SaveChangesAsync();
+
         return serviceDao;
     }
 

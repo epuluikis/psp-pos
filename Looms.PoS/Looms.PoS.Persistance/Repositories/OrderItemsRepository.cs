@@ -14,44 +14,41 @@ public class OrderItemsRepository : LoomsException, IOrderItemsRepository
         _context = context;
     }
 
-    public async Task<OrderItemDao> CreateAsync(OrderItemDao orderItem)
+    public async Task<OrderItemDao> CreateAsync(OrderItemDao orderItemDao)
     {
-        var orderItemEntity = await _context.OrderItems.AddAsync(orderItem);
-        await _context.SaveChangesAsync();
-        return orderItemEntity.Entity;
-    }
+        orderItemDao = _context.CreateProxy<OrderItemDao>(orderItemDao);
 
-    public async Task RemoveAsync(Guid id)
-    {
-        var orderItem = await _context.OrderItems.FindAsync(id);
-        _context.OrderItems.Remove(orderItem!);
+        var entityEntry = await _context.OrderItems.AddAsync(orderItemDao);
+        await _context.SaveChangesAsync();
+
+        return entityEntry.Entity;
     }
 
     public async Task<IEnumerable<OrderItemDao>> GetAllAsync(Guid orderId)
     {
-        var orderItems = await _context.OrderItems.Where(x => x.OrderId == orderId && x.IsDeleted == false).ToListAsync();
-        return orderItems;
+        return await _context.OrderItems.Where(x => x.OrderId == orderId && x.IsDeleted == false).ToListAsync();
     }
 
     public async Task<OrderItemDao> GetAsync(Guid id)
     {
-        var orderItem = await _context.OrderItems
-            .Include(x => x.ProductVariation)
-            .Include(x => x.Discount)
-            .Include(x => x.Service)
-            .Include(x => x.Product)
-                .ThenInclude(p => p.Tax)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        var orderItemDao = await _context.OrderItems
+                                         .Include(x => x.ProductVariation)
+                                         .Include(x => x.Discount)
+                                         .Include(x => x.Service)
+                                         .Include(x => x.Product)
+                                         .ThenInclude(p => p.Tax)
+                                         .FirstOrDefaultAsync(x => x.Id == id);
 
-        ValidateOrderItem(orderItem);
+        if (orderItemDao is null || orderItemDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Order item not found");
+        }
 
-        return orderItem;
+        return orderItemDao;
     }
 
     public async Task<OrderItemDao> UpdateAsync(OrderItemDao orderItem)
     {
-        ValidateOrderItem(orderItem);
-
         await RemoveAsync(orderItem.Id);
         _context.OrderItems.Update(orderItem);
         await _context.SaveChangesAsync();
@@ -59,11 +56,9 @@ public class OrderItemsRepository : LoomsException, IOrderItemsRepository
         return orderItem;
     }
 
-    private void ValidateOrderItem(OrderItemDao orderItem)
+    public async Task RemoveAsync(Guid id)
     {
-        if (orderItem is null || orderItem.IsDeleted)
-        {
-            throw new LoomsNotFoundException("Order item not found");
-        }
+        var orderItemDao = await _context.OrderItems.FindAsync(id);
+        _context.OrderItems.Remove(orderItemDao!);
     }
 }

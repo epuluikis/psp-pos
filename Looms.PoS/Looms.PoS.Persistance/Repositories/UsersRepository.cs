@@ -16,8 +16,11 @@ public class UsersRepository : IUsersRepository
 
     public async Task<UserDao> CreateAsync(UserDao userDao)
     {
+        userDao = _context.CreateProxy<UserDao>(userDao);
+
         var entityEntry = await _context.AddAsync(userDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -34,6 +37,7 @@ public class UsersRepository : IUsersRepository
         {
             throw new LoomsNotFoundException("User not found");
         }
+
         return userDao;
     }
 
@@ -50,6 +54,7 @@ public class UsersRepository : IUsersRepository
         {
             throw new LoomsNotFoundException("User not found");
         }
+
         return userDao;
     }
 
@@ -58,6 +63,7 @@ public class UsersRepository : IUsersRepository
         await RemoveAsync(userDao.Id);
         _context.Users.Update(userDao);
         await _context.SaveChangesAsync();
+
         return userDao;
     }
 
