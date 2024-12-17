@@ -11,17 +11,12 @@ public class CreatePaymentProviderCommandValidator : AbstractValidator<CreatePay
         IEnumerable<IValidator<CreatePaymentProviderRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreatePaymentProviderRequest>(request);
-
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+                
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

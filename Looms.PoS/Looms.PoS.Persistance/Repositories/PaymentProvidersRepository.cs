@@ -29,9 +29,28 @@ public class PaymentProvidersRepository : IPaymentProvidersRepository
         return await _context.PaymentProviders.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<PaymentProviderDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.PaymentProviders.Where(x => !x.IsDeleted && x.BusinessId == businessId).ToListAsync();
+    }
+
     public async Task<PaymentProviderDao> GetAsync(Guid id)
     {
         var paymentProviderDao = await _context.PaymentProviders.FindAsync(id);
+
+        if (paymentProviderDao is null || paymentProviderDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("PaymentProvider not found");
+        }
+
+        return paymentProviderDao;
+    }
+
+    public async Task<PaymentProviderDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var paymentProviderDao = await _context.PaymentProviders
+            .Where(x => x.Id == id && x.BusinessId == businessId)
+            .FirstOrDefaultAsync();
 
         if (paymentProviderDao is null || paymentProviderDao.IsDeleted)
         {
