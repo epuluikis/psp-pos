@@ -1,8 +1,8 @@
 using Bogus;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Enums;
-using Looms.PoS.Persistance;
 
+namespace Looms.PoS.Persistance;
 public class DataSeeder
 {
     private readonly AppDbContext _context;
