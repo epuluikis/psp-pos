@@ -1,7 +1,7 @@
 using AutoMapper;
 using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Models.Responses.Reservation;
-using Looms.PoS.Application.Utilities;
+using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.Profiles;

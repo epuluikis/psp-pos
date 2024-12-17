@@ -4,6 +4,7 @@ using Looms.PoS.Application.Features.Product.Commands.UpdateProductVariation;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariation;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariations;
+using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Application.Models.Requests.ProductVariation;
 using Looms.PoS.Application.Models.Responses.Product;
 using Looms.PoS.Swagger.Attributes;

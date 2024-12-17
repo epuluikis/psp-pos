@@ -1,6 +1,6 @@
 ﻿using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
-using Looms.PoS.Application.Models.Requests.ProductVariation;
+using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

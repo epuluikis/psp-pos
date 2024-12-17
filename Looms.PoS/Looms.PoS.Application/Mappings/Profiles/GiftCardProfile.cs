@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Looms.PoS.Application.Models.Requests.GiftCard;
 using Looms.PoS.Application.Models.Responses.GiftCard;
-using Looms.PoS.Application.Utilities;
+using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Domain.Daos;
 
 namespace Looms.PoS.Application.Mappings.Profiles;

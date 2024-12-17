@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Utilities.Helpers;
 
 namespace Looms.PoS.Application.Utilities.Validators;
 

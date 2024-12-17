@@ -2,9 +2,9 @@
 
 public record CreateProductRequest
 {
-    public String Name { get; init; } = string.Empty;
-    public String? TaxId { get; init; } = null;
+    public string Name { get; init; } = string.Empty;
+    public string? TaxId { get; init; }
     public decimal Price { get; init; }
-    public decimal QuantityInStock { get; init; }
-    public String Description { get; init; } = string.Empty;
+    public int QuantityInStock { get; init; }
+    public string Description { get; init; } = string.Empty;
 }

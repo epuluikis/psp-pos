@@ -3,7 +3,6 @@ using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Looms.PoS.Persistance.Repositories;
 
@@ -46,6 +45,8 @@ public class TaxesRepository : ITaxesRepository
     public async Task<TaxDao> GetByTaxCategoryAsync(TaxCategory taxCategory)
     {
         var taxDao = await _context.Taxes.FirstOrDefaultAsync(x => x.TaxCategory == taxCategory);
+
+        taxDao ??= await _context.Taxes.FirstOrDefaultAsync(x => x.TaxCategory == TaxCategory.Both);
 
         if (taxDao is null || taxDao.IsDeleted)
         {

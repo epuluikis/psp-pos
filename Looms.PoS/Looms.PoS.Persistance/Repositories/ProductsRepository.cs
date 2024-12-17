@@ -47,18 +47,16 @@ public class ProductsRepository : IProductsRepository
 
     public async Task<ProductDao> UpdateAsync(ProductDao productDao)
     {
-        // Get the existing entity from the context. This ensures it's tracked.
         var existingProduct = await _context.Products.FindAsync(productDao.Id);
 
-        if (existingProduct == null)
-        {
-            throw new LoomsNotFoundException("Product not found");
-        }
+        _context.Entry(existingProduct!).CurrentValues.SetValues(productDao);
 
-        // Update the properties of the existing entity
-        _context.Entry(existingProduct).CurrentValues.SetValues(productDao);
         await _context.SaveChangesAsync();
-
-        return existingProduct;
+        return existingProduct!;
+    }
+    private async Task RemoveAsync(Guid id)
+    {
+        var productDao = await _context.Products.FindAsync(id);
+        _context.Products.Remove(productDao!);
     }
 }

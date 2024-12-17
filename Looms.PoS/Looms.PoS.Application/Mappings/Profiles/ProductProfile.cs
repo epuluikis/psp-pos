@@ -9,8 +9,13 @@ public class ProductProfile : Profile
 {
     public ProductProfile()
     {
-        CreateMap<CreateProductRequest, ProductDao>(MemberList.Source);
+        CreateMap<CreateProductRequest, ProductDao>(MemberList.Source)
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.QuantityInStock));
 
-        CreateMap<ProductDao, ProductResponse>();
+        CreateMap<UpdateProductRequest, ProductDao>(MemberList.Source)
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.QuantityInStock));
+
+        CreateMap<ProductDao, ProductResponse>()
+            .ForMember(dest => dest.QuantityInStock, opt => opt.MapFrom(src => src.Quantity));
     }
 }
