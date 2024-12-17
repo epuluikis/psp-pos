@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.RequestHandler;
 using Looms.PoS.Application.Interfaces.Services;
@@ -29,7 +30,8 @@ public class DeleteUserCommandHandler : ILoomsRequestHandler<DeleteUserCommand, 
 
     public async Task<IActionResult> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
     {
-        var originalDao = await _usersRepository.GetAsync(Guid.Parse(command.Id));
+        var businessId = HttpContextHelper.GetHeaderBusinessId(command.Request);
+        var originalDao = await _usersRepository.GetByBusinessAsync(Guid.Parse(command.Id), Guid.Parse(businessId));
 
         var deletedDao = _modelsResolver.GetDeletedDao(originalDao);
         _ = await _usersRepository.UpdateAsync(deletedDao);

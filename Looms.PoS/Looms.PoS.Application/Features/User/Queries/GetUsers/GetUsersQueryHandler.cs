@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.RequestHandler;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Domain.Enums;
@@ -25,7 +26,8 @@ public class GetUsersQueryHandler : ILoomsRequestHandler<GetUsersQuery, IActionR
 
     public async Task<IActionResult> Handle(GetUsersQuery query, CancellationToken cancellationToken)
     {
-        var userDaos = await _usersRepository.GetAllAsync();
+        var businessId = HttpContextHelper.GetHeaderBusinessId(query.Request);
+        var userDaos = await _usersRepository.GetAllByBusinessAsync(Guid.Parse(businessId));
 
         var response = _modelsResolver.GetResponseFromDao(userDaos);
 

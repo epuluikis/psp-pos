@@ -1,6 +1,6 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
-using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -33,9 +33,10 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
     public async Task<IActionResult> Handle(CreateOrdersCommand command, CancellationToken cancellationToken)
     {
         var orderRequest = await _httpContentResolver.GetPayloadAsync<CreateOrderRequest>(command.Request);
+        var businessId = HttpContextHelper.GetHeaderBusinessId(command.Request);
 
         var businessDao = _businessRepository.GetAsync(Guid.Parse(orderRequest.BusinessId));
-        var userDao = _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
+        var userDao = _usersRepository.GetByBusinessAsync(Guid.Parse(orderRequest.UserId), Guid.Parse(businessId));
 
         await Task.WhenAll(businessDao, userDao);
 

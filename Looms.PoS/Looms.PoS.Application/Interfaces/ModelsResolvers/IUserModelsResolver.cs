@@ -6,7 +6,7 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 
 public interface IUserModelsResolver
 {
-    UserDao GetDaoFromRequest(CreateUserRequest createUserRequest);
+    UserDao GetDaoFromRequest(CreateUserRequest createUserRequest, Guid businessId);
     UserDao GetDaoFromDaoAndRequest(UserDao originalDao, UpdateUserRequest updateUserRequest);
     UserDao GetDeletedDao(UserDao originalDao);
     UserResponse GetResponseFromDao(UserDao userDao);

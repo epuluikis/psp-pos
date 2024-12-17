@@ -19,12 +19,13 @@ public class UserModelsResolver : IUserModelsResolver
         _mapper = mapper;
     }
 
-    public UserDao GetDaoFromRequest(CreateUserRequest createUserRequest)
+    public UserDao GetDaoFromRequest(CreateUserRequest createUserRequest, Guid businessId)
     {
         return _mapper.Map<UserDao>(createUserRequest) with
         {
             Id = Guid.NewGuid(),
-            Password = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(createUserRequest.Password)))
+            Password = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(createUserRequest.Password))),
+            BusinessId = businessId
         };
     }
 
@@ -33,8 +34,7 @@ public class UserModelsResolver : IUserModelsResolver
         return originalDao with
         {
             Name = updateUserRequest.Name,
-            Role = Enum.Parse<UserRole>(updateUserRequest.Role),
-            BusinessId = Guid.Parse(updateUserRequest.BusinessId)
+            Role = Enum.Parse<UserRole>(updateUserRequest.Role)
         };
     }
 

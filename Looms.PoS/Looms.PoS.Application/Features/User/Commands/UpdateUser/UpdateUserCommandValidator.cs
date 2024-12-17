@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests.User;
 using Looms.PoS.Application.Utilities.Validators;
@@ -16,20 +17,17 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, _, cancellationToken) => await usersRepository.GetAsync(Guid.Parse(id)));
+            .CustomAsync(async (id, context, cancellationToken) =>
+                await usersRepository.GetByBusinessAsync(Guid.Parse(id!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])));
 
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<UpdateUserRequest>(request);
 
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests.User;
-using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
@@ -28,10 +27,5 @@ public class CreateUserRequestValidator : AbstractValidator<CreateUserRequest>
 
         RuleFor(x => x.Password)
             .NotEmpty();
-
-        RuleFor(x => x.BusinessId)
-            .Cascade(CascadeMode.Stop)
-            .MustBeValidGuid()
-            .CustomAsync(async (id, _, cancellationToken) => await businessesRepository.GetAsync(Guid.Parse(id)));
     }
 }

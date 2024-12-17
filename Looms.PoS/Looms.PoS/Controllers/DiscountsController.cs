@@ -1,12 +1,9 @@
 ﻿using Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
 using Looms.PoS.Application.Features.Discount.Commands.DeleteDiscount;
 using Looms.PoS.Application.Features.Discount.Commands.UpdateDiscount;
-using Looms.PoS.Application.Features.Discount.Queries;
 using Looms.PoS.Application.Features.Discount.Queries.GetDiscount;
 using Looms.PoS.Application.Features.Discount.Queries.GetDiscounts;
-using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Requests.Discount;
-using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Application.Models.Responses.Discount;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
