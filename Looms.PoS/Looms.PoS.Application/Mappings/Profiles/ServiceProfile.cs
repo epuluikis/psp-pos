@@ -9,8 +9,7 @@ public class ServiceProfile : Profile
 {
     public ServiceProfile()
     {
-        CreateMap<CreateServiceRequest, ServiceDao>(MemberList.Source)
-            .ForMember(dest => dest.BusinessId, opt => opt.MapFrom(src => Guid.Parse(src.BusinessId)));
+        CreateMap<CreateServiceRequest, ServiceDao>(MemberList.Source);
 
         CreateMap<UpdateServiceRequest, ServiceDao>(MemberList.Source);
 

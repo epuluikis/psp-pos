@@ -6,6 +6,6 @@ public record CreateServiceRequest
     public string Category { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public int DurationMin { get; init; }
-    public string BusinessId { get; init; } = string.Empty;
+    public string TaxId { get; init; } = string.Empty;
     public string? Description { get; init; }
 }

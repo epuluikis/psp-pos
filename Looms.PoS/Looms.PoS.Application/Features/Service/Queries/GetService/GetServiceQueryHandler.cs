@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -18,7 +19,10 @@ public class GetServiceQueryHandler : IRequestHandler<GetServiceQuery, IActionRe
 
     public async Task<IActionResult> Handle(GetServiceQuery request, CancellationToken cancellationToken)
     {
-        var serviceDao = await _servicesRepository.GetAsync(Guid.Parse(request.Id));
+        var serviceDao = await _servicesRepository.GetAsyncByIdAndBusinessId(
+            Guid.Parse(request.Id),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(request.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(serviceDao);
 

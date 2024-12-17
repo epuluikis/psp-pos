@@ -29,6 +29,13 @@ public class ServicesRepository : IServicesRepository
         return await _context.Services.ToListAsync();
     }
 
+    public async Task<IEnumerable<ServiceDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.Services
+            .Where(x => x.BusinessId == businessId && !x.IsDeleted)
+            .ToListAsync();
+    }
+
     public async Task<ServiceDao> GetAsync(Guid id)
     {
         var serviceDao = await _context.Services.FindAsync(id);
@@ -43,7 +50,9 @@ public class ServicesRepository : IServicesRepository
 
     public async Task<ServiceDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
     {
-        var serviceDao = await _context.Services.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
+        var serviceDao = await _context.Services
+            .Where(x => x.Id == id && x.BusinessId == businessId)
+            .FirstOrDefaultAsync();
 
         if (serviceDao is null || serviceDao.IsDeleted)
         {

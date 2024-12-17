@@ -11,5 +11,6 @@ public interface ITaxesRepository
     Task<TaxDao> GetAsync(Guid id);
     Task<TaxDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId);
     Task<TaxDao> GetByTaxCategoryAsync(TaxCategory taxCategory);
+    Task<TaxDao> GetByTaxCategoryAndBusinessIdAsync(TaxCategory taxCategory, Guid businessId);
     Task<TaxDao> UpdateAsync(TaxDao taxDao);
 }

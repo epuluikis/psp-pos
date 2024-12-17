@@ -8,5 +8,6 @@ public interface IServicesRepository
     Task<IEnumerable<ServiceDao>> GetAllAsync();
     Task<ServiceDao> GetAsync(Guid id);
     Task<ServiceDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId);
+    Task<IEnumerable<ServiceDao>> GetAllAsyncByBusinessId(Guid businessId);
     Task<ServiceDao> UpdateAsync(ServiceDao serviceDao);
 }
