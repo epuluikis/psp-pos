@@ -8,6 +8,6 @@ public interface IReservationsRepository
     Task<IEnumerable<ReservationDao>> GetAllAsync();
     Task<ReservationDao> GetAsync(Guid id);
     Task<ReservationDao> UpdateAsync(ReservationDao reservationDao);
-    Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(string customerName, string email, DateTime appointmentTime);
-    Task<IEnumerable<ReservationDao>> GetReservationsByEmployeeAndTimeAsync(Guid employeeId, DateTime appointmentTime);
+    Task<bool> ExistsWithTimeOverlapAndCustomer(DateTime start, DateTime end, string customerName, string email);
+    Task<bool> ExistsWithTimeOverlapAndEmployeeId(DateTime start, DateTime end, Guid employeeId);
 }

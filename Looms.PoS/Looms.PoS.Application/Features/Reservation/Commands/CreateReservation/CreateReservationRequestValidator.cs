@@ -12,19 +12,25 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
     {
         RuleFor(x => x.CustomerName)
             .Cascade(CascadeMode.Stop)
-            .MustAsync(async (request, customerName, cancellation) =>
+            .MustAsync(async (request, customerName, _) =>
             {
+                var serviceDao = await servicesRepository.GetAsync(Guid.Parse(request.ServiceId));
                 var appointmentTime = DateTimeHelper.ConvertToUtc(request.AppointmentTime);
-                var existingReservations = await reservationsRepository.GetReservationsByCustomerAndTimeAsync(customerName, request.Email, appointmentTime);
-                var existingReservation = existingReservations.FirstOrDefault();
-                return existingReservation is null;
+
+                return !await reservationsRepository.ExistsWithTimeOverlapAndCustomer(
+                    appointmentTime,
+                    appointmentTime.AddMinutes(serviceDao.DurationMin),
+                    customerName,
+                    request.Email
+                );
             })
             .WithMessage("An appointment for the same customer at the same time already exists.");
 
         RuleFor(x => x.AppointmentTime)
             .Cascade(CascadeMode.Stop)
             .MustBeValidDateTime()
-            .MustAsync(async (request, dateString, cancellation) =>
+            .Must(dateString => DateTimeHelper.ConvertToUtc(dateString) >= DateTime.UtcNow)
+            .MustAsync(async (request, dateString, _) =>
             {
                 var service = await servicesRepository.GetAsync(Guid.Parse(request.ServiceId));
                 var business = service.Business;
@@ -32,44 +38,40 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
                 var endTime = appointmentTime.AddMinutes(service.DurationMin);
                 return appointmentTime.Hour >= business.StartHour && endTime.Hour < business.EndHour;
             })
-            .Must(dateString =>
-            {
-                var parsedDate = DateTimeHelper.ConvertToUtc(dateString);
-                return parsedDate >= DateTime.UtcNow;
-            })
             .WithMessage("Appointment time must be in the future and within business hours.");
 
         RuleFor(x => x.EmployeeId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .MustAsync(async (request, employeeId, cancellation) =>
+            .MustAsync(async (request, employeeId, _) =>
             {
-                var employeeGuid = Guid.Parse(employeeId);
+                var serviceDao = await servicesRepository.GetAsync(Guid.Parse(request.ServiceId));
                 var appointmentTime = DateTimeHelper.ConvertToUtc(request.AppointmentTime);
-                var existingReservations = await reservationsRepository.GetReservationsByEmployeeAndTimeAsync(employeeGuid, appointmentTime);
-                var existingReservation = existingReservations.FirstOrDefault();
-                return existingReservation is null;
+
+                return !await reservationsRepository.ExistsWithTimeOverlapAndEmployeeId(
+                    appointmentTime,
+                    appointmentTime.AddMinutes(serviceDao.DurationMin),
+                    Guid.Parse(employeeId)
+                );
             })
             .WithMessage("An appointment with the same employee at the same time already exists.");
-            
+
 
         RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (serviceId, context, cancellation) => 
+            .CustomAsync(async (serviceId, _, _) =>
             {
-                await servicesRepository.GetAsync(new Guid(serviceId));
+                await servicesRepository.GetAsync(Guid.Parse(serviceId));
             });
-        
+
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .Matches(@"^\+?\d{1,3}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$");
-        
+            .MustBeValidPhoneNumber();
+
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .EmailAddress();
     }
-
 }

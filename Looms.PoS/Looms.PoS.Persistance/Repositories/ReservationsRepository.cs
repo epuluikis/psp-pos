@@ -55,23 +55,18 @@ public class ReservationsRepository : IReservationsRepository
         _context.Reservations.Remove(reservationDao!);
     }
 
-    public async Task<IEnumerable<ReservationDao>> GetReservationsByCustomerAndTimeAsync(
-        string customerName,
-        string email,
-        DateTime appointmentTime)
+    public async Task<bool> ExistsWithTimeOverlapAndCustomer(DateTime start, DateTime end, string customerName, string email)
     {
-        return await _context.Reservations
-                             .Where(r => r.CustomerName == customerName
-                                      && r.Email == email
-                                      && r.AppointmentTime == appointmentTime
-                                      && !r.IsDeleted)
-                             .ToListAsync();
+        return await _context.Reservations.AnyAsync(r
+            => r.CustomerName == customerName
+            && r.Email == email
+            && start < r.AppointmentTime.AddMinutes(r.Service.DurationMin)
+            && r.AppointmentTime < end);
     }
 
-    public async Task<IEnumerable<ReservationDao>> GetReservationsByEmployeeAndTimeAsync(Guid employeeId, DateTime appointmentTime)
+    public async Task<bool> ExistsWithTimeOverlapAndEmployeeId(DateTime start, DateTime end, Guid employeeId)
     {
-        return await _context.Reservations
-                             .Where(r => r.EmployeeId == employeeId && r.AppointmentTime == appointmentTime && !r.IsDeleted)
-                             .ToListAsync();
+        return await _context.Reservations.AnyAsync(r
+            => r.EmployeeId == employeeId && start < r.AppointmentTime.AddMinutes(r.Service.DurationMin) && r.AppointmentTime < end);
     }
 }
