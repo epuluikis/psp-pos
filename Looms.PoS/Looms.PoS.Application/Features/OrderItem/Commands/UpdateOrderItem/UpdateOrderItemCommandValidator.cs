@@ -1,8 +1,10 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.OrderItem.Commands.UpdateOrderItem;
@@ -12,53 +14,41 @@ public class UpdateOrderItemCommandValidator : AbstractValidator<UpdateOrderItem
     public UpdateOrderItemCommandValidator(
         IHttpContentResolver httpContentResolver,
         IEnumerable<IValidator<UpdateOrderItemRequest>> validators,
-        IOrderItemsRepository orderItemsRepository)
+        IOrderItemsRepository orderItemsRepository
+    )
     {
-        RuleFor(x => x.OrderId)
-            .Cascade(CascadeMode.Stop)
-            .MustBeValidGuid();
-
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, context, cancellationToken) =>
+            .DependentRules(() =>
             {
-                var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(id));
+                RuleFor(x => x.OrderId)
+                    .Cascade(CascadeMode.Stop)
+                    .MustBeValidGuid()
+                    .CustomAsync(async (orderId, context, _) =>
+                        {
+                            var orderItemDao = await orderItemsRepository.GetAsyncByIdAndOrderIdAndBusinessId(
+                                Guid.Parse(context.InstanceToValidate.Id),
+                                Guid.Parse(orderId!),
+                                Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                            );
 
-                if (orderItem.OrderId != Guid.Parse(context.InstanceToValidate.OrderId))
-                {
-                    context.AddFailure("Order item does not belong to the order.");
-                }
+                            if (orderItemDao.Order.Status != OrderStatus.Pending)
+                            {
+                                context.AddFailure($"Cannot update order with status {orderItemDao.Order.Status}.");
+                            }
+                        }
+                    );
             });
 
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
-            {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(request);
-                var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(context.InstanceToValidate.Id));
-
-                var deltaQuantity = body.Quantity - orderItem.Quantity;
-
-                if (deltaQuantity > 0)
+            .CustomAsync(async (request, context, _) =>
                 {
-                    if (orderItem.Product is not null && orderItem.Product.Quantity < deltaQuantity)
-                    {
-                        context.AddFailure("Product quantity is too low.");
-                    }
+                    var body = await httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(request);
+                    var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
-                    if (orderItem.ProductVariation is not null && orderItem.ProductVariation.Quantity < deltaQuantity)
-                    {
-                        context.AddFailure("Product variation quantity is too low.");
-                    }
+                    await Task.WhenAll(validationResults);
                 }
-
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
-                await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
-            });
+            );
     }
 }

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
@@ -10,38 +11,98 @@ public class UpdateOrderItemRequestValidator : AbstractValidator<UpdateOrderItem
 {
     public UpdateOrderItemRequestValidator(
         IDiscountsRepository discountsRepository,
-        IProductVariationRepository variationsRepository)
+        IProductVariationRepository variationRepository,
+        IProductsRepository productsRepository,
+        IServicesRepository servicesRepository
+    )
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.Quantity)
-            .NotEmpty()
-            .GreaterThan(0);
+        RuleFor(x => x)
+            .Must(x => x.ServiceId is not null && x.ProductId is null || x.ProductId is not null && x.ServiceId is null)
+            .WithMessage("ReservationId or ProductId is required.");
 
-        RuleFor(x => x.DiscountId!)
+        RuleFor(x => x.ServiceId)
             .MustBeValidGuid()
-            .CustomAsync(async (discountId, context, cancellationToken) =>
+            .CustomAsync(async (serviceId, context, _)
+                => await servicesRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(serviceId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                )
+            ).When(x => x.ServiceId is not null);
+
+        RuleFor(x => x.ProductId)
+            .MustBeValidGuid()
+            .CustomAsync(async (productId, context, _) =>
             {
-                var discount = await discountsRepository.GetAsync(Guid.Parse(discountId));
+                var productDao = await productsRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(productId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                );
+
+                if (productDao.Quantity < context.InstanceToValidate.Quantity)
+                {
+                    context.AddFailure("Product quantity is too low.");
+                }
+            })
+            .When(x => x.ProductId is not null);
+
+        RuleFor(x => x.ProductVariationId)
+            .Null()
+            .When(x => x.ProductId is null)
+            .WithMessage("ProductVariation is only allowed with Product.");
+
+        RuleFor(x => x.ProductVariationId)
+            .MustBeValidGuid()
+            .CustomAsync(async (variationId, context, _) =>
+            {
+                var variation =
+                    await variationRepository.GetAsyncByIdAndProductId(
+                        Guid.Parse(variationId!),
+                        Guid.Parse(context.InstanceToValidate.ProductId!)
+                    );
+
+                if (variation!.Quantity < context.InstanceToValidate.Quantity)
+                {
+                    context.AddFailure("Variation quantity is too low.");
+                }
+            })
+            .When(x => x.ProductVariationId is not null);
+
+        RuleFor(x => x.DiscountId)
+            .MustBeValidGuid()
+            .CustomAsync(async (discountId, context, _) =>
+            {
+                var discount = await discountsRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(discountId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                );
 
                 if (discount.Target == DiscountTarget.Order)
                 {
                     context.AddFailure("Discount cannot be applied to order item.");
+
+                    return;
+                }
+
+                if (context.InstanceToValidate.ProductId is not null
+                 && discount.ProductId != Guid.Parse(context.InstanceToValidate.ProductId))
+                {
+                    context.AddFailure("Discount cannot be applied to product item.");
+
+                    return;
+                }
+
+                if (context.InstanceToValidate.ServiceId is not null
+                 && discount.ProductId != Guid.Parse(context.InstanceToValidate.ServiceId))
+                {
+                    context.AddFailure("Discount cannot be applied to service item.");
                 }
             })
             .When(x => x.DiscountId is not null);
 
-        RuleFor(x => x.VariationId!)
-            .MustBeValidGuid()
-            .CustomAsync(async (variationId, context, cancellationToken) =>
-            {
-                var variation = await variationsRepository.GetAsync(Guid.Parse(variationId));
-
-                if (variation.Quantity < context.InstanceToValidate.Quantity)
-                {
-                    context.AddFailure("Product variation quantity is too low.");
-                }
-            })
-            .When(x => x.VariationId is not null);
+        RuleFor(x => x.Quantity)
+            .NotEmpty()
+            .GreaterThan(0);
     }
 }

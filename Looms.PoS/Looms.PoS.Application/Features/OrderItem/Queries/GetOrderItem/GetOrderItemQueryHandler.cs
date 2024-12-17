@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -16,10 +17,16 @@ public class GetOrderItemQueryHandler : IRequestHandler<GetOrderItemQuery, IActi
         _modelsResolver = modelsResolver;
     }
 
-    public async Task<IActionResult> Handle(GetOrderItemQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetOrderItemQuery query, CancellationToken cancellationToken)
     {
-        var orderItemDao = await _orderItemsRepository.GetAsync(Guid.Parse(request.Id));
+        var orderItemDao = await _orderItemsRepository.GetAsyncByIdAndOrderIdAndBusinessId(
+            Guid.Parse(query.Id),
+            Guid.Parse(query.OrderId),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
+        );
+
         var response = _modelsResolver.GetResponseFromDao(orderItemDao);
+
         return new OkObjectResult(response);
     }
 }

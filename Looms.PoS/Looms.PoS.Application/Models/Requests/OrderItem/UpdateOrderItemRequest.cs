@@ -2,9 +2,13 @@ namespace Looms.PoS.Application.Models.Requests.OrderItem;
 
 public record UpdateOrderItemRequest
 {
+    public string? ProductId { get; init; }
+
+    public string? ProductVariationId { get; init; }
+
+    public string? ServiceId { get; init; }
+
     public int Quantity { get; init; }
 
     public string? DiscountId { get; init; }
-
-    public string? VariationId { get; init; }
 }

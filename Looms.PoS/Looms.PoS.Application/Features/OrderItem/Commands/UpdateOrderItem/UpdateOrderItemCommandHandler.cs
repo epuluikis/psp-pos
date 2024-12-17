@@ -9,33 +9,43 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Transactions;
 
-// TODO: Add rollback if a different product variation is added to update the quantity of the previous product variation
-
 namespace Looms.PoS.Application.Features.OrderItem.Commands.UpdateOrderItem;
 
 public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemCommand, IActionResult>
 {
-    private readonly IOrderItemsRepository _orderItemsRepository;
-    private readonly IDiscountsRepository _discountsRepository;
-    private readonly IOrderItemModelsResolver _modelsResolver;
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly IProductVariationUpdatesService _productVariationUpdatesService;
-    private readonly IProductUpdatesService _productUpdatesService;
+    private readonly IOrderModelsResolver _orderModelsResolver;
+    private readonly IOrderItemModelsResolver _orderItemModelsResolver;
+    private readonly IOrderItemsRepository _orderItemsRepository;
+    private readonly IOrdersRepository _ordersRepository;
+    private readonly IProductsRepository _productsRepository;
+    private readonly IProductVariationRepository _variationsRepository;
+    private readonly IServicesRepository _servicesRepository;
+    private readonly IOrderItemService _orderItemService;
 
     public UpdateOrderItemCommandHandler(
-        IOrderItemsRepository orderItemsRepository,
-        IDiscountsRepository discountsRepository,
-        IOrderItemModelsResolver modelsResolver,
         IHttpContentResolver httpContentResolver,
-        IProductVariationUpdatesService productVariationUpdatesService,
-        IProductUpdatesService productUpdatesService)
+        IOrderItemsRepository orderItemsRepository,
+        IOrderItemModelsResolver orderItemModelsResolver,
+        IOrderModelsResolver orderModelsResolver,
+        IOrdersRepository ordersRepository,
+        IProductsRepository productsRepository,
+        IProductVariationRepository variationsRepository,
+        IProductService productService,
+        IProductVariationService productVariationService,
+        IServicesRepository servicesRepository,
+        IOrderItemService orderItemService
+    )
     {
-        _orderItemsRepository = orderItemsRepository;
-        _discountsRepository = discountsRepository;
-        _modelsResolver = modelsResolver;
         _httpContentResolver = httpContentResolver;
-        _productVariationUpdatesService = productVariationUpdatesService;
-        _productUpdatesService = productUpdatesService;
+        _orderItemsRepository = orderItemsRepository;
+        _orderItemModelsResolver = orderItemModelsResolver;
+        _orderModelsResolver = orderModelsResolver;
+        _ordersRepository = ordersRepository;
+        _productsRepository = productsRepository;
+        _variationsRepository = variationsRepository;
+        _servicesRepository = servicesRepository;
+        _orderItemService = orderItemService;
     }
 
     public async Task<IActionResult> Handle(UpdateOrderItemCommand command, CancellationToken cancellationToken)
@@ -43,49 +53,29 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
         var orderItemRequest = await _httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(command.Request);
         var originalDao = await _orderItemsRepository.GetAsync(Guid.Parse(command.Id));
 
-        var discountDao = orderItemRequest.DiscountId is not null
-            ? await _discountsRepository.GetAsync(Guid.Parse(orderItemRequest.DiscountId))
-            : null;
+        var product = orderItemRequest.ProductId is null ? null : await _productsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductId));
+        var productVariation = orderItemRequest.ProductVariationId is null
+            ? null
+            : await _variationsRepository.GetAsync(Guid.Parse(orderItemRequest.ProductVariationId));
 
-        var orderItemDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, orderItemRequest, discountDao);
+        var service = orderItemRequest.ServiceId is null ? null : await _servicesRepository.GetAsync(Guid.Parse(orderItemRequest.ServiceId));
 
-        await CompleteTransaction(orderItemDao, originalDao);
+        var orderItemDao =
+            _orderItemModelsResolver.GetDaoFromDaoAndRequest(originalDao, orderItemRequest, product, productVariation, service);
 
-        var response = _modelsResolver.GetResponseFromDao(orderItemDao);
+
+        using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            await _orderItemService.ResetQuantity(originalDao);
+            await _orderItemsRepository.UpdateAsync(orderItemDao);
+            await _orderItemService.SetQuantity(orderItemDao);
+
+            transactionScope.Complete();
+        }
+
+        var orderDao = await _ordersRepository.GetAsync(orderItemDao.OrderId);
+        var response = _orderModelsResolver.GetResponseFromDao(orderDao);
+
         return new OkObjectResult(response);
-    }
-
-    private async Task CompleteTransaction(OrderItemDao orderItemDao, OrderItemDao originalDao)
-    {
-        var quantityToDeduct = orderItemDao.Quantity - originalDao.Quantity;
-
-        using var tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-        if (orderItemDao.Product is not null && quantityToDeduct != 0)
-        {
-            await _productUpdatesService.UpdateProductStock(orderItemDao.Product, quantityToDeduct);
-        }
-
-        if (originalDao.ProductVariation is not null)
-        {
-            if (originalDao.ProductVariation.Id == orderItemDao.ProductVariation.Id)
-            {
-                await _productVariationUpdatesService.UpdateProductVariationStock(originalDao.ProductVariation, quantityToDeduct);
-            }
-            else
-            {
-                // Rolling back quantity updates for the previous product variation
-                var previousQuantity = -originalDao.Quantity;
-                await _productVariationUpdatesService.UpdateProductVariationStock(originalDao.ProductVariation, previousQuantity);
-            }
-        }
-        else if (orderItemDao.ProductVariation is not null)
-        {
-            // Updating the quantity for the new product variation
-            await _productVariationUpdatesService.UpdateProductVariationStock(orderItemDao.ProductVariation, orderItemDao.Quantity);
-        }
-
-        await _orderItemsRepository.UpdateAsync(orderItemDao);
-        tran.Complete();
     }
 }

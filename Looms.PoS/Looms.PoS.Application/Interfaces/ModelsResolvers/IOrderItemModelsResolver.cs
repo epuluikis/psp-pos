@@ -9,13 +9,21 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 public interface IOrderItemModelsResolver
 {
     OrderItemDao GetDaoFromRequest(
-        Guid orderId,
         CreateOrderItemRequest createOrderItemRequest,
+        Guid orderId,
         ProductDao? productDao,
         ProductVariationDao? productVariationDao,
-        ServiceDao? serviceDao);
+        ServiceDao? serviceDao
+    );
 
-    OrderItemDao GetDaoFromDaoAndRequest(OrderItemDao orderItemDao, UpdateOrderItemRequest updateOrderItemRequest, DiscountDao? discountDao);
+    OrderItemDao GetDaoFromDaoAndRequest(
+        OrderItemDao orderItemDao,
+        UpdateOrderItemRequest updateOrderItemRequest,
+        ProductDao? productDao,
+        ProductVariationDao? productVariationDao,
+        ServiceDao? serviceDao
+    );
+
     OrderItemResponse GetResponseFromDao(OrderItemDao orderItemDao);
     IEnumerable<OrderItemResponse> GetResponseFromDao(IEnumerable<OrderItemDao> orderItemDao);
     OrderItemDao GetDeletedDao(OrderItemDao originalDao);

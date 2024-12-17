@@ -9,12 +9,15 @@ namespace Looms.PoS.Application.Features.GiftCard.Queries.GetGiftCards;
 public class GetGiftCardsQueryHandler : IRequestHandler<GetGiftCardsQuery, IActionResult>
 {
     private readonly IGiftCardsRepository _giftCardsRepository;
-    private readonly IGiftCardModelsResolver _modelsResolver;
+    private readonly IGiftCardModelsResolver _giftCardsModelResolver;
 
-    public GetGiftCardsQueryHandler(IGiftCardsRepository giftCardsRepository, IGiftCardModelsResolver modelsResolver)
+    public GetGiftCardsQueryHandler(
+        IGiftCardsRepository giftCardsRepository,
+        IGiftCardModelsResolver giftCardsModelResolver
+    )
     {
         _giftCardsRepository = giftCardsRepository;
-        _modelsResolver = modelsResolver;
+        _giftCardsModelResolver = giftCardsModelResolver;
     }
 
     public async Task<IActionResult> Handle(GetGiftCardsQuery query, CancellationToken cancellationToken)
@@ -23,7 +26,7 @@ public class GetGiftCardsQueryHandler : IRequestHandler<GetGiftCardsQuery, IActi
             Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
         );
 
-        var response = _modelsResolver.GetResponseFromDao(giftCardDaos);
+        var response = _giftCardsModelResolver.GetResponseFromDao(giftCardDaos);
 
         return new OkObjectResult(response);
     }

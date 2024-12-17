@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -8,21 +9,27 @@ namespace Looms.PoS.Application.Features.Order.Queries.GetOrders;
 public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, IActionResult>
 {
     private readonly IOrdersRepository _ordersRepository;
-    private readonly IOrderModelsResolver _modelsResolver;
+    private readonly IOrderModelsResolver _orderModelsResolver;
 
-    public GetOrdersQueryHandler(IOrdersRepository ordersRepository, IOrderModelsResolver modelsResolver)
+    public GetOrdersQueryHandler(
+        IOrdersRepository ordersRepository,
+        IOrderModelsResolver orderModelsResolver
+    )
     {
         _ordersRepository = ordersRepository;
-        _modelsResolver = modelsResolver;
+        _orderModelsResolver = orderModelsResolver;
     }
 
-    public async Task<IActionResult> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetOrdersQuery query, CancellationToken cancellationToken)
     {
-        var filter = _modelsResolver.GetFiltersFromQuery(request);
+        var filter = _orderModelsResolver.GetFiltersFromQuery(query);
 
-        var orderDaos = await _ordersRepository.GetAllAsync(filter);
+        var orderDaos = await _ordersRepository.GetAllAsyncByBusinessId(
+            filter,
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
+        );
 
-        var response = _modelsResolver.GetResponseFromDao(orderDaos);
+        var response = _orderModelsResolver.GetResponseFromDao(orderDaos);
 
         return new OkObjectResult(response);
     }

@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
@@ -11,38 +12,33 @@ namespace Looms.PoS.Application.Features.Order.Commands.CreateOrder;
 public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, IActionResult>
 {
     private readonly IOrdersRepository _ordersRepository;
-    private readonly IBusinessesRepository _businessRepository;
-    private readonly IUsersRepository _usersRepository;
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly IOrderModelsResolver _modelsResolver;
+    private readonly IOrderModelsResolver _orderModelsResolver;
 
     public CreateOrdersCommandHandler(
         IOrdersRepository ordersRepository,
-        IBusinessesRepository businessRepository,
-        IUsersRepository usersRepository,
         IHttpContentResolver httpContentResolver,
-        IOrderModelsResolver modelsResolver)
+        IOrderModelsResolver orderModelsResolver
+    )
     {
         _ordersRepository = ordersRepository;
-        _businessRepository = businessRepository;
-        _usersRepository = usersRepository;
         _httpContentResolver = httpContentResolver;
-        _modelsResolver = modelsResolver;
+        _orderModelsResolver = orderModelsResolver;
     }
 
     public async Task<IActionResult> Handle(CreateOrdersCommand command, CancellationToken cancellationToken)
     {
         var orderRequest = await _httpContentResolver.GetPayloadAsync<CreateOrderRequest>(command.Request);
 
-        var businessDao = _businessRepository.GetAsync(Guid.Parse(orderRequest.BusinessId));
-        var userDao = _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
+        var orderDao = _orderModelsResolver.GetDaoFromRequest(
+            orderRequest,
+            Guid.Parse(HttpContextHelper.GetUserId(command.Request)),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
+        );
 
-        await Task.WhenAll(businessDao, userDao);
+        orderDao = await _ordersRepository.CreateAsync(orderDao);
 
-        var orderDao = _modelsResolver.GetDaoFromRequest(orderRequest, businessDao.Result, userDao.Result);
-        var createdOrderDao = await _ordersRepository.CreateAsync(orderDao);
-
-        var response = _modelsResolver.GetResponseFromDao(createdOrderDao);
+        var response = _orderModelsResolver.GetResponseFromDao(orderDao);
 
         return new CreatedAtRouteResult($"/orders/{orderDao.Id}", response);
     }
