@@ -8,6 +8,5 @@ public interface IOrderItemService
     decimal CalculateOrderItemPrice(ProductDao? productDao, ProductVariationDao? productVariationDao, ServiceDao? serviceDao, int quantity);
     decimal CalculateOrderItemTax(TaxDao tax, decimal price);
     Task SetQuantity(OrderItemDao orderItemDao);
-    Task RecalculateQuantity(OrderItemDao newOrderItemDao, OrderItemDao oldOrderItemDao);
     Task ResetQuantity(OrderItemDao orderItemDao);
 }

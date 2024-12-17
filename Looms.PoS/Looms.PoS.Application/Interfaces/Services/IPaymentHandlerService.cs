@@ -8,5 +8,5 @@ public interface IPaymentHandlerService
 {
     PaymentMethod SupportedMethod { get; }
 
-    Task<PaymentResponse> HandlePayment(PaymentDao paymentDao);
+    Task<PaymentDao> HandlePayment(PaymentDao paymentDao);
 }

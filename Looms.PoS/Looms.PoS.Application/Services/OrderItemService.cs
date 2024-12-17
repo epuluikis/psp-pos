@@ -81,21 +81,6 @@ public class OrderItemService : IOrderItemService
         }
     }
 
-    public async Task RecalculateQuantity(OrderItemDao newOrderItemDao, OrderItemDao oldOrderItemDao)
-    {
-        // TODO
-        throw new NotImplementedException();
-        // if (orderItemDao.Product is not null)
-        // {
-        //     await _productService.UpdateStock(orderItemDao.Product, orderItemDao.Quantity);
-        // }
-        //
-        // if (orderItemDao.ProductVariation is not null)
-        // {
-        //     await _productVariationService.UpdateStock(orderItemDao.ProductVariation, orderItemDao.Quantity);
-        // }
-    }
-
     public async Task ResetQuantity(OrderItemDao orderItemDao)
     {
         if (orderItemDao.Product is not null)

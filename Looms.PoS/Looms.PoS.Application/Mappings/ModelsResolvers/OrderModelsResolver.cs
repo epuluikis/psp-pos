@@ -20,7 +20,7 @@ public class OrderModelsResolver : IOrderModelsResolver
     private readonly IRefundModelsResolver _refundModelsResolver;
     private readonly IOrderService _orderService;
     private readonly IRefundService _refundService;
-    private readonly IPaymentTotalsService _paymentTotalsService;
+    private readonly IPaymentService _paymentService;
 
     public OrderModelsResolver(
         IMapper mapper,
@@ -29,7 +29,7 @@ public class OrderModelsResolver : IOrderModelsResolver
         IRefundModelsResolver refundModelsResolver,
         IOrderService orderService,
         IRefundService refundService,
-        IPaymentTotalsService paymentTotalsService)
+        IPaymentService paymentService)
     {
         _mapper = mapper;
         _paymentModelsResolver = paymentModelsResolver;
@@ -37,7 +37,7 @@ public class OrderModelsResolver : IOrderModelsResolver
         _refundModelsResolver = refundModelsResolver;
         _orderService = orderService;
         _refundService = refundService;
-        _paymentTotalsService = paymentTotalsService;
+        _paymentService = paymentService;
     }
 
     public GetAllOrdersFilter GetFiltersFromQuery(GetOrdersQuery getOrdersQuery)
@@ -73,10 +73,11 @@ public class OrderModelsResolver : IOrderModelsResolver
             Payments = _paymentModelsResolver.GetResponseFromDao(orderDao.Payments),
             Refunds = _refundModelsResolver.GetResponseFromDao(orderDao.Refunds),
             OrderItems = _orderItemModelsResolver.GetResponseFromDao(orderDao.OrderItems),
-            TotalAmount = _orderService.CalculateTotal(orderDao),
-            AmountPaid = _paymentTotalsService.CalculatePaymentTotal(orderDao.Payments),
-            AmountRefunded = _refundService.CalculateRefundTotal(orderDao.Refunds),
-            TaxAmount = _orderService.CalculateTax(orderDao)
+            TotalAmount = _orderService.CalculateTotal(orderDao) + _paymentService.CalculateTips(orderDao.Payments),
+            AmountPaid = _paymentService.CalculateTotalWithTips(orderDao.Payments),
+            AmountRefunded = _refundService.CalculateTotal(orderDao.Refunds),
+            TaxAmount = _orderService.CalculateTax(orderDao),
+            TipAmount = _paymentService.CalculateTips(orderDao.Payments)
         };
     }
 

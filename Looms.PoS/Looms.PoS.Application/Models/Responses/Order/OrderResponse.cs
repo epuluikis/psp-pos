@@ -10,7 +10,7 @@ public record OrderResponse
 {
     public Guid Id { get; init; }
 
-    public string BusinessName { get; init; }
+    public string BusinessName { get; init; } = string.Empty;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public OrderStatus Status { get; init; } = OrderStatus.Pending;
@@ -25,12 +25,15 @@ public record OrderResponse
 
     public decimal TaxAmount { get; init; }
 
-// this is will be with tax and discount applied
+    public decimal TipAmount { get; init; }
+
+    public decimal SubTotal => TotalAmount - TaxAmount - TipAmount;
+
     public decimal TotalAmount { get; init; }
 
     public decimal AmountPaid { get; init; }
 
-    public decimal AmountDue => TotalAmount - AmountPaid;
+    public decimal AmountDue => TotalAmount + TipAmount - AmountPaid;
 
     public decimal AmountRefunded { get; init; }
 }

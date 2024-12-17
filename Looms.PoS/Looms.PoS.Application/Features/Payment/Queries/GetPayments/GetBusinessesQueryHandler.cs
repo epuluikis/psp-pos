@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,11 @@ public class GetPaymentsQueryHandler : IRequestHandler<GetPaymentsQuery, IAction
         _modelsResolver = modelsResolver;
     }
 
-    public async Task<IActionResult> Handle(GetPaymentsQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Handle(GetPaymentsQuery query, CancellationToken cancellationToken)
     {
-        var paymentDaos = await _paymentsRepository.GetAllAsync();
+        var paymentDaos = await _paymentsRepository.GetAllAsyncByBusinessId(
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(paymentDaos);
 

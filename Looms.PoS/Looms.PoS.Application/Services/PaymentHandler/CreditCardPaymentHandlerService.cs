@@ -32,7 +32,7 @@ public class CreditCardPaymentHandlerService : IPaymentHandlerService
         _paymentTerminalsRepository = paymentTerminalsRepository;
     }
 
-    public async Task<PaymentResponse> HandlePayment(PaymentDao paymentDao)
+    public async Task<PaymentDao> HandlePayment(PaymentDao paymentDao)
     {
         var paymentTerminalDao = await _paymentTerminalsRepository.GetAsync(paymentDao.PaymentTerminalId.GetValueOrDefault());
 
@@ -40,8 +40,6 @@ public class CreditCardPaymentHandlerService : IPaymentHandlerService
                            .GetService(paymentTerminalDao.PaymentProvider!.Type)
                            .HandlePayment(paymentDao, paymentTerminalDao.PaymentProvider, paymentTerminalDao);
 
-        paymentDao = await _paymentsRepository.CreateAsync(paymentDao);
-
-        return _paymentModelsResolver.GetResponseFromDao(paymentDao);
+        return await _paymentsRepository.CreateAsync(paymentDao);
     }
 }
