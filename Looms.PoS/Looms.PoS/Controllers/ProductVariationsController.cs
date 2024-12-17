@@ -2,10 +2,9 @@
 using Looms.PoS.Application.Features.Product.Commands.DeleteProductVariation;
 using Looms.PoS.Application.Features.Product.Commands.UpdateProductVariation;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariation;
-using Looms.PoS.Application.Features.Product.Queries.GetProductVariationForProduct;
 using Looms.PoS.Application.Features.Product.Queries.GetProductVariations;
+using Looms.PoS.Application.Features.Product.Queries.GetProductVariationsForProduct;
 using Looms.PoS.Application.Models.Requests.Product;
-using Looms.PoS.Application.Models.Requests.ProductVariation;
 using Looms.PoS.Application.Models.Responses.Product;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
@@ -57,7 +56,8 @@ public class ProductVariationsController : ControllerBase
     }
 
     [HttpGet($"/{EntityName}/{{productVariationId}}")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Product variations for specific product successfully retrieved.", typeof(IEnumerable<ProductVariationResponse>))]
+    [SwaggerResponse(StatusCodes.Status200OK, "Product variations for specific product successfully retrieved.",
+        typeof(IEnumerable<ProductVariationResponse>))]
     public async Task<IActionResult> GetProductVariation(string productVariationId)
     {
         var query = new GetProductVariationQuery(GetRequest(), productVariationId);

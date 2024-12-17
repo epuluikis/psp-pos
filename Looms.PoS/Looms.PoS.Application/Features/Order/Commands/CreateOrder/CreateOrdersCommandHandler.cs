@@ -1,6 +1,7 @@
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
     private readonly IOrderModelsResolver _modelsResolver;
 
     public CreateOrdersCommandHandler(
-        IOrdersRepository ordersRepository, 
+        IOrdersRepository ordersRepository,
         IBusinessesRepository businessRepository,
         IUsersRepository usersRepository,
         IHttpContentResolver httpContentResolver,
@@ -34,13 +35,13 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
         var orderRequest = await _httpContentResolver.GetPayloadAsync<CreateOrderRequest>(command.Request);
 
         var businessDao = _businessRepository.GetAsync(Guid.Parse(orderRequest.BusinessId));
-        var userDao =  _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
+        var userDao = _usersRepository.GetAsync(Guid.Parse(orderRequest.UserId));
 
         await Task.WhenAll(businessDao, userDao);
-        
+
         var orderDao = _modelsResolver.GetDaoFromRequest(orderRequest, businessDao.Result, userDao.Result);
         var createdOrderDao = await _ordersRepository.CreateAsync(orderDao);
-        
+
         var response = _modelsResolver.GetResponseFromDao(createdOrderDao);
 
         return new CreatedAtRouteResult($"/orders/{orderDao.Id}", response);

@@ -1,7 +1,7 @@
-namespace Looms.PoS.Application.Models.Requests;
+namespace Looms.PoS.Application.Models.Requests.OrderItem;
 
 public record UpdateOrderItemRequest
-{                
+{
     public int Quantity { get; init; }
 
     public string? DiscountId { get; init; }

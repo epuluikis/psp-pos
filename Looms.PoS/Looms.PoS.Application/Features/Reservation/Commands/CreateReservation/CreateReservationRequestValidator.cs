@@ -1,8 +1,8 @@
 using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Reservation;
+using Looms.PoS.Application.Utilities.Helpers;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
-using Looms.PoS.Application.Utilities.Helpers;
 
 namespace Looms.PoS.Application.Features.Reservation.Commands.CreateReservation;
 

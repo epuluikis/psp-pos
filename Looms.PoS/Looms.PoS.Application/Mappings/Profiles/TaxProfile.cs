@@ -14,7 +14,7 @@ public class TaxProfile : Profile
         CreateMap<CreateTaxRequest, TaxDao>(MemberList.Source)
             .ForMember(dest => dest.TaxCategory, opt => opt.MapFrom(src => Enum.Parse<TaxCategory>(src.TaxCategory, true)))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.StartDate)))
-            .ForMember(dest => dest.EndDate, opt => 
+            .ForMember(dest => dest.EndDate, opt =>
             {
                 opt.Condition(src => !string.IsNullOrEmpty(src.EndDate));
                 opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.EndDate));
@@ -23,7 +23,7 @@ public class TaxProfile : Profile
         CreateMap<UpdateTaxRequest, TaxDao>(MemberList.Source)
             .ForMember(dest => dest.TaxCategory, opt => opt.MapFrom(src => Enum.Parse<TaxCategory>(src.TaxCategory, true)))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.StartDate)))
-            .ForMember(dest => dest.EndDate, opt => 
+            .ForMember(dest => dest.EndDate, opt =>
             {
                 opt.Condition(src => !string.IsNullOrEmpty(src.EndDate));
                 opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.EndDate));

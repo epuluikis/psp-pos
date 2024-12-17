@@ -33,9 +33,9 @@ public class CreateBusinessCommandHandler : ILoomsRequestHandler<CreateBusinessC
         var businessRequest = await _httpContentResolver.GetPayloadAsync<CreateBusinessRequest>(command.Request);
 
         var businessDao = _modelsResolver.GetDaoFromRequest(businessRequest);
-        var createdBusinessDao = await _businessesRepository.CreateAsync(businessDao);
+        businessDao = await _businessesRepository.CreateAsync(businessDao);
 
-        var response = _modelsResolver.GetResponseFromDao(createdBusinessDao);
+        var response = _modelsResolver.GetResponseFromDao(businessDao);
 
         return new CreatedAtRouteResult($"/businesses/{businessDao.Id}", response);
     }

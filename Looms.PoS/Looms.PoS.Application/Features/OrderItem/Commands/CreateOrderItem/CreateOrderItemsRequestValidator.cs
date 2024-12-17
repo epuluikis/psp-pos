@@ -1,11 +1,10 @@
 using FluentValidation;
-using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
-using System.Security.Cryptography.X509Certificates;
 
-namespace Looms.PoS.Application.Features.Discount.Commands.CreateDiscount;
+namespace Looms.PoS.Application.Features.OrderItem.Commands.CreateOrderItem;
 
 public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItemRequest>
 {
@@ -23,31 +22,30 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
 
         RuleFor(x => x.ServiceId!)
             .MustBeValidGuid()
-            .CustomAsync(async (serviceId, context, cancellationToken) => 
+            .CustomAsync(async (serviceId, context, cancellationToken) =>
                 await servicesRepository.GetAsync(Guid.Parse(serviceId)))
             .When(x => x.ServiceId is not null);
 
         RuleFor(x => x.ProductId!)
             .MustBeValidGuid()
-            .CustomAsync(async (productId, context, cancellationToken) => 
+            .CustomAsync(async (productId, context, cancellationToken) =>
             {
                 var product = await productsRepository.GetAsync(Guid.Parse(productId));
 
-                if(product!.Quantity < context.InstanceToValidate.Quantity)
+                if (product!.Quantity < context.InstanceToValidate.Quantity)
                 {
                     context.AddFailure("Product quantity is too low.");
                 }
-
             })
             .When(x => x.ServiceId is null && x.ProductId is not null);
 
         RuleFor(x => x.ProductVariationId!)
             .MustBeValidGuid()
-            .CustomAsync(async (variationId, context, cancellationToken) => 
+            .CustomAsync(async (variationId, context, cancellationToken) =>
             {
                 var variation = await variationRepository.GetAsync(Guid.Parse(variationId));
 
-                if(variation!.Quantity < context.InstanceToValidate.Quantity)
+                if (variation!.Quantity < context.InstanceToValidate.Quantity)
                 {
                     context.AddFailure("Variation quantity is too low.");
                 }
@@ -59,16 +57,18 @@ public class CreateOrderItemRequestValidator : AbstractValidator<CreateOrderItem
             .CustomAsync(async (discountId, context, cancellationToken) =>
             {
                 var discount = await discountsRepository.GetAsync(Guid.Parse(discountId));
-                
+
                 if (discount.Target == DiscountTarget.Order)
                 {
                     context.AddFailure("Discount cannot be applied to order item.");
                 }
-                else if(context.InstanceToValidate.ProductId is not null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ProductId))
+                else if (context.InstanceToValidate.ProductId is not null
+                      && discount.ProductId != Guid.Parse(context.InstanceToValidate.ProductId))
                 {
                     context.AddFailure("Discount cannot be applied to product item.");
                 }
-                else if(context.InstanceToValidate.ServiceId is not null && discount.ProductId != Guid.Parse(context.InstanceToValidate.ServiceId))
+                else if (context.InstanceToValidate.ServiceId is not null
+                      && discount.ProductId != Guid.Parse(context.InstanceToValidate.ServiceId))
                 {
                     context.AddFailure("Discount cannot be applied to service item.");
                 }

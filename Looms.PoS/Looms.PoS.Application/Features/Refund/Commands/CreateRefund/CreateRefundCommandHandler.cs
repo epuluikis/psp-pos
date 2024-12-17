@@ -1,6 +1,7 @@
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Refund;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +27,9 @@ public class CreateRefundCommandHandler : IRequestHandler<CreateRefundCommand, I
     public async Task<IActionResult> Handle(CreateRefundCommand request, CancellationToken cancellationToken)
     {
         var refundRequest = await _httpContentResolver.GetPayloadAsync<CreateRefundRequest>(request.Request);
-        
+
         //TODO: Extract user id from request
-        
+
         var refundDao = _modelsResolver.GetDaoFromRequest(refundRequest);
         var createdRefundDao = await _refundsRepository.CreateAsync(refundDao);
 

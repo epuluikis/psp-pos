@@ -1,10 +1,9 @@
-using Looms.PoS.Application.Features.Order.Queries.GetOrder;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Order.Queries;
+namespace Looms.PoS.Application.Features.Order.Queries.GetOrder;
 
 public class GetOrderQueryHandler : IRequestHandler<GetOrderQuery, IActionResult>
 {

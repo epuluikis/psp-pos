@@ -2,6 +2,7 @@ using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -21,7 +22,8 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
     private readonly IProductVariationUpdatesService _productVariationUpdatesService;
     private readonly IProductUpdatesService _productUpdatesService;
 
-    public UpdateOrderItemCommandHandler(IOrderItemsRepository orderItemsRepository, 
+    public UpdateOrderItemCommandHandler(
+        IOrderItemsRepository orderItemsRepository,
         IDiscountsRepository discountsRepository,
         IOrderItemModelsResolver modelsResolver,
         IHttpContentResolver httpContentResolver,
@@ -41,7 +43,10 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
         var orderItemRequest = await _httpContentResolver.GetPayloadAsync<UpdateOrderItemRequest>(command.Request);
         var originalDao = await _orderItemsRepository.GetAsync(Guid.Parse(command.Id));
 
-        var discountDao = orderItemRequest.DiscountId is not null ? await _discountsRepository.GetAsync(Guid.Parse(orderItemRequest.DiscountId)) : null;
+        var discountDao = orderItemRequest.DiscountId is not null
+            ? await _discountsRepository.GetAsync(Guid.Parse(orderItemRequest.DiscountId))
+            : null;
+
         var orderItemDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, orderItemRequest, discountDao);
 
         await CompleteTransaction(orderItemDao, originalDao);
@@ -54,15 +59,16 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
     {
         var quantityToDeduct = orderItemDao.Quantity - originalDao.Quantity;
 
-        using TransactionScope tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        using var tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
         if (orderItemDao.Product is not null && quantityToDeduct != 0)
         {
             await _productUpdatesService.UpdateProductStock(orderItemDao.Product, quantityToDeduct);
         }
 
-        if(originalDao.ProductVariation is not null)
+        if (originalDao.ProductVariation is not null)
         {
-            if(originalDao.ProductVariation.Id == orderItemDao.ProductVariation.Id)
+            if (originalDao.ProductVariation.Id == orderItemDao.ProductVariation.Id)
             {
                 await _productVariationUpdatesService.UpdateProductVariationStock(originalDao.ProductVariation, quantityToDeduct);
             }

@@ -1,10 +1,9 @@
-using Looms.PoS.Application.Features.Refund.Queries.GetRefund;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Looms.PoS.Application.Features.Discount.Queries.GetDiscount;
+namespace Looms.PoS.Application.Features.Refund.Queries.GetRefund;
 
 public class GetRefundsQueryHandler : IRequestHandler<GetRefundQuery, IActionResult>
 {

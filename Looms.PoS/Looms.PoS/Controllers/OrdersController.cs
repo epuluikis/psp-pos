@@ -3,12 +3,14 @@ using Looms.PoS.Application.Features.Order.Commands.DeleteOrder;
 using Looms.PoS.Application.Features.Order.Commands.UpdateOrder;
 using Looms.PoS.Application.Features.Order.Queries.GetOrder;
 using Looms.PoS.Application.Features.Order.Queries.GetOrders;
-using Looms.PoS.Application.Models.Requests;
-using Looms.PoS.Application.Models.Responses;
+using Looms.PoS.Application.Models.Requests.Order;
+using Looms.PoS.Application.Models.Responses.Order;
 using Looms.PoS.Swagger.Attributes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+
+namespace Looms.PoS.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]

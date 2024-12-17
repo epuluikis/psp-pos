@@ -57,7 +57,7 @@ public class CreatePaymentRequestValidator : AbstractValidator<CreatePaymentRequ
 
         When(x => x.PaymentMethod == PaymentMethod.CreditCard, () =>
         {
-            RuleFor(x => x.PaymentTerminalId)
+            RuleFor(x => x.PaymentTerminalId!)
                 .MustBeValidGuid()
                 .CustomAsync(async (id, _, _) =>
                 {

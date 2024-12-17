@@ -9,7 +9,7 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
     public LoginCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<LoginRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<LoginRequest>(request);
 

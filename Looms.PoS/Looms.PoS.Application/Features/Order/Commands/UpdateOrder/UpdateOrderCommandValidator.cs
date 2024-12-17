@@ -1,6 +1,7 @@
 using FluentValidation;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 
@@ -9,7 +10,7 @@ namespace Looms.PoS.Application.Features.Order.Commands.UpdateOrder;
 public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
 {
     public UpdateOrderCommandValidator(
-        IHttpContentResolver httpContentResolver, 
+        IHttpContentResolver httpContentResolver,
         IEnumerable<IValidator<UpdateOrderRequest>> validators,
         IOrdersRepository ordersRepository)
     {

@@ -1,6 +1,7 @@
 using FluentValidation;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Refund;
 
 namespace Looms.PoS.Application.Features.Refund.Commands.CreateRefund;
 

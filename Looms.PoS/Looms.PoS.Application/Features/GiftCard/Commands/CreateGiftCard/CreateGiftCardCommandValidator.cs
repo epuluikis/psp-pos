@@ -9,7 +9,7 @@ public class CreateGiftCardCommandValidator : AbstractValidator<CreateGiftCardCo
     public CreateGiftCardCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateGiftCardRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreateGiftCardRequest>(request);
 

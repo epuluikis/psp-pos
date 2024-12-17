@@ -37,7 +37,6 @@ public class GiftCardsController : ControllerBase
         return await _mediator.Send(comnand);
     }
 
-    // TODO: scope to business
     [HttpGet($"/{EntityName}")]
     [SwaggerResponse(StatusCodes.Status200OK, "List of giftCards returned successfully.", typeof(List<GiftCardResponse>))]
     public async Task<IActionResult> GetGiftCards()
@@ -47,7 +46,6 @@ public class GiftCardsController : ControllerBase
         return await _mediator.Send(query);
     }
 
-    // TODO: scope to business
     [HttpGet($"/{EntityName}/{{giftCardId}}")]
     [SwaggerResponse(StatusCodes.Status200OK, "GiftCard details returned successfully.", typeof(GiftCardResponse))]
     public async Task<IActionResult> GetGiftCard(string giftCardId)

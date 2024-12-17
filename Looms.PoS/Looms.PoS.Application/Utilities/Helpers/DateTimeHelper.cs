@@ -2,7 +2,6 @@ using System.Globalization;
 
 namespace Looms.PoS.Application.Utilities.Helpers;
 
-
 public static class DateTimeHelper
 {
     public const string DateFormat = "yyyy-MM-dd HH:mm:ss";
@@ -33,6 +32,7 @@ public static class DateTimeHelper
     {
         return DateTime.SpecifyKind(dateTime, DateTimeKind.Utc).ToLocalTime().ToString();
     }
+
     public static bool TryConvertToUtc(string dateString, out DateTime utcDateTime)
     {
         return DateTime.TryParseExact(

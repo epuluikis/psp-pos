@@ -9,7 +9,7 @@ public class CreateBusinessCommandValidator : AbstractValidator<CreateBusinessCo
     public CreateBusinessCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateBusinessRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreateBusinessRequest>(request);
 

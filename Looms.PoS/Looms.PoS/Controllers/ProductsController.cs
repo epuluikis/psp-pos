@@ -26,6 +26,7 @@ public class ProductsController : ControllerBase
         _mediator = mediator;
         _contextAccessor = contextAccessor;
     }
+
     [HttpPost($"/{EntityName}")]
     [SwaggerRequestType(typeof(CreateProductRequest))]
     [SwaggerResponse(StatusCodes.Status201Created, "Product successfully created.", typeof(ProductResponse))]
@@ -35,6 +36,7 @@ public class ProductsController : ControllerBase
 
         return await _mediator.Send(command);
     }
+
     [HttpGet($"/{EntityName}")]
     [SwaggerResponse(StatusCodes.Status200OK, "Products successfully retrieved.", typeof(IEnumerable<ProductResponse>))]
     public async Task<IActionResult> GetProducts()

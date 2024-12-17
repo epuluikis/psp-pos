@@ -1,6 +1,7 @@
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests;
+using Looms.PoS.Application.Models.Requests.Discount;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ public class UpdateDiscountCommandHandler : IRequestHandler<UpdateDiscountComman
     private readonly IDiscountModelsResolver _modelsResolver;
 
     public UpdateDiscountCommandHandler(
-        IDiscountsRepository discountsRepository, 
+        IDiscountsRepository discountsRepository,
         IHttpContentResolver httpContentResolver,
         IDiscountModelsResolver modelsResolver)
     {
@@ -26,12 +27,12 @@ public class UpdateDiscountCommandHandler : IRequestHandler<UpdateDiscountComman
     public async Task<IActionResult> Handle(UpdateDiscountCommand command, CancellationToken cancellationToken)
     {
         var discountRequest = await _httpContentResolver.GetPayloadAsync<UpdateDiscountRequest>(command.Request);
-        
+
         var original = await _discountsRepository.GetAsync(Guid.Parse(command.Id));
 
         var discountDao = _modelsResolver.GetDaoFromDaoAndRequest(original, discountRequest);
         var updateDiscountDao = await _discountsRepository.UpdateAsync(discountDao);
-        
+
         var response = _modelsResolver.GetResponseFromDao(updateDiscountDao);
 
         return new OkObjectResult(response);

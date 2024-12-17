@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Looms.PoS.Application.Models.Requests.Business;
+using Looms.PoS.Application.Utilities.Validators;
 
 namespace Looms.PoS.Application.Features.Business.Commands.UpdateBusiness;
 
@@ -14,6 +15,12 @@ public class UpdateBusinessRequestValidator : AbstractValidator<UpdateBusinessRe
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .EmailAddress();
+
+        When(x => x.PhoneNumber is not null, () =>
+        {
+            RuleFor(x => x.PhoneNumber!)
+                .MustBeValidPhoneNumber();
+        });
 
         RuleFor(x => x.StartHour)
             .Cascade(CascadeMode.Stop)

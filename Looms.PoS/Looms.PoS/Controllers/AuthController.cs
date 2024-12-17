@@ -36,12 +36,7 @@ public class AuthController : ControllerBase
 
         if (response is LoginResponse loginResponse)
         {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = loginResponse.Expires,
-            };
+            var cookieOptions = new CookieOptions { HttpOnly = true, SameSite = SameSiteMode.Strict, Expires = loginResponse.Expires };
 
             Response.Cookies.Append("auth-token", loginResponse.Token, cookieOptions);
         }

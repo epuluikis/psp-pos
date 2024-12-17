@@ -14,18 +14,19 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
         RuleFor(x => x.Email)
             .Cascade(CascadeMode.Stop)
             .EmailAddress()
-            .MustAsync(async (email, cancellationToken) =>
+            .MustAsync(async (email, _) =>
             {
                 if (!await usersRepository.ExistsWithEmail(email))
                 {
                     throw new LoomsUnauthorizedException("Invalid credentials");
                 }
+
                 return true;
             })
             .DependentRules(() =>
             {
                 RuleFor(x => x.Password)
-                    .CustomAsync(async (password, context, cancellationToken) =>
+                    .CustomAsync(async (password, context, _) =>
                     {
                         var user = await usersRepository.GetByEmailAsync(context.InstanceToValidate.Email);
 
