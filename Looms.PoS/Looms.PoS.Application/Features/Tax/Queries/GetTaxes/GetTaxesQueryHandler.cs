@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -18,7 +19,9 @@ public class GetTaxesQueryHandler : IRequestHandler<GetTaxesQuery, IActionResult
 
     public async Task<IActionResult> Handle(GetTaxesQuery request, CancellationToken cancellationToken)
     {
-        var taxDaos = await _taxesRepository.GetAllAsync();
+        var taxDaos = await _taxesRepository.GetAllAsyncByBusinessId(
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(request.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(taxDaos);
 

@@ -30,9 +30,28 @@ public class TaxesRepository : ITaxesRepository
         return await _context.Taxes.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<TaxDao>> GetAllAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.Taxes.Where(x => x.BusinessId == businessId && !x.IsDeleted).ToListAsync();
+    }
+
     public async Task<TaxDao> GetAsync(Guid id)
     {
         var taxDao = await _context.Taxes.FindAsync(id);
+
+        if (taxDao is null || taxDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Tax not found");
+        }
+
+        return taxDao;
+    }
+
+    public async Task<TaxDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var taxDao = await _context.Taxes
+            .Where(x => x.BusinessId == businessId && x.Id == id)
+            .FirstOrDefaultAsync();
 
         if (taxDao is null || taxDao.IsDeleted)
         {
