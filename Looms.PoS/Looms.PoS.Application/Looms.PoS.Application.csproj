@@ -24,9 +24,4 @@
         <ProjectReference Include="..\Looms.PoS.Domain\Looms.PoS.Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Features\Payment\Handlers\"/>
-        <Folder Include="Services\Product\"/>
-    </ItemGroup>
-
 </Project>

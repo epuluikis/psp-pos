@@ -17,7 +17,7 @@ public class OrderService : IOrderService
 
     public decimal CalculateTotal(OrderDao order)
     {
-        decimal total = 0;
+        var total = 0m;
 
         if (order.OrderItems.Count == 0)
         {
@@ -48,7 +48,7 @@ public class OrderService : IOrderService
 
     public decimal CalculateTax(OrderDao order)
     {
-        decimal totalTax = 0;
+        var totalTax = 0m;
 
         if (order.OrderItems.Count == 0)
         {
@@ -109,7 +109,7 @@ public class OrderService : IOrderService
 
     private decimal CalculateTotalWithPercentageDiscount(IEnumerable<OrderItemDao> orderItems, DiscountDao discount)
     {
-        decimal total = 0;
+        var total = 0m;
 
         foreach (var orderItem in orderItems)
         {
@@ -122,7 +122,7 @@ public class OrderService : IOrderService
 
     private decimal CalculateTotalWithAmountDiscount(IEnumerable<OrderItemDao> orderItems, decimal discountedPrice, decimal originalPrice)
     {
-        decimal tax = 0;
+        var tax = 0m;
 
         if (discountedPrice < 0)
         {
@@ -142,7 +142,7 @@ public class OrderService : IOrderService
 
     private decimal CalculateTaxWithPercentageDiscount(IEnumerable<OrderItemDao> orderItems, DiscountDao discount)
     {
-        decimal taxTotal = 0;
+        var taxTotal = 0m;
 
         foreach (var orderItem in orderItems)
         {
@@ -155,7 +155,7 @@ public class OrderService : IOrderService
 
     private decimal CalculateTaxWithAmountDiscount(IEnumerable<OrderItemDao> orderItems, decimal discountedPrice, decimal originalPrice)
     {
-        decimal tax = 0;
+        var tax = 0m;
 
         if (discountedPrice < 0)
         {

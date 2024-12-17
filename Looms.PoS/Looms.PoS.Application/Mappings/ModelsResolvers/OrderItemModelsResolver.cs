@@ -37,11 +37,11 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
             createOrderItemRequest.Quantity
         );
 
-        decimal tax = 0;
+        var tax = 0m;
 
         var taxDao = productDao?.Tax ?? serviceDao?.Tax;
 
-        if (taxDao != null)
+        if (taxDao is not null)
         {
             tax = _orderItemService.CalculateOrderItemTax(taxDao, price);
         }
@@ -78,7 +78,7 @@ public class OrderItemModelsResolver : IOrderItemModelsResolver
 
         var taxDao = productDao?.Tax ?? serviceDao?.Tax;
 
-        if (taxDao != null)
+        if (taxDao is not null)
         {
             tax = _orderItemService.CalculateOrderItemTax(taxDao, price);
         }

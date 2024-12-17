@@ -43,7 +43,7 @@ public class OrderItemService : IOrderItemService
         ServiceDao? serviceDao,
         int quantity)
     {
-        decimal price = 0;
+        var price = 0m;
 
         if (serviceDao is not null)
         {

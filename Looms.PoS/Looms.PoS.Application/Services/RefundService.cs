@@ -7,7 +7,7 @@ public class RefundService : IRefundService
 {
     public decimal CalculateRefundTotal(IEnumerable<RefundDao> refunds)
     {
-        decimal total = 0;
+        var total = 0m;
 
         if (!refunds.Any())
         {
