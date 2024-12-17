@@ -226,7 +226,7 @@ public class AppDbContext : DbContext
             x.HasOne(o => o.Discount)
              .WithMany(d => d.Orders)
              .HasForeignKey(o => o.DiscountId)
-             .IsRequired();
+             .IsRequired(false);
         });
 
         modelBuilder.Entity<OrderItemDao>(x =>
@@ -245,7 +245,7 @@ public class AppDbContext : DbContext
 
             x.HasOne(oi => oi.ProductVariation)
              .WithMany(pv => pv.OrderItems)
-             .HasForeignKey(oi => oi.ProductId)
+             .HasForeignKey(oi => oi.ProductVariationId)
              .IsRequired(false);
 
             x.HasOne(oi => oi.Service)

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Looms.PoS.Domain.Daos;
 
-public class RefundDao
+public record RefundDao
 {
     public Guid Id { get; init; }
 
