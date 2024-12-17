@@ -18,6 +18,11 @@ public class ServiceModelsResolver : IServiceModelsResolver
     public ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest)
         => _mapper.Map<ServiceDao>(createServiceRequest);
 
+    public ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest, Guid businessId)
+    {
+        return _mapper.Map<ServiceDao>(createServiceRequest) with {BusinessId = businessId};
+    }
+
     public ServiceDao GetDaoFromDaoAndRequest(ServiceDao originalDao, UpdateServiceRequest updateServiceRequest)
     {
         return _mapper.Map<ServiceDao>(updateServiceRequest) with

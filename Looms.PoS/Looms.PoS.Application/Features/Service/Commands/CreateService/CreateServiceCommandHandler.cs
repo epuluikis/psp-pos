@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.Service;
@@ -27,7 +28,10 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
     {
         var serviceRequest = await _httpContentResolver.GetPayloadAsync<CreateServiceRequest>(command.Request);
 
-        var serviceDao = _modelsResolver.GetDaoFromRequest(serviceRequest);
+        var serviceDao = _modelsResolver.GetDaoFromRequest(
+            serviceRequest,
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
+        );
         var createdServiceDao = await _servicesRepository.CreateAsync(serviceDao);
 
         var response = _modelsResolver.GetResponseFromDao(createdServiceDao);

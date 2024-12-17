@@ -7,6 +7,7 @@ namespace Looms.PoS.Application.Interfaces.ModelsResolvers;
 public interface IServiceModelsResolver
 {
     ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest);
+    ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest, Guid businessId);
     ServiceDao GetDaoFromDaoAndRequest(ServiceDao originalDao, UpdateServiceRequest updateServiceRequest);
     ServiceDao GetDeletedDao(ServiceDao originalDao);
     ServiceResponse GetResponseFromDao(ServiceDao serviceDao);

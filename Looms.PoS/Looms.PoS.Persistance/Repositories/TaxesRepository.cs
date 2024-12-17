@@ -56,6 +56,24 @@ public class TaxesRepository : ITaxesRepository
         return taxDao;
     }
 
+    public async Task<TaxDao> GetByTaxCategoryAndBusinessIdAsync(TaxCategory taxCategory, Guid businessId)
+    {
+        var taxDao = await _context.Taxes
+            .Where(x => x.BusinessId == businessId && x.TaxCategory == taxCategory)
+            .FirstOrDefaultAsync();
+            
+        taxDao ??= await _context.Taxes
+            .Where(x => x.BusinessId == businessId && x.TaxCategory == TaxCategory.Both)
+            .FirstOrDefaultAsync();
+
+        if (taxDao is null || taxDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Tax not found");
+        }
+
+        return taxDao;
+    }
+
     public async Task<TaxDao> UpdateAsync(TaxDao taxDao)
     {
         await RemoveAsync(taxDao.Id);

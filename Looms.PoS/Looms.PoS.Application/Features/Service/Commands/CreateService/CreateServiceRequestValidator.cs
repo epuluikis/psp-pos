@@ -1,13 +1,16 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.Service;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
 
 public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequest>
 {
-    public CreateServiceRequestValidator(IBusinessesRepository businessesRepository)
+    public CreateServiceRequestValidator(
+        ITaxesRepository taxesRepository)
     {
         RuleFor(x => x.Name)
             .NotEmpty();
@@ -22,13 +25,15 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
 
         RuleFor(x => x.DurationMin)
             .GreaterThanOrEqualTo(0);
-            
-        RuleFor(x => x.BusinessId)
+
+        RuleFor(x => x.TaxId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (businessId, context, cancellation) => 
-            {
-                await businessesRepository.GetAsync(new Guid(businessId));
-            });
+            .CustomAsync(async (taxId, context, _) 
+                => await taxesRepository.GetByTaxCategoryAndBusinessIdAsync(
+                    Enum.Parse<TaxCategory>(context.InstanceToValidate.Category),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                )
+            );
     }
 }
