@@ -244,13 +244,13 @@ public class DataSeeder
             orders = fakerOrder.Generate(5).Select(o => o with 
             { 
                 UserId = user.Id, 
-                BussinessId = user.BusinessId, 
+                BusinessId = user.BusinessId, 
                 DiscountId = new Faker().Random.Bool() ? discounts[new Faker().Random.Int(0, discounts.Count - 1)].Id : null
             }).ToList();
             foreach (var order in orders)
             {
                 user.Orders.Add(order); 
-                var business = businesses.First(b => b.Id == order.BussinessId);
+                var business = businesses.First(b => b.Id == order.BusinessId);
                 business.Orders.Add(order);
                 if(order.DiscountId.HasValue)
                 {

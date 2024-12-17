@@ -8,7 +8,7 @@ public record OrderDao
 
     public Guid UserId { get; init; }
 
-    public Guid BussinessId { get; init; }
+    public Guid BusinessId { get; init; }
 
     public OrderStatus Status { get; init; } = OrderStatus.Pending;
 
