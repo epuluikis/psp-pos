@@ -35,7 +35,6 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
             Guid.Parse(HttpContextHelper.GetUserId(command.Request)),
             Guid.Parse(businessId)
         );
-        var userDao = _usersRepository.GetByBusinessAsync(Guid.Parse(orderRequest.UserId), Guid.Parse(businessId));
 
         orderDao = await _ordersRepository.CreateAsync(orderDao);
 
