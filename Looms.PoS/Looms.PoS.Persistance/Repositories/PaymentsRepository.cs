@@ -16,8 +16,11 @@ public class PaymentsRepository : IPaymentsRepository
 
     public async Task<PaymentDao> CreateAsync(PaymentDao paymentDao)
     {
+        paymentDao = _context.CreateProxy<PaymentDao>(paymentDao);
+
         var entityEntry = await _context.AddAsync(paymentDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -55,6 +58,7 @@ public class PaymentsRepository : IPaymentsRepository
         await RemoveAsync(paymentDao.Id);
         _context.Payments.Update(paymentDao);
         await _context.SaveChangesAsync();
+
         return paymentDao;
     }
 

@@ -6,6 +6,7 @@ namespace Looms.PoS.Domain.Daos;
 public record UserDao
 {
     public Guid Id { get; init; }
+
     public string Name { get; init; } = string.Empty;
 
     [Index(IsUnique = true)]
@@ -17,8 +18,13 @@ public record UserDao
     public UserRole Role { get; init; }
 
     public Guid BusinessId { get; init; }
+
     public bool IsDeleted { get; init; }
+
 
     public virtual BusinessDao Business { get; init; } = null!;
     public virtual ICollection<ReservationDao> Reservations { get; init; } = [];
+    public virtual ICollection<RefundDao> Refunds { get; init; } = [];
+    public virtual ICollection<GiftCardDao> GiftCards { get; init; } = [];
+    public virtual ICollection<OrderDao> Orders { get; init; } = [];
 }

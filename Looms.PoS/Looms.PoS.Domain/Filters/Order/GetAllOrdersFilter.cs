@@ -1,7 +1,7 @@
 namespace Looms.PoS.Domain.Filters.Order;
 
-public record GetAllOrdersFilter 
+public record GetAllOrdersFilter
 {
-    public string Status { get; init; }
-    public string UserId { get; init; }
+    public string? Status { get; init; }
+    public string? UserId { get; init; }
 }

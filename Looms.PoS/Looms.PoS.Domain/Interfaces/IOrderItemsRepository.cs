@@ -8,5 +8,4 @@ public interface IOrderItemsRepository
     Task<OrderItemDao> UpdateAsync(OrderItemDao orderItem);
     Task<IEnumerable<OrderItemDao>> GetAllAsync(Guid orderId);
     Task<OrderItemDao> GetAsync(Guid id);
-    Task RemoveAsync(Guid id);
 }

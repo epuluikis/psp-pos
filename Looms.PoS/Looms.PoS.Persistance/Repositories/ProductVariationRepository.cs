@@ -16,8 +16,11 @@ public class ProductVariationRepository : IProductVariationRepository
 
     public async Task<ProductVariationDao> CreateAsync(ProductVariationDao productVariationDao)
     {
+        productVariationDao = _context.CreateProxy<ProductVariationDao>(productVariationDao);
+
         var entityEntry = await _context.AddAsync(productVariationDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -39,6 +42,7 @@ public class ProductVariationRepository : IProductVariationRepository
         {
             throw new LoomsNotFoundException("Product variation entry not found");
         }
+
         return productVariationDao;
     }
 
@@ -47,6 +51,7 @@ public class ProductVariationRepository : IProductVariationRepository
         await RemoveAsync(productVariationDao.Id);
         _context.ProductVariations.Update(productVariationDao);
         await _context.SaveChangesAsync();
+
         return productVariationDao;
     }
 

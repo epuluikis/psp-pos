@@ -16,8 +16,11 @@ public class BusinessesRepository : IBusinessesRepository
 
     public async Task<BusinessDao> CreateAsync(BusinessDao businessDao)
     {
+        businessDao = _context.CreateProxy<BusinessDao>(businessDao);
+
         var entityEntry = await _context.AddAsync(businessDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -34,6 +37,7 @@ public class BusinessesRepository : IBusinessesRepository
         {
             throw new LoomsNotFoundException("Business not found");
         }
+
         return businessDao;
     }
 
@@ -42,6 +46,7 @@ public class BusinessesRepository : IBusinessesRepository
         await RemoveAsync(businessDao.Id);
         _context.Businesses.Update(businessDao);
         await _context.SaveChangesAsync();
+
         return businessDao;
     }
 

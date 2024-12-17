@@ -16,8 +16,11 @@ public class RefundsRepository : IRefundsRepository
 
     public async Task<RefundDao> CreateAsync(RefundDao refundDao)
     {
+        refundDao = _context.CreateProxy<RefundDao>(refundDao);
+
         var entityEntry = await _context.AddAsync(refundDao);
         await _context.SaveChangesAsync();
+
         return entityEntry.Entity;
     }
 
@@ -28,7 +31,6 @@ public class RefundsRepository : IRefundsRepository
 
     public async Task<RefundDao> GetAsync(Guid id)
     {
-        return await _context.Refunds.FindAsync(id)
-            ?? throw new LoomsNotFoundException("Refund not found");
+        return await _context.Refunds.FindAsync(id) ?? throw new LoomsNotFoundException("Refund not found");
     }
 }
