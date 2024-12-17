@@ -14,6 +14,10 @@ public class CreateDiscountsRequestValidator : AbstractValidator<CreateDiscountR
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
+        RuleFor(x => x.DiscountType)
+            .NotNull()
+            .IsInEnum();
+
         RuleFor(x => x.DiscountTarget)
             .NotNull()
             .IsInEnum();

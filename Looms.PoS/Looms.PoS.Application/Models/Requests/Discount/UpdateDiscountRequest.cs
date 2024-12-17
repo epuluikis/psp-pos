@@ -5,7 +5,7 @@ namespace Looms.PoS.Application.Models.Requests.Discount;
 public record UpdateDiscountRequest
 {
     public string? Name { get; init; } = string.Empty;
-    public string DiscountType { get; init; } = string.Empty;
+    public DiscountType DiscountType { get; init; }
     public decimal Value { get; init; }
     public DiscountTarget DiscountTarget { get; init; }
     public string? ProductId { get; init; } = string.Empty;
