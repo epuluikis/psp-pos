@@ -29,6 +29,13 @@ public class ProductsRepository : IProductsRepository
         return await _context.Products.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<ProductDao>> GetAllByBusinessIdAsync(Guid businessId)
+    {
+        return await _context.Products
+            .Where(x => x.BusinessId == businessId && !x.IsDeleted)
+            .ToListAsync();
+    }
+
     public async Task<ProductDao> GetAsync(Guid id)
     {
         var productDao = await _context.Products.FindAsync(id);

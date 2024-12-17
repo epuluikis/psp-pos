@@ -9,17 +9,12 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     public CreateProductCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateProductRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreateProductRequest>(request);
-
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+                
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }
