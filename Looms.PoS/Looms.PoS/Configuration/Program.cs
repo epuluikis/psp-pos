@@ -3,6 +3,7 @@ using Looms.PoS.Application.Options;
 using Looms.PoS.Persistance;
 using Looms.PoS.Swagger.Filters;
 using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Looms.PoS.Configuration;
 
@@ -57,6 +58,14 @@ public class Program
         builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var context = services.GetRequiredService<AppDbContext>();
+            var dataSeeder = new DataSeeder(context);
+            dataSeeder.Seed();
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
