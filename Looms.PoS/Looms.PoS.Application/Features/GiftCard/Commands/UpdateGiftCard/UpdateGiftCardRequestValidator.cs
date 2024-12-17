@@ -30,6 +30,6 @@ public class UpdateGiftCardRequestValidator : AbstractValidator<UpdateGiftCardRe
             .MustBeValidDateTime();
 
         RuleFor(x => x.IsActive)
-            .NotEmpty();
+            .NotNull();
     }
 }

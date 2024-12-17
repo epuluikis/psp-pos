@@ -33,7 +33,7 @@ public class UpdatePaymentProviderRequestValidator : AbstractValidator<UpdatePay
             .NotEmpty();
 
         RuleFor(x => x.IsActive)
-            .NotEmpty()
+            .NotNull()
             .MustAsync(async (_, isActive, context, _) =>
                 !isActive || !await paymentProvidersRepository.ExistsActiveByBusinessIdExcludingId(
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader]),
