@@ -32,7 +32,7 @@ public class CreatePaymentProviderRequestValidator : AbstractValidator<CreatePay
 
         RuleFor(x => x.IsActive)
             .Cascade(CascadeMode.Stop)
-            .NotEmpty()
+            .NotNull()
             .MustAsync(async (_, isActive, context, _) =>
                 !isActive || !await paymentProvidersRepository.ExistsActiveByBusinessId(
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader]))

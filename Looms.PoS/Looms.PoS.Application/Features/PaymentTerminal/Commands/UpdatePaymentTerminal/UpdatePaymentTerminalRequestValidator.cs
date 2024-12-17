@@ -33,7 +33,7 @@ public class UpdatePaymentTerminalRequestValidator : AbstractValidator<UpdatePay
             .CustomAsync(async (id, _, _) => await paymentProvidersRepository.GetAsync(Guid.Parse(id!)));
 
         RuleFor(x => x.IsActive)
-            .NotEmpty();
+            .NotNull();
 
         RuleFor(x => x)
             .MustAsync(async (x, _, _) =>

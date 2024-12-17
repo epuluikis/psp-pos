@@ -27,6 +27,6 @@ public class CreateGiftCardRequestValidator : AbstractValidator<CreateGiftCardRe
             .MustBeValidDateTime();
 
         RuleFor(x => x.IsActive)
-            .NotEmpty();
+            .NotNull();
     }
 }
