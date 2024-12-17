@@ -14,5 +14,17 @@ public class UpdateBusinessRequestValidator : AbstractValidator<UpdateBusinessRe
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .EmailAddress();
+
+        RuleFor(x => x.StartHour)
+            .Cascade(CascadeMode.Stop)
+            .GreaterThanOrEqualTo(0)
+            .LessThanOrEqualTo(24)
+            .LessThan(x => x.EndHour);
+
+        RuleFor(x => x.EndHour)
+            .Cascade(CascadeMode.Stop)
+            .GreaterThanOrEqualTo(0)
+            .LessThanOrEqualTo(24)
+            .GreaterThan(x => x.StartHour);
     }
 }
