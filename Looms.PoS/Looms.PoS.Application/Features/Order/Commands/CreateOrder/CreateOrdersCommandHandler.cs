@@ -28,12 +28,11 @@ public class CreateOrdersCommandHandler : IRequestHandler<CreateOrdersCommand, I
     public async Task<IActionResult> Handle(CreateOrdersCommand command, CancellationToken cancellationToken)
     {
         var orderRequest = await _httpContentResolver.GetPayloadAsync<CreateOrderRequest>(command.Request);
-        var businessId = HttpContextHelper.GetHeaderBusinessId(command.Request);
 
         var orderDao = _orderModelsResolver.GetDaoFromRequest(
             orderRequest,
             Guid.Parse(HttpContextHelper.GetUserId(command.Request)),
-            Guid.Parse(businessId)
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
         );
 
         orderDao = await _ordersRepository.CreateAsync(orderDao);
