@@ -11,48 +11,33 @@ namespace Looms.PoS.Application.Features.OrderItem.Commands.DeleteOrderItem;
 public class DeleteOrderItemCommandHandler : IRequestHandler<DeleteOrderItemCommand, IActionResult>
 {
     private readonly IOrderItemsRepository _orderItemsRepository;
-    private readonly IOrderItemModelsResolver _modelsResolver;
-    private readonly IProductUpdatesService _productUpdatesService;
-    private readonly IProductVariationUpdatesService _productVariationUpdatesService;
-    
-    public DeleteOrderItemCommandHandler(IOrderItemsRepository orderItemsRepository, 
-        IOrderItemModelsResolver modelsResolver,
-        IProductUpdatesService productUpdatesService,
-        IProductVariationUpdatesService productVariationUpdatesService)
+    private readonly IOrderItemModelsResolver _orderItemModelsResolver;
+    private readonly IOrderItemService _orderItemService;
+
+    public DeleteOrderItemCommandHandler(
+        IOrderItemsRepository orderItemsRepository,
+        IOrderItemModelsResolver orderItemModelsResolver,
+        IOrderItemService orderItemService
+    )
     {
         _orderItemsRepository = orderItemsRepository;
-        _modelsResolver = modelsResolver;
-        _productUpdatesService = productUpdatesService;
-        _productVariationUpdatesService = productVariationUpdatesService;
+        _orderItemModelsResolver = orderItemModelsResolver;
+        _orderItemService = orderItemService;
     }
 
     public async Task<IActionResult> Handle(DeleteOrderItemCommand request, CancellationToken cancellationToken)
     {
         var originalDao = await _orderItemsRepository.GetAsync(Guid.Parse(request.Id));
+        var orderItemDao = _orderItemModelsResolver.GetDeletedDao(originalDao);
 
-        await CompleteTransaction(originalDao);
-        
+        using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            await _orderItemService.ResetQuantity(originalDao);
+            await _orderItemsRepository.UpdateAsync(orderItemDao);
+
+            transactionScope.Complete();
+        }
+
         return new NoContentResult();
-    }
-
-    private async Task CompleteTransaction(OrderItemDao orderItemDao)
-    {
-        using TransactionScope tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-        if (orderItemDao.Product is not null)
-        {
-            await _productUpdatesService.UpdateProductStock(orderItemDao.Product, -orderItemDao.Quantity);
-        }
-
-        if (orderItemDao.ProductVariation is not null)
-        {
-            await _productVariationUpdatesService.UpdateProductVariationStock(orderItemDao.ProductVariation, -orderItemDao.Quantity);
-        }
-
-        var deleteItemDao = _modelsResolver.GetDeletedDao(orderItemDao);
-        await _orderItemsRepository.UpdateAsync(deleteItemDao);
-
-        tran.Complete();
-
     }
 }

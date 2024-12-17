@@ -10,5 +10,7 @@ public interface IOrdersRepository
     Task<OrderDao> UpdateAsync(OrderDao order);
     Task<IEnumerable<OrderDao>> GetAllAsync();
     Task<IEnumerable<OrderDao>> GetAllAsync(GetAllOrdersFilter filter);
+    Task<IEnumerable<OrderDao>> GetAllAsyncByBusinessId(GetAllOrdersFilter filter, Guid businessId);
     Task<OrderDao> GetAsync(Guid id);
+    Task<OrderDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId);
 }

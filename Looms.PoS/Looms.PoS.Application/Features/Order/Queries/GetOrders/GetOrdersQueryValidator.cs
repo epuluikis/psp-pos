@@ -7,7 +7,7 @@ namespace Looms.PoS.Application.Features.Order.Queries.GetOrders;
 
 public class GetOrdersQueryValidator : AbstractValidator<GetOrdersQuery>
 {
-    public GetOrdersQueryValidator(IOrdersRepository ordersRepository)
+    public GetOrdersQueryValidator()
     {
         RuleFor(x => x.Status)
             .Must(x => Enum.TryParse<OrderStatus>(x, out _))

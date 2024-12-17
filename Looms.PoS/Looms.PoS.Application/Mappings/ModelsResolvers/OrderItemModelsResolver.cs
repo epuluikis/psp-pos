@@ -12,48 +12,81 @@ namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 public class OrderItemModelsResolver : IOrderItemModelsResolver
 {
     private readonly IMapper _mapper;
-    private readonly IOrderItemTotalsService _orderItemTotalsService;
-
+    private readonly IOrderItemService _orderItemService;
 
     public OrderItemModelsResolver(
         IMapper mapper,
-        IOrderItemTotalsService orderItemTotalsService)
+        IOrderItemService orderItemService
+    )
     {
         _mapper = mapper;
-        _orderItemTotalsService = orderItemTotalsService;
+        _orderItemService = orderItemService;
+    }
+
+    public OrderItemDao GetDaoFromRequest(
+        CreateOrderItemRequest createOrderItemRequest,
+        Guid orderId,
+        ProductDao? productDao,
+        ProductVariationDao? productVariationDao,
+        ServiceDao? serviceDao)
+    {
+        var price = _orderItemService.CalculateOrderItemPrice(
+            productDao,
+            productVariationDao,
+            serviceDao,
+            createOrderItemRequest.Quantity
+        );
+
+        var tax = 0m;
+
+        var taxDao = productDao?.Tax ?? serviceDao?.Tax;
+
+        if (taxDao is not null)
+        {
+            tax = _orderItemService.CalculateOrderItemTax(taxDao, price);
+        }
+
+        return _mapper.Map<OrderItemDao>(createOrderItemRequest) with
+        {
+            OrderId = orderId,
+            Product = productDao,
+            ProductId = productDao?.Id,
+            ProductVariation = productVariationDao,
+            ProductVariationId = productVariationDao?.Id,
+            Service = serviceDao,
+            ServiceId = serviceDao?.Id,
+            Price = price,
+            Tax = tax
+        };
     }
 
     public OrderItemDao GetDaoFromDaoAndRequest(
         OrderItemDao orderItemDao,
         UpdateOrderItemRequest updateOrderItemRequest,
-        DiscountDao? discountDao)
-    {
-        var price = _orderItemTotalsService.CalculateOrderItemPrice(orderItemDao, discountDao, orderItemDao.Quantity);
-        var taxDao = orderItemDao.Product is not null ? orderItemDao.Product.Tax : orderItemDao.Service?.Tax;
-        var tax = _orderItemTotalsService.CalculateOrderItemTax(taxDao, price);
-
-        return _mapper.Map(updateOrderItemRequest, orderItemDao) with
-        {
-            Id = orderItemDao.Id, Discount = discountDao, Price = price, Tax = tax
-        };
-    }
-
-    public OrderItemDao GetDaoFromRequest(
-        Guid orderId,
-        CreateOrderItemRequest createOrderItemRequest,
         ProductDao? productDao,
         ProductVariationDao? productVariationDao,
         ServiceDao? serviceDao)
     {
-        var price = _orderItemTotalsService.CalculateOrderItemPrice(productDao, productVariationDao, serviceDao,
-            createOrderItemRequest.Quantity);
+        var price = _orderItemService.CalculateOrderItemPrice(
+            productDao,
+            productVariationDao,
+            serviceDao,
+            updateOrderItemRequest.Quantity
+        );
 
-        var taxDao = productDao is not null ? productDao.Tax : serviceDao?.Tax;
-        var tax = _orderItemTotalsService.CalculateOrderItemTax(taxDao, price);
+        var tax = 0m;
 
-        return _mapper.Map<OrderItemDao>(createOrderItemRequest) with
+        var taxDao = productDao?.Tax ?? serviceDao?.Tax;
+
+        if (taxDao is not null)
         {
-            OrderId = orderId,
+            tax = _orderItemService.CalculateOrderItemTax(taxDao, price);
+        }
+
+        return _mapper.Map<OrderItemDao>(updateOrderItemRequest) with
+        {
+            Id = orderItemDao.Id,
+            OrderId = orderItemDao.OrderId,
             Product = productDao,
             ProductId = productDao?.Id,
             ProductVariation = productVariationDao,

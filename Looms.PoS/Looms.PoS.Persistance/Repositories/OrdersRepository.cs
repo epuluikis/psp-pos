@@ -77,6 +77,23 @@ public class OrdersRepository : LoomsException, IOrdersRepository
                           .ToListAsync();
     }
 
+    public async Task<IEnumerable<OrderDao>> GetAllAsyncByBusinessId(GetAllOrdersFilter filter, Guid businessId)
+    {
+        var query = _context.Orders.AsQueryable();
+
+        if (filter.Status is not null)
+        {
+            query = query.Where(x => x.Status == Enum.Parse<OrderStatus>(filter.Status));
+        }
+
+        if (filter.UserId is not null)
+        {
+            query = query.Where(x => x.UserId == Guid.Parse(filter.UserId));
+        }
+
+        return await query.Where(x => !x.IsDeleted && x.BusinessId == businessId).ToListAsync();
+    }
+
 
     public async Task<OrderDao> GetAsync(Guid id)
     {
@@ -98,6 +115,18 @@ public class OrdersRepository : LoomsException, IOrdersRepository
                                      .ThenInclude(p => p.Tax)
                                      .FirstOrDefaultAsync(x => x.Id == id);
 
+
+        if (orderDao is null || orderDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Order not found");
+        }
+
+        return orderDao;
+    }
+
+    public async Task<OrderDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var orderDao = await _context.Orders.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
 
         if (orderDao is null || orderDao.IsDeleted)
         {

@@ -220,7 +220,7 @@ public class AppDbContext : DbContext
 
             x.HasOne(o => o.Business)
              .WithMany(b => b.Orders)
-             .HasForeignKey(o => o.BussinessId)
+             .HasForeignKey(o => o.BusinessId)
              .IsRequired();
 
             x.HasOne(o => o.Discount)

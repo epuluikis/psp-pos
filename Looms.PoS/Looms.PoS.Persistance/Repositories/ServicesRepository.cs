@@ -41,6 +41,18 @@ public class ServicesRepository : IServicesRepository
         return serviceDao;
     }
 
+    public async Task<ServiceDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var serviceDao = await _context.Services.Where(x => x.Id == id && x.BusinessId == businessId).FirstOrDefaultAsync();
+
+        if (serviceDao is null || serviceDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Service not found");
+        }
+
+        return serviceDao;
+    }
+
     public async Task<ServiceDao> UpdateAsync(ServiceDao serviceDao)
     {
         await RemoveAsync(serviceDao.Id);

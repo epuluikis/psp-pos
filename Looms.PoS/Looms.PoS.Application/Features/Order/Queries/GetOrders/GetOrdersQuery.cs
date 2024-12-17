@@ -15,5 +15,4 @@ public record GetOrdersQuery : LoomsHttpRequest, IRequest<IActionResult>
         Status = status;
         UserId = userId;
     }
-
 }

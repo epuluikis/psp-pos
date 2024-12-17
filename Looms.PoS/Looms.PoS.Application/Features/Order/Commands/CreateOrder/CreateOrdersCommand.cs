@@ -7,7 +7,6 @@ namespace Looms.PoS.Application.Features.Order.Commands.CreateOrder;
 
 public record CreateOrdersCommand : LoomsHttpRequest, IRequest<IActionResult>
 {
-
     public CreateOrdersCommand(HttpRequest request) : base(request)
     {
     }

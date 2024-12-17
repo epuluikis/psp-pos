@@ -47,6 +47,19 @@ public class OrderItemsRepository : LoomsException, IOrderItemsRepository
         return orderItemDao;
     }
 
+    public async Task<OrderItemDao> GetAsyncByIdAndOrderIdAndBusinessId(Guid id, Guid orderId, Guid businessId)
+    {
+        var orderItemDao = await _context.OrderItems.Where(x => x.Id == id && x.OrderId == orderId && x.Order.BusinessId == businessId)
+                                         .FirstOrDefaultAsync();
+
+        if (orderItemDao is null || orderItemDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Order item not found");
+        }
+
+        return orderItemDao;
+    }
+
     public async Task<OrderItemDao> UpdateAsync(OrderItemDao orderItem)
     {
         await RemoveAsync(orderItem.Id);

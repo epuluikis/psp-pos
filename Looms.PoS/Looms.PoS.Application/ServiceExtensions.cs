@@ -30,16 +30,15 @@ public static class ServiceExtensions
 
         services.AddSingleton<IHttpContentResolver, HttpContentResolver>();
         services.AddSingleton<ITokenService, TokenService>();
-        services.AddSingleton<IDiscountTotalsService, DiscountsTotalsService>();
-        services.AddSingleton<IOrderTotalsService, OrderTotalsService>();
-        services.AddSingleton<IOrderItemTotalsService, OrderItemTotalsService>();
-        services.AddSingleton<IRefundsTotalsService, RefundsTotalsService>();
+        services.AddSingleton<IDiscountService, DiscountService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IOrderItemService, OrderItemService>();
+        services.AddSingleton<IRefundService, RefundService>();
         services.AddSingleton<IPaymentTotalsService, PaymentsTotalsService>();
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<INotificationService, TwilioNotificationService>();
-
-        services.AddScoped<IProductUpdatesService, ProductUpdatesService>();
-        services.AddScoped<IProductVariationUpdatesService, ProductVariationUpdatesService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductVariationService, ProductVariationService>();
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceExtensions).Assembly));
         services.AddValidatorsFromAssembly(typeof(ServiceExtensions).Assembly);
@@ -67,8 +66,8 @@ public static class ServiceExtensions
         services.AddSingleton<IDiscountModelsResolver, DiscountModelsResolver>();
         services.AddSingleton<IRefundModelsResolver, RefundModelsResolver>();
         services.AddSingleton<IPaymentModelsResolver, PaymentModelsResolver>();
-        services.AddSingleton<IOrderModelsResolver, OrderModelsResolver>();
-        services.AddSingleton<IOrderItemModelsResolver, OrderItemModelsResolver>();
+        services.AddScoped<IOrderModelsResolver, OrderModelsResolver>();
+        services.AddScoped<IOrderItemModelsResolver, OrderItemModelsResolver>();
 
         services.AddSingleton<IServiceModelsResolver, ServiceModelsResolver>();
         services.AddSingleton<IReservationModelsResolver, ReservationModelsResolver>();
