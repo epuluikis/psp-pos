@@ -1,4 +1,6 @@
-﻿using Looms.PoS.Application.Interfaces.ModelsResolvers;
+﻿using Looms.PoS.Application.Constants;
+using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +20,10 @@ public class GetProductQueryHandler : IRequestHandler<GetProductQuery, IActionRe
 
     public async Task<IActionResult> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
-        var productDao = await _productsRepository.GetAsync(Guid.Parse(request.Id));
+        var productDao = await _productsRepository.GetAsyncByIdAndBusinessId(
+            Guid.Parse(request.Id),
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(request.Request))
+        );
 
         var response = _modelsResolver.GetResponseFromDao(productDao);
 

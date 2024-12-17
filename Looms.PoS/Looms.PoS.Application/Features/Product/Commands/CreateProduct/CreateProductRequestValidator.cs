@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
@@ -14,8 +15,12 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
 
         RuleFor(x => x.TaxId!)
             .MustBeValidGuid()
-            .CustomAsync(async (taxId, context, cancellationToken) =>
-                await taxesRepository.GetAsync(Guid.Parse(taxId)))
+            .CustomAsync(async (taxId, context, cancellationToken) 
+                => await taxesRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(taxId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                )
+            )
             .When(x => x.TaxId is not null);
 
         RuleFor(x => x.Price)

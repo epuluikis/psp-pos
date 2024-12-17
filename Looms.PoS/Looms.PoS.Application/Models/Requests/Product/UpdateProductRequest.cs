@@ -6,5 +6,4 @@ public record UpdateProductRequest
     public decimal Price { get; init; }
     public decimal QuantityInStock { get; init; }
     public string Description { get; init; } = string.Empty;
-    public IEnumerable<VariationRequest> VariationRequest { get; init; } = [];
 }
