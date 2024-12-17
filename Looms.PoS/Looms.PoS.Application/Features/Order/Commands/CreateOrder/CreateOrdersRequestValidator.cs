@@ -1,30 +1,32 @@
 using FluentValidation;
 using Looms.PoS.Application.Constants;
+using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.Order.Commands.CreateOrder;
 
 public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
 {
-    public CreateOrderRequestValidator(
-        IBusinessesRepository businessesRepository,
-        IUsersRepository usersRepository)
+    public CreateOrderRequestValidator(IDiscountsRepository discountsRepository)
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.BusinessId)
-            .Cascade(CascadeMode.Stop)
+        RuleFor(x => x.DiscountId)
             .MustBeValidGuid()
-            .CustomAsync(async (businessId, _, cancellationToken) =>
-                await businessesRepository.GetAsync(Guid.Parse(businessId!)));
+            .CustomAsync(async (discountId, context, _) =>
+            {
+                var discountDao = await discountsRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(discountId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                );
 
-        RuleFor(x => x.UserId)
-            .Cascade(CascadeMode.Stop)
-            .MustBeValidGuid()
-            .CustomAsync(async (userId, context, cancellationToken) =>
-                await usersRepository.GetByBusinessAsync(Guid.Parse(userId!),
-                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])));
+                if (discountDao.Target != DiscountTarget.Order)
+                {
+                    context.AddFailure("Discount cannot be applied to order.");
+                }
+            }).When(x => x.DiscountId is not null);
     }
 }

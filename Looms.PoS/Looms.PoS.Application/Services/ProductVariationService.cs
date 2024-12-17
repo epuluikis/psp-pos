@@ -5,20 +5,23 @@ using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Services;
 
-public class ProductVariationUpdatesService : IProductVariationUpdatesService
+public class ProductVariationService : IProductVariationService
 {
     private readonly IProductVariationRepository _variationsRepository;
     private readonly IProductVariationModelsResolver _productVariationModelsResolver;
-    public ProductVariationUpdatesService(IProductVariationRepository variationsRepository, IProductVariationModelsResolver productVariationModelsResolver)
+
+    public ProductVariationService(
+        IProductVariationRepository variationsRepository,
+        IProductVariationModelsResolver productVariationModelsResolver)
     {
         _variationsRepository = variationsRepository;
         _productVariationModelsResolver = productVariationModelsResolver;
     }
 
-    public async Task<ProductVariationDao> UpdateProductVariationStock(ProductVariationDao productVariationDao, int quantity)
+    public async Task<ProductVariationDao> UpdateStock(ProductVariationDao productVariationDao, int quantity)
     {
         var updatedVariationDao = _productVariationModelsResolver.GetUpdatedQuantityDao(productVariationDao, quantity);
-        var updatedDao = await _variationsRepository.UpdateAsync(updatedVariationDao);
-        return updatedDao;
+
+        return await _variationsRepository.UpdateAsync(updatedVariationDao);
     }
 }

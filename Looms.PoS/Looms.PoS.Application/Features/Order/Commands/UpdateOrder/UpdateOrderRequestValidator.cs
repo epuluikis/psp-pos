@@ -1,4 +1,5 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
@@ -12,14 +13,19 @@ public class UpdateOrderRequestValidator : AbstractValidator<UpdateOrderRequest>
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 
-        RuleFor(x => x.DiscountId!)
+        RuleFor(x => x.DiscountId)
             .MustBeValidGuid()
-            .CustomAsync(async (discountId, _, cancellationToken) =>
-                await discountsRepository.GetAsync(Guid.Parse(discountId)))
-            .When(x => x.DiscountId is not null);
+            .CustomAsync(async (discountId, context, _) =>
+            {
+                var discountDao = await discountsRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(discountId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                );
 
-        RuleFor(x => x.Status)
-            .Must(value => Enum.TryParse<OrderStatus>(value, true, out _))
-            .When(x => x.Status is not null);
+                if (discountDao.Target != DiscountTarget.Order)
+                {
+                    context.AddFailure("Discount cannot be applied to order.");
+                }
+            }).When(x => x.DiscountId is not null);
     }
 }

@@ -1,7 +1,9 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.OrderItem.Commands.CreateOrderItem;
@@ -11,27 +13,33 @@ public class CreateOrderItemsCommandValidator : AbstractValidator<CreateOrderIte
     public CreateOrderItemsCommandValidator(
         IHttpContentResolver httpContentResolver,
         IEnumerable<IValidator<CreateOrderItemRequest>> validators,
-        IOrdersRepository ordersRepository)
+        IOrdersRepository ordersRepository
+    )
     {
         RuleFor(x => x.OrderId)
             .MustBeValidGuid()
-            .CustomAsync(async (orderId, context, cancellationToken) =>
-            {
-                var order = await ordersRepository.GetAsync(Guid.Parse(orderId));
-            });
+            .CustomAsync(async (productId, context, _) =>
+                {
+                    var orderDao = await ordersRepository.GetAsyncByIdAndBusinessId(
+                        Guid.Parse(productId!),
+                        Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                    );
+
+                    if (orderDao.Status != OrderStatus.Pending)
+                    {
+                        context.AddFailure($"Cannot update order with status {orderDao.Status}.");
+                    }
+                }
+            );
 
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
-            {
-                var body = await httpContentResolver.GetPayloadAsync<CreateOrderItemRequest>(request);
-
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
-                await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
+            .CustomAsync(async (request, context, _) =>
                 {
-                    context.AddFailure(validationError);
+                    var body = await httpContentResolver.GetPayloadAsync<CreateOrderItemRequest>(request);
+                    var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+
+                    await Task.WhenAll(validationResults);
                 }
-            });
+            );
     }
 }

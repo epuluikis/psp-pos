@@ -7,6 +7,7 @@ using Looms.PoS.Application.Models.Requests.Order;
 using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Application.Models.Responses.Order;
 using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Filters.Order;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
@@ -17,8 +18,8 @@ public class OrderModelsResolver : IOrderModelsResolver
     private readonly IPaymentModelsResolver _paymentModelsResolver;
     private readonly IOrderItemModelsResolver _orderItemModelsResolver;
     private readonly IRefundModelsResolver _refundModelsResolver;
-    private readonly IOrderTotalsService _orderTotalsService;
-    private readonly IRefundsTotalsService _refundsTotalsService;
+    private readonly IOrderService _orderService;
+    private readonly IRefundService _refundService;
     private readonly IPaymentTotalsService _paymentTotalsService;
 
     public OrderModelsResolver(
@@ -26,16 +27,16 @@ public class OrderModelsResolver : IOrderModelsResolver
         IPaymentModelsResolver paymentModelsResolver,
         IOrderItemModelsResolver orderItemModelsResolver,
         IRefundModelsResolver refundModelsResolver,
-        IOrderTotalsService orderTotalsService,
-        IRefundsTotalsService refundsTotalsService,
+        IOrderService orderService,
+        IRefundService refundService,
         IPaymentTotalsService paymentTotalsService)
     {
         _mapper = mapper;
         _paymentModelsResolver = paymentModelsResolver;
         _orderItemModelsResolver = orderItemModelsResolver;
         _refundModelsResolver = refundModelsResolver;
-        _orderTotalsService = orderTotalsService;
-        _refundsTotalsService = refundsTotalsService;
+        _orderService = orderService;
+        _refundService = refundService;
         _paymentTotalsService = paymentTotalsService;
     }
 
@@ -44,14 +45,24 @@ public class OrderModelsResolver : IOrderModelsResolver
         return _mapper.Map<GetAllOrdersFilter>(getOrdersQuery);
     }
 
-    public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest, BusinessDao businessDao, UserDao userDao)
+    public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest, Guid userId, Guid businessId)
     {
-        return _mapper.Map<OrderDao>(createOrderRequest) with { Business = businessDao, User = userDao };
+        return _mapper.Map<OrderDao>(createOrderRequest) with { UserId = userId, BusinessId = businessId };
     }
 
-    public OrderDao GetDaoFromDaoAndRequest(OrderDao orderDao, UpdateOrderRequest updateOrderRequest, DiscountDao? discountDao)
+    public OrderDao GetDaoFromRequest(CreateOrderRequest createOrderRequest)
     {
-        return _mapper.Map(updateOrderRequest, orderDao) with { Id = orderDao.Id, Discount = discountDao, OrderItems = orderDao.OrderItems };
+        return _mapper.Map<OrderDao>(createOrderRequest);
+    }
+
+    public OrderDao GetDaoFromDaoAndRequest(OrderDao orderDao, UpdateOrderRequest updateOrderRequest)
+    {
+        return _mapper.Map(updateOrderRequest, orderDao) with { Id = orderDao.Id, OrderItems = orderDao.OrderItems };
+    }
+
+    public OrderDao GetDaoFromDaoAndStatus(OrderDao orderDao, OrderStatus orderStatus)
+    {
+        return _mapper.Map<OrderDao>(orderDao) with { Status = orderStatus };
     }
 
     public OrderResponse GetResponseFromDao(OrderDao orderDao)
@@ -62,10 +73,10 @@ public class OrderModelsResolver : IOrderModelsResolver
             Payments = _paymentModelsResolver.GetResponseFromDao(orderDao.Payments),
             Refunds = _refundModelsResolver.GetResponseFromDao(orderDao.Refunds),
             OrderItems = _orderItemModelsResolver.GetResponseFromDao(orderDao.OrderItems),
-            TotalAmount = _orderTotalsService.CalculateOrderTotal(orderDao),
+            TotalAmount = _orderService.CalculateTotal(orderDao),
             AmountPaid = _paymentTotalsService.CalculatePaymentTotal(orderDao.Payments),
-            AmountRefunded = _refundsTotalsService.CalculateRefundTotal(orderDao.Refunds),
-            TaxAmount = _orderTotalsService.CalculateOrderTax(orderDao)
+            AmountRefunded = _refundService.CalculateRefundTotal(orderDao.Refunds),
+            TaxAmount = _orderService.CalculateTax(orderDao)
         };
     }
 

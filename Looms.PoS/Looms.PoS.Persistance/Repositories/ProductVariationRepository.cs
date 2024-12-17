@@ -46,6 +46,18 @@ public class ProductVariationRepository : IProductVariationRepository
         return productVariationDao;
     }
 
+    public async Task<ProductVariationDao> GetAsyncByIdAndProductId(Guid id, Guid productId)
+    {
+        var productVariationDao = await _context.ProductVariations.Where(x => x.Id == id && x.ProductId == productId).FirstOrDefaultAsync();
+
+        if (productVariationDao is null || productVariationDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Product variation entry not found");
+        }
+
+        return productVariationDao;
+    }
+
     public async Task<ProductVariationDao> UpdateAsync(ProductVariationDao productVariationDao)
     {
         await RemoveAsync(productVariationDao.Id);

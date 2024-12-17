@@ -7,8 +7,9 @@ public class PaymentsTotalsService : IPaymentTotalsService
 {
     public decimal CalculatePaymentTotal(IEnumerable<PaymentDao> payments)
     {
-        decimal total = 0;
-        if(!payments.Any())
+        var total = 0m;
+
+        if (!payments.Any())
         {
             return 0;
         }
@@ -16,7 +17,8 @@ public class PaymentsTotalsService : IPaymentTotalsService
         foreach (var payment in payments)
         {
             total += payment.Amount;
-            if(payment.Tip is not default(decimal))
+
+            if (payment.Tip is not default(decimal))
             {
                 total += payment.Tip;
             }

@@ -2,13 +2,12 @@ using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Application.Models.Requests.OrderItem;
+using Looms.PoS.Application.Services;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Transactions;
-
-// TODO: Add checks for service availability, if service is not being ordered when it is reserved
 
 namespace Looms.PoS.Application.Features.OrderItem.Commands.CreateOrderItem;
 
@@ -16,37 +15,37 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
 {
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IOrderModelsResolver _orderModelsResolver;
-    private readonly IOrderItemModelsResolver _modelsResolver;
+    private readonly IOrderItemModelsResolver _orderItemModelsResolver;
     private readonly IOrderItemsRepository _orderItemsRepository;
     private readonly IOrdersRepository _ordersRepository;
     private readonly IProductsRepository _productsRepository;
     private readonly IProductVariationRepository _variationsRepository;
-    private readonly IProductUpdatesService _productUpdatesService;
-    private readonly IProductVariationUpdatesService _productVariationUpdatesService;
     private readonly IServicesRepository _servicesRepository;
+    private readonly IOrderItemService _orderItemService;
 
     public CreateOrderItemsCommandHandler(
         IHttpContentResolver httpContentResolver,
         IOrderItemsRepository orderItemsRepository,
-        IOrderItemModelsResolver modelsResolver,
+        IOrderItemModelsResolver orderItemModelsResolver,
         IOrderModelsResolver orderModelsResolver,
         IOrdersRepository ordersRepository,
         IProductsRepository productsRepository,
         IProductVariationRepository variationsRepository,
-        IProductUpdatesService productUpdatesService,
-        IProductVariationUpdatesService productVariationUpdatesService,
-        IServicesRepository servicesRepository)
+        IProductService productService,
+        IProductVariationService productVariationService,
+        IServicesRepository servicesRepository,
+        IOrderItemService orderItemService
+    )
     {
         _httpContentResolver = httpContentResolver;
         _orderItemsRepository = orderItemsRepository;
-        _modelsResolver = modelsResolver;
+        _orderItemModelsResolver = orderItemModelsResolver;
         _orderModelsResolver = orderModelsResolver;
         _ordersRepository = ordersRepository;
         _productsRepository = productsRepository;
         _variationsRepository = variationsRepository;
-        _productUpdatesService = productUpdatesService;
-        _productVariationUpdatesService = productVariationUpdatesService;
         _servicesRepository = servicesRepository;
+        _orderItemService = orderItemService;
     }
 
     public async Task<IActionResult> Handle(CreateOrderItemsCommand command, CancellationToken cancellationToken)
@@ -61,31 +60,19 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
 
         var service = orderItemRequest.ServiceId is null ? null : await _servicesRepository.GetAsync(Guid.Parse(orderItemRequest.ServiceId));
 
-        var orderItemDao = _modelsResolver.GetDaoFromRequest(orderId, orderItemRequest, product, productVariation, service);
+        var orderItemDao = _orderItemModelsResolver.GetDaoFromRequest(orderItemRequest, orderId, product, productVariation, service);
 
-        await CompleteTransaction(product, productVariation, orderItemDao, orderItemRequest.Quantity);
+        using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            await _orderItemsRepository.CreateAsync(orderItemDao);
+            await _orderItemService.SetQuantity(orderItemDao);
+
+            transactionScope.Complete();
+        }
 
         var orderDao = await _ordersRepository.GetAsync(orderId);
         var response = _orderModelsResolver.GetResponseFromDao(orderDao);
 
         return new OkObjectResult(response);
-    }
-
-    private async Task CompleteTransaction(ProductDao product, ProductVariationDao productVariation, OrderItemDao orderItemDao, int quantity)
-    {
-        using var tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-        if (product is not null)
-        {
-            await _productUpdatesService.UpdateProductStock(product, quantity);
-        }
-
-        if (productVariation is not null)
-        {
-            await _productVariationUpdatesService.UpdateProductVariationStock(productVariation, quantity);
-        }
-
-        await _orderItemsRepository.CreateAsync(orderItemDao);
-        tran.Complete();
     }
 }

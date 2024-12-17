@@ -11,16 +11,16 @@ public class UpdateGiftCardCommandHandler : IRequestHandler<UpdateGiftCardComman
 {
     private readonly IGiftCardsRepository _giftCardsRepository;
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly IGiftCardModelsResolver _modelsResolver;
+    private readonly IGiftCardModelsResolver _giftCardModelsResolver;
 
     public UpdateGiftCardCommandHandler(
         IGiftCardsRepository giftCardsRepository,
         IHttpContentResolver httpContentResolver,
-        IGiftCardModelsResolver modelsResolver)
+        IGiftCardModelsResolver giftCardModelsResolver)
     {
         _giftCardsRepository = giftCardsRepository;
         _httpContentResolver = httpContentResolver;
-        _modelsResolver = modelsResolver;
+        _giftCardModelsResolver = giftCardModelsResolver;
     }
 
     public async Task<IActionResult> Handle(UpdateGiftCardCommand command, CancellationToken cancellationToken)
@@ -29,10 +29,10 @@ public class UpdateGiftCardCommandHandler : IRequestHandler<UpdateGiftCardComman
 
         var originalDao = await _giftCardsRepository.GetAsync(Guid.Parse(command.Id));
 
-        var giftCardDao = _modelsResolver.GetDaoFromDaoAndRequest(originalDao, updateGiftCardRequest);
+        var giftCardDao = _giftCardModelsResolver.GetDaoFromDaoAndRequest(originalDao, updateGiftCardRequest);
         var updatedGiftCardDao = await _giftCardsRepository.UpdateAsync(giftCardDao);
 
-        var response = _modelsResolver.GetResponseFromDao(updatedGiftCardDao);
+        var response = _giftCardModelsResolver.GetResponseFromDao(updatedGiftCardDao);
 
         return new OkObjectResult(response);
     }

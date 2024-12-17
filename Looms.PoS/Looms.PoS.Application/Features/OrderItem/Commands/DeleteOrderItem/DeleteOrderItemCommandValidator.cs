@@ -1,5 +1,9 @@
 using FluentValidation;
+using Looms.PoS.Application.Constants;
+using Looms.PoS.Application.Interfaces;
+using Looms.PoS.Application.Models.Requests.OrderItem;
 using Looms.PoS.Application.Utilities.Validators;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 
 namespace Looms.PoS.Application.Features.OrderItem.Commands.DeleteOrderItem;
@@ -7,22 +11,42 @@ namespace Looms.PoS.Application.Features.OrderItem.Commands.DeleteOrderItem;
 public class DeleteOrderItemCommandValidator : AbstractValidator<DeleteOrderItemCommand>
 {
     public DeleteOrderItemCommandValidator(
-        IOrderItemsRepository orderItemsRepository)
+        IHttpContentResolver httpContentResolver,
+        IEnumerable<IValidator<CreateOrderItemRequest>> validators,
+        IOrderItemsRepository orderItemsRepository
+    )
     {
-        RuleFor(x => x.OrderId)
-        .Cascade(CascadeMode.Stop)
-        .MustBeValidGuid();
-
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, context, cancellationToken) => {
-                var orderItem = await orderItemsRepository.GetAsync(Guid.Parse(id));
-                
-                if(orderItem.OrderId == Guid.Parse(context.InstanceToValidate.OrderId))
-                {
-                    context.AddFailure("Order item does not belong to the order.");
-                }
+            .DependentRules(() =>
+            {
+                RuleFor(x => x.OrderId)
+                    .Cascade(CascadeMode.Stop)
+                    .MustBeValidGuid()
+                    .CustomAsync(async (orderId, context, _) =>
+                        {
+                            var orderItemDao = await orderItemsRepository.GetAsyncByIdAndOrderIdAndBusinessId(
+                                Guid.Parse(context.InstanceToValidate.Id),
+                                Guid.Parse(orderId!),
+                                Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                            );
+
+                            if (orderItemDao.Order.Status != OrderStatus.Pending)
+                            {
+                                context.AddFailure($"Cannot update order with status {orderItemDao.Order.Status}.");
+                            }
+                        }
+                    );
+            });
+
+        RuleFor(x => x.Request)
+            .CustomAsync(async (request, context, _) =>
+            {
+                var body = await httpContentResolver.GetPayloadAsync<CreateOrderItemRequest>(request);
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+
+                await Task.WhenAll(validationResults);
             });
     }
 }
