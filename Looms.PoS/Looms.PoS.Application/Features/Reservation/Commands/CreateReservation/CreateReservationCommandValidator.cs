@@ -9,17 +9,12 @@ public class CreateReservationCommandValidator : AbstractValidator<CreateReserva
     public CreateReservationCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateReservationRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreateReservationRequest>(request);
-
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
+                
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

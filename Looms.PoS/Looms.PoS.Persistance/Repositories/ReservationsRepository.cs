@@ -29,6 +29,28 @@ public class ReservationsRepository : IReservationsRepository
         return await _context.Reservations.Where(x => !x.IsDeleted).ToListAsync();
     }
 
+    public async Task<IEnumerable<ReservationDao>> GetALlAsyncByBusinessId(Guid businessId)
+    {
+        return await _context.Reservations
+            .Where(x => !x.IsDeleted && x.Service.BusinessId == businessId)
+            .ToListAsync();
+    }
+
+    public async Task<ReservationDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId)
+    {
+        var reservationDao = await _context.Reservations
+            .Where(x => x.Id == id && x.Service.BusinessId == businessId)
+            .FirstOrDefaultAsync();
+
+        if (reservationDao is null || reservationDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Reservation not found");
+        }
+
+        return reservationDao;
+    }
+
+
     public async Task<ReservationDao> GetAsync(Guid id)
     {
         var reservationDao = await _context.Reservations.FindAsync(id);

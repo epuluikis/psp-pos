@@ -3,6 +3,7 @@ using Looms.PoS.Application.Models.Requests.Reservation;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
 using Looms.PoS.Application.Utilities.Helpers;
+using Looms.PoS.Application.Constants;
 
 namespace Looms.PoS.Application.Features.Reservation.Commands.UpdateReservation;
 
@@ -30,10 +31,12 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x.ServiceId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (serviceId, context, cancellation) =>
-            {
-                await servicesRepository.GetAsync(new Guid(serviceId));
-            });
+            .CustomAsync(async (serviceId, context, cancellation) 
+                => await servicesRepository.GetAsyncByIdAndBusinessId(
+                    Guid.Parse(serviceId!),
+                    Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
+                )
+            );
 
         RuleFor(x => x.PhoneNumber)
             .Cascade(CascadeMode.Stop)
