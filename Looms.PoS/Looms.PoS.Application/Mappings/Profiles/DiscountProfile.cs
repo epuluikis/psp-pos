@@ -12,16 +12,12 @@ public class DiscountProfile : Profile
     public DiscountProfile()
     {
         CreateMap<CreateDiscountRequest, DiscountDao>(MemberList.Source)
-            .ForMember(dest => dest.Target, opt => opt.MapFrom(src => src.DiscountTarget))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.StartDate)))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.EndDate)))
-            .ForMember(dest => dest.DiscountType, opt => opt.MapFrom(src => Enum.Parse<DiscountType>(src.DiscountType, true)));
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.EndDate)));
 
         CreateMap<UpdateDiscountRequest, DiscountDao>(MemberList.Source)
-            .ForMember(dest => dest.Target, opt => opt.MapFrom(src => src.DiscountTarget))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.StartDate)))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.EndDate)))
-            .ForMember(dest => dest.DiscountType, opt => opt.MapFrom(src => Enum.Parse<DiscountType>(src.DiscountType, true)));
+            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToUtc(src.EndDate)));
 
         CreateMap<DiscountDao, DiscountResponse>()
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => DateTimeHelper.ConvertToLocal(src.StartDate)))
