@@ -19,7 +19,7 @@ public record OrderResponse
 
     public IEnumerable<PaymentResponse> Payments { get; init; } = new List<PaymentResponse>();
 
-    public IEnumerable<RefundResponse>? Refunds { get; init; } = new List<RefundResponse>();
+    public IEnumerable<RefundResponse> Refunds { get; init; } = new List<RefundResponse>();
 
     public Guid? DiscountId { get; init; } = null;
 
@@ -33,7 +33,7 @@ public record OrderResponse
 
     public decimal AmountPaid { get; init; }
 
-    public decimal AmountDue => TotalAmount + TipAmount - AmountPaid;
+    public decimal AmountDue => TotalAmount - AmountPaid;
 
     public decimal AmountRefunded { get; init; }
 }

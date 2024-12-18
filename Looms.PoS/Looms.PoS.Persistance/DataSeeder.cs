@@ -1,7 +1,10 @@
 using Bogus;
 using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Enums;
-using Looms.PoS.Persistance;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace Looms.PoS.Persistance;
 
 public class DataSeeder
 {
@@ -14,7 +17,9 @@ public class DataSeeder
 
     public void Seed()
     {
-        Randomizer.Seed = new Random(123);
+        Randomizer.Seed = new Random(0);
+
+        var hashedPassword = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes("password")));
 
         var fakerBusiness = new Faker<BusinessDao>()
                             .RuleFor(b => b.Id, f => Guid.NewGuid())
@@ -24,19 +29,19 @@ public class DataSeeder
                             .RuleFor(b => b.PhoneNumber, f => f.Phone.PhoneNumber())
                             .RuleFor(b => b.StartHour, f => f.Random.Int(0, 12))
                             .RuleFor(b => b.EndHour, f => f.Random.Int(13, 23))
-                            .RuleFor(b => b.IsDeleted, f => f.Random.Bool()); // do you want some of them being deleted?
+                            .RuleFor(b => b.IsDeleted, f => false);
 
         var fakerUser = new Faker<UserDao>()
                         .RuleFor(u => u.Id, f => Guid.NewGuid())
                         .RuleFor(u => u.Name, f => f.Name.FullName())
                         .RuleFor(u => u.Email, f => f.Internet.Email())
-                        .RuleFor(u => u.Password, f => f.Internet.Password())
+                        .RuleFor(u => u.Password, f => hashedPassword)
                         .RuleFor(u => u.Role, f => f.PickRandom<UserRole>())
                         .RuleFor(u => u.IsDeleted, f => f.Random.Bool());
 
         var fakerTax = new Faker<TaxDao>()
                        .RuleFor(t => t.Id, f => Guid.NewGuid())
-                       .RuleFor(t => t.Name, f => f.Commerce.ProductName()) //i hope its logical
+                       .RuleFor(t => t.Name, f => f.Commerce.ProductName())
                        .RuleFor(t => t.Percentage, f => f.Random.Int(0, 50))
                        .RuleFor(t => t.TaxCategory, f => f.PickRandom<TaxCategory>())
                        .RuleFor(t => t.StartDate, f => f.Date.Past().ToUniversalTime())
@@ -45,7 +50,7 @@ public class DataSeeder
 
         var fakerDiscount = new Faker<DiscountDao>()
                             .RuleFor(d => d.Id, f => Guid.NewGuid())
-                            .RuleFor(d => d.Name, f => f.Commerce.ProductName()) //i hope its logical
+                            .RuleFor(d => d.Name, f => f.Commerce.ProductName())
                             .RuleFor(d => d.DiscountType, f => f.PickRandom<DiscountType>())
                             .RuleFor(d => d.Value, f => f.Random.Decimal(5, 50))
                             .RuleFor(d => d.Target, f => f.PickRandom<DiscountTarget>())
@@ -76,7 +81,7 @@ public class DataSeeder
                           .RuleFor(r => r.Id, f => Guid.NewGuid())
                           .RuleFor(r => r.Amount, f => f.Random.Decimal(10, 50))
                           .RuleFor(r => r.RefundReason, f => f.Lorem.Sentence())
-                          .RuleFor(r => r.RefundStatus, f => f.PickRandom<RefundStatus>())
+                          .RuleFor(r => r.Status, f => f.PickRandom<RefundStatus>())
                           .RuleFor(r => r.CreatedAt, f => DateTime.UtcNow)
                           .RuleFor(r => r.ProcessedAt, f => f.Random.Bool() ? f.Date.Past().ToUniversalTime() : null);
 
@@ -142,7 +147,6 @@ public class DataSeeder
                              .RuleFor(oi => oi.Tax, f => f.Random.Decimal(0, 10));
 
 
-        //Relationships and generating data
         var businesses = fakerBusiness.Generate(1).ToList();
 
         var taxes = new List<TaxDao>();

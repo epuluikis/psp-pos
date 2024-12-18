@@ -10,17 +10,12 @@ public class CreateRefundCommandValidator : AbstractValidator<CreateRefundComman
     public CreateRefundCommandValidator(IHttpContentResolver httpContentResolver, IEnumerable<IValidator<CreateRefundRequest>> validators)
     {
         RuleFor(x => x.Request)
-            .CustomAsync(async (request, context, cancellationToken) =>
+            .CustomAsync(async (request, context, _) =>
             {
                 var body = await httpContentResolver.GetPayloadAsync<CreateRefundRequest>(request);
+                var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
-                var validationResults = validators.Select(x => x.ValidateAsync(body));
                 await Task.WhenAll(validationResults);
-
-                foreach (var validationError in validationResults.SelectMany(x => x.Result.Errors))
-                {
-                    context.AddFailure(validationError);
-                }
             });
     }
 }

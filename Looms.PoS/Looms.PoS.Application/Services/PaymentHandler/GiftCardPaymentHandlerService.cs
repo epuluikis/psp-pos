@@ -6,6 +6,7 @@ using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Exceptions;
 using Looms.PoS.Domain.Interfaces;
+using System.Transactions;
 
 namespace Looms.PoS.Application.Services.PaymentHandler;
 
@@ -56,10 +57,14 @@ public class GiftCardPaymentHandlerService : IPaymentHandlerService
         }
 
         giftCardDao = _giftCardModelsResolver.GetDaoFromDaoAndCurrentBalance(giftCardDao, currentBalance);
-        await _giftCardsRepository.UpdateAsync(giftCardDao);
-
         paymentDao = _paymentModelsResolver.GetDaoFromDaoAndStatus(paymentDao, PaymentStatus.Succeeded);
 
-        return await _paymentsRepository.CreateAsync(paymentDao);
+        using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        {
+            await _giftCardsRepository.UpdateAsync(giftCardDao);
+            paymentDao = await _paymentsRepository.CreateAsync(paymentDao);
+        }
+
+        return paymentDao;
     }
 }

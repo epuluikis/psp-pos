@@ -1,3 +1,4 @@
+using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
@@ -9,15 +10,19 @@ public class GetRefundsQueryHandler : IRequestHandler<GetRefundsQuery, IActionRe
 {
     private readonly IRefundsRepository _refundsRepository;
     private readonly IRefundModelsResolver _modelsResolver;
-    
+
     public GetRefundsQueryHandler(IRefundsRepository refundsRepository, IRefundModelsResolver modelsResolver)
     {
         _refundsRepository = refundsRepository;
         _modelsResolver = modelsResolver;
     }
-    public async Task<IActionResult> Handle(GetRefundsQuery request, CancellationToken cancellationToken)
+
+    public async Task<IActionResult> Handle(GetRefundsQuery query, CancellationToken cancellationToken)
     {
-        var refundDaos = await _refundsRepository.GetAllAsync();
+        var refundDaos = await _refundsRepository.GetAllAsyncByBusinessId(
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(query.Request))
+        );
+
         var response = _modelsResolver.GetResponseFromDao(refundDaos);
 
         return new OkObjectResult(response);

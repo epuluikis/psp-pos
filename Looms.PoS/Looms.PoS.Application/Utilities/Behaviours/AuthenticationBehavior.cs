@@ -19,7 +19,7 @@ public class AuthenticationBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (request is AuthRequest)
+        if (request is AuthRequest or WebhookRequest)
         {
             return await next();
         }
@@ -32,7 +32,8 @@ public class AuthenticationBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 
         var tokenString = token[0]!;
 
-        if (!tokenString.StartsWith(TokenConstants.TokenPrefix) || !_tokenService.IsTokenValid(tokenString[TokenConstants.TokenPrefix.Length..]))
+        if (!tokenString.StartsWith(TokenConstants.TokenPrefix)
+         || !_tokenService.IsTokenValid(tokenString[TokenConstants.TokenPrefix.Length..]))
         {
             throw new LoomsUnauthorizedException("Invalid token provided");
         }

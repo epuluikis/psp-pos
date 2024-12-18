@@ -11,5 +11,6 @@ public interface IPaymentProviderService
     Task<bool> Validate(string externalId, string apiSecret);
     Task<bool> ValidateTerminal(PaymentProviderDao paymentProviderDao, string externalId);
     Task<PaymentDao> HandlePayment(PaymentDao paymentDao, PaymentProviderDao paymentProviderDao, PaymentTerminalDao paymentTerminalDao);
+    Task<RefundDao> HandleRefund(RefundDao refundDao, PaymentDao paymentDao, PaymentProviderDao paymentProviderDao);
     Task HandleWebhook(HttpRequest request, PaymentProviderDao paymentProviderDao);
 }

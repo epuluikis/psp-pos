@@ -1,5 +1,6 @@
 using Looms.PoS.Application.Interfaces.Services;
 using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Services;
 
@@ -20,12 +21,17 @@ public class PaymentService : IPaymentService
         return CalculateTotal(payments, false, true);
     }
 
-    private decimal CalculateTotal(IEnumerable<PaymentDao> payments, bool includeAmount, bool includeTips)
+    private static decimal CalculateTotal(IEnumerable<PaymentDao> payments, bool includeAmount, bool includeTips)
     {
         var total = 0m;
 
         foreach (var payment in payments)
         {
+            if (payment.Status is not PaymentStatus.Succeeded)
+            {
+                continue;
+            }
+
             if (includeAmount)
             {
                 total += payment.Amount;
