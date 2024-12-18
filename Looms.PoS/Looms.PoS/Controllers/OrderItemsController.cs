@@ -33,7 +33,7 @@ public class OrderItemsController : ControllerBase
 
     [HttpPost($"/orders/{{orderId}}/{EntityName}")]
     [SwaggerRequestType(typeof(CreateOrderItemRequest))]
-    [SwaggerResponse(StatusCodes.Status201Created, "Order item created successfully.", typeof(OrderResponse))]
+    [SwaggerResponse(StatusCodes.Status201Created, "Order item created successfully.", typeof(OrderItemResponse))]
     public async Task<IActionResult> CreateOrderItem(string orderId)
     {
         var command = new CreateOrderItemsCommand(GetRequest(), orderId);
