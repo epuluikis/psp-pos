@@ -3,6 +3,7 @@ using Looms.PoS.Application.Constants;
 using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Interfaces;
+using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Product.Commands.CreateProduct;
 
@@ -15,7 +16,7 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
 
         RuleFor(x => x.TaxId!)
             .MustBeValidGuid()
-            .CustomAsync(async (taxId, context, cancellationToken) 
+            .CustomAsync(async (taxId, context, cancellationToken) =>
             {
                 var tax = await taxesRepository.GetAsyncByIdAndBusinessId(
                     Guid.Parse(taxId!),
@@ -26,7 +27,6 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
                 {
                     context.AddFailure("Provided tax should be for product.");
                 }
-                return tax;
             })
             .When(x => x.TaxId is not null);
 

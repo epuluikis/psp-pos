@@ -4,6 +4,7 @@ using Looms.PoS.Application.Models.Requests.Service;
 using Looms.PoS.Application.Utilities.Validators;
 using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
+using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Features.Service.Commands.CreateService;
 
@@ -29,7 +30,7 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
         RuleFor(x => x.TaxId)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (taxId, context, _) 
+            .CustomAsync(async (taxId, context, _) =>
             {
                 var tax = await taxesRepository.GetByTaxCategoryAndBusinessIdAsync(
                     Enum.Parse<TaxCategory>(context.InstanceToValidate.Category),
@@ -37,9 +38,8 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
                 );
 
                 if(tax.TaxCategory is not TaxCategory.Service){
-                    context.AddFailure("Provided tax should be for service.")
+                    context.AddFailure("Provided tax should be for service.");
                 }
-                return tax;
             });
     }
 }
