@@ -14,7 +14,7 @@ public record DiscountDao
     [Column(TypeName = "decimal(10,2)")]
     public decimal Value { get; init; }
 
-    public DiscountTarget Target { get; init; } = DiscountTarget.Order;
+    public DiscountTarget Target { get; init; }
 
     public Guid? ProductId { get; init; }
 

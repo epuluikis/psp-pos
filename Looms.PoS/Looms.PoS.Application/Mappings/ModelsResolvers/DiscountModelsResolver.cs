@@ -5,7 +5,6 @@ using Looms.PoS.Application.Models.Requests.Discount;
 using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Application.Models.Responses.Discount;
 using Looms.PoS.Domain.Daos;
-using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 
@@ -24,13 +23,8 @@ public class DiscountModelsResolver : IDiscountModelsResolver
     }
 
     public DiscountDao GetDaoFromRequestAndBusinessId(CreateDiscountRequest createDiscountRequest, Guid businessId)
-    {   
-        var category = createDiscountRequest.ProductId is not null ? DiscountTarget.Product : DiscountTarget.Order;
-
-        return _mapper.Map<DiscountDao>(createDiscountRequest) with { 
-            BusinessId = businessId,
-            Target = category
-        };
+    {
+        return _mapper.Map<DiscountDao>(createDiscountRequest) with { BusinessId = businessId };
     }
 
     public DiscountDao GetDaoFromDaoAndRequest(DiscountDao discountDao, UpdateDiscountRequest updateDiscountRequest)

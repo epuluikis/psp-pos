@@ -17,12 +17,12 @@ public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRe
         RuleFor(x => x.DiscountType)
             .NotNull()
             .IsInEnum();
-        
-        RuleFor(x => x.DiscountTarget)
+
+        RuleFor(x => x.Target)
             .NotEmpty()
             .IsInEnum();
 
-        When(x => x.DiscountTarget == DiscountTarget.Product, () =>
+        When(x => x.Target == DiscountTarget.Product, () =>
         {
             RuleFor(x => x.ProductId)
                 .MustBeValidGuid()
@@ -34,7 +34,7 @@ public class UpdateDiscountRequestValidator : AbstractValidator<UpdateDiscountRe
                 );
         });
 
-        When(x => x.DiscountTarget != DiscountTarget.Product, () =>
+        When(x => x.Target != DiscountTarget.Product, () =>
         {
             RuleFor(x => x.ProductId)
                 .Null()

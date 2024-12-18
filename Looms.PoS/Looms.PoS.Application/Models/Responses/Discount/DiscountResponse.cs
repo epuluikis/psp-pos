@@ -14,7 +14,7 @@ public record DiscountResponse
     public decimal Value { get; init; } = 0;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public DiscountTarget DiscountTarget { get; init; }
+    public DiscountTarget Target { get; init; }
 
     public Guid? ProductId { get; init; }
     public string StartDate { get; init; } = string.Empty;
