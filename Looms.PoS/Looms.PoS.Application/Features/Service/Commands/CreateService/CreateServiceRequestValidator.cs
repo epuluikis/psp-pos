@@ -30,10 +30,16 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
             .CustomAsync(async (taxId, context, _) 
-                => await taxesRepository.GetByTaxCategoryAndBusinessIdAsync(
+            {
+                var tax = await taxesRepository.GetByTaxCategoryAndBusinessIdAsync(
                     Enum.Parse<TaxCategory>(context.InstanceToValidate.Category),
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
-                )
-            );
+                );
+
+                if(tax.TaxCategory is not TaxCategory.Service){
+                    context.AddFailure("Provided tax should be for service.")
+                }
+                return tax;
+            });
     }
 }

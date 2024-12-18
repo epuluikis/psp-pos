@@ -11,6 +11,9 @@ public class CreateTaxRequestValidator : AbstractValidator<CreateTaxRequest>
 {
     public CreateTaxRequestValidator()
     {
+        RuleFor(x => x.Name)
+            .NotEmpty();
+
         RuleFor(x => x.Percentage)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()

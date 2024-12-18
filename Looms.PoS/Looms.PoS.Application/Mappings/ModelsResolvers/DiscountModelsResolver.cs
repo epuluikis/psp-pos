@@ -23,8 +23,13 @@ public class DiscountModelsResolver : IDiscountModelsResolver
     }
 
     public DiscountDao GetDaoFromRequestAndBusinessId(CreateDiscountRequest createDiscountRequest, Guid businessId)
-    {
-        return _mapper.Map<DiscountDao>(createDiscountRequest) with { BusinessId = businessId };
+    {   
+        var category = createDiscountRequest.ProductId is not null ? DiscountTarget.Product : DiscountTarget.Order;
+
+        return _mapper.Map<DiscountDao>(createDiscountRequest) with { 
+            BusinessId = businessId,
+            Target = category
+        };
     }
 
     public DiscountDao GetDaoFromDaoAndRequest(DiscountDao discountDao, UpdateDiscountRequest updateDiscountRequest)
