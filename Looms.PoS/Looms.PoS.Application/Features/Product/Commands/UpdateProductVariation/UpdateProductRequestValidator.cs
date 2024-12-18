@@ -2,7 +2,7 @@
 using Looms.PoS.Application.Models.Requests.Product;
 using Looms.PoS.Domain.Interfaces;
 
-namespace Looms.PoS.Application.Features.Product.Commands.UpdateProduct;
+namespace Looms.PoS.Application.Features.Product.Commands.UpdateProductVariation;
 
 public class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequest>
 {
