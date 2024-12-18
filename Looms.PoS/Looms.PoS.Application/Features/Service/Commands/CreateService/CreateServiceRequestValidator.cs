@@ -18,7 +18,7 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
 
         RuleFor(x => x.Category)
             .NotEmpty();
-            
+
         RuleFor(x => x.Price)
             .Cascade(CascadeMode.Stop)
             .PrecisionScale(10, 2, false)
@@ -33,11 +33,12 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
             .CustomAsync(async (taxId, context, _) =>
             {
                 var tax = await taxesRepository.GetByTaxCategoryAndBusinessIdAsync(
-                    Enum.Parse<TaxCategory>(context.InstanceToValidate.Category),
+                    TaxCategory.Service,
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
                 );
 
-                if(tax.TaxCategory is not (TaxCategory.Service or TaxCategory.Both)){
+                if (tax.TaxCategory is not (TaxCategory.Service or TaxCategory.Both))
+                {
                     context.AddFailure("Provided tax should be for service.");
                 }
             });
