@@ -27,15 +27,30 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
     public async Task<IActionResult> Handle(CreateServiceCommand command, CancellationToken cancellationToken)
     {
         var serviceRequest = await _httpContentResolver.GetPayloadAsync<CreateServiceRequest>(command.Request);
+        var tax = await GetTaxAsync(productRequest.TaxId);
 
         var serviceDao = _modelsResolver.GetDaoFromRequest(
             serviceRequest,
-            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request)),
+            tax
         );
+
         var createdServiceDao = await _servicesRepository.CreateAsync(serviceDao);
 
         var response = _modelsResolver.GetResponseFromDao(createdServiceDao);
 
         return new CreatedAtRouteResult($"/services/{serviceDao.Id}", response);
+    }
+
+    private async Task<TaxDao> GetTaxAsync(string? taxId)
+    {
+        if (taxId is null)
+        {
+            return await _taxesRepository.GetByTaxCategoryAsync(TaxCategory.Service);
+        }
+        else
+        {
+            return await _taxesRepository.GetAsync(Guid.Parse(taxId));
+        }
     }
 }
