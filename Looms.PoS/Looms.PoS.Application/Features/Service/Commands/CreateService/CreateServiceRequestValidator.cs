@@ -37,7 +37,7 @@ public class CreateServiceRequestValidator : AbstractValidator<CreateServiceRequ
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
                 );
 
-                if(tax.TaxCategory is not TaxCategory.Service){
+                if(tax.TaxCategory is not (TaxCategory.Service or TaxCategory.Both)){
                     context.AddFailure("Provided tax should be for service.");
                 }
             });

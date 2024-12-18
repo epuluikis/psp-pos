@@ -23,7 +23,7 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
                 );
 
-                if(tax.TaxCategory is not TaxCategory.Product)
+                if (tax.TaxCategory is not (TaxCategory.Product or TaxCategory.Both))
                 {
                     context.AddFailure("Provided tax should be for product.");
                 }
