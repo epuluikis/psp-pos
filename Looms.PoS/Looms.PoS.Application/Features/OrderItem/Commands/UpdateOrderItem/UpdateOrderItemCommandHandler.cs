@@ -59,7 +59,7 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
         using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
             await _orderItemService.ResetQuantity(originalDao);
-            await _orderItemsRepository.UpdateAsync(orderItemDao);
+            orderItemDao = await _orderItemsRepository.UpdateAsync(orderItemDao);
             await _orderItemService.SetQuantity(orderItemDao);
 
             transactionScope.Complete();

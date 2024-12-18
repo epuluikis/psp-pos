@@ -58,7 +58,7 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
 
         using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
         {
-            await _orderItemsRepository.CreateAsync(orderItemDao);
+            orderItemDao = await _orderItemsRepository.CreateAsync(orderItemDao);
             await _orderItemService.SetQuantity(orderItemDao);
 
             transactionScope.Complete();

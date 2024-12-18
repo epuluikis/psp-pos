@@ -15,9 +15,9 @@ public class PaymentProviderModelsResolver : IPaymentProviderModelsResolver
         _mapper = mapper;
     }
 
-    public PaymentProviderDao GetDaoFromRequest(CreatePaymentProviderRequest createPaymentProviderRequest)
+    public PaymentProviderDao GetDaoFromRequest(CreatePaymentProviderRequest createPaymentProviderRequest, Guid businessId)
     {
-        return _mapper.Map<PaymentProviderDao>(createPaymentProviderRequest);
+        return _mapper.Map<PaymentProviderDao>(createPaymentProviderRequest) with { BusinessId = businessId };
     }
 
     public PaymentProviderDao GetDaoFromDaoAndRequest(

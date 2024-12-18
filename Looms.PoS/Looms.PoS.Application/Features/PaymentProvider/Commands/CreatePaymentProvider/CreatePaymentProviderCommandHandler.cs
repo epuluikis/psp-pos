@@ -1,4 +1,5 @@
-﻿using Looms.PoS.Application.Interfaces;
+﻿using Looms.PoS.Application.Helpers;
+using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.PaymentProvider;
 using Looms.PoS.Domain.Interfaces;
@@ -27,7 +28,11 @@ public class CreatePaymentProviderCommandHandler : IRequestHandler<CreatePayment
     {
         var paymentProviderRequest = await _httpContentResolver.GetPayloadAsync<CreatePaymentProviderRequest>(command.Request);
 
-        var paymentProviderDao = _modelsResolver.GetDaoFromRequest(paymentProviderRequest);
+        var paymentProviderDao = _modelsResolver.GetDaoFromRequest(
+            paymentProviderRequest,
+            Guid.Parse(HttpContextHelper.GetHeaderBusinessId(command.Request))
+        );
+
         var createdPaymentProviderDao = await _paymentProvidersRepository.CreateAsync(paymentProviderDao);
 
         var response = _modelsResolver.GetResponseFromDao(createdPaymentProviderDao);
