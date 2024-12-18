@@ -127,8 +127,8 @@ public class OrderService : IOrderService
         foreach (var orderItem in orderItems)
         {
             var newItemPrice = _discountService.CalculateTotalWithDiscount(discount, orderItem.Price);
-            var tax = orderItem.Product is not null ? orderItem.Product.Tax : orderItem.Service.Tax;
-            total += newItemPrice + _orderItemService.CalculateOrderItemTax(tax, newItemPrice);
+            var taxDao = orderItem.Product is not null ? orderItem.Product.Tax : orderItem.Service.Tax;
+            total += newItemPrice + _orderItemService.CalculateOrderItemTax(taxDao, newItemPrice);
         }
 
         return total;
@@ -146,8 +146,8 @@ public class OrderService : IOrderService
         foreach (var orderItem in orderItems)
         {
             var newItemPrice = Math.Round(discountedPrice * orderItem.Price / originalPrice, 2, MidpointRounding.AwayFromZero);
-            var tax = orderItem.Product is not null ? orderItem.Product.Tax : orderItem.Service.Tax;
-            tax += _orderItemService.CalculateOrderItemTax(tax, newItemPrice);
+            var taxDao = orderItem.Product is not null ? orderItem.Product.Tax : orderItem.Service!.Tax;
+            tax += _orderItemService.CalculateOrderItemTax(taxDao, newItemPrice);
         }
 
         var total = tax + discountedPrice;
@@ -181,8 +181,8 @@ public class OrderService : IOrderService
         foreach (var orderItem in orderItems)
         {
             var newItemPrice = Math.Round(discountedPrice * orderItem.Price / originalPrice, 2, MidpointRounding.AwayFromZero);
-            var tax = orderItem.Product is not null ? orderItem.Product.Tax : orderItem.Service.Tax;
-            tax += _orderItemService.CalculateOrderItemTax(tax, newItemPrice);
+            var taxDao = orderItem.Product is not null ? orderItem.Product.Tax : orderItem.Service!.Tax;
+            tax += _orderItemService.CalculateOrderItemTax(taxDao, newItemPrice);
         }
 
         return tax;

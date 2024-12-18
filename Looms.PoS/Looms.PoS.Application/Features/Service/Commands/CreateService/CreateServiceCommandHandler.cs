@@ -2,6 +2,8 @@ using Looms.PoS.Application.Helpers;
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Models.Requests.Service;
+using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -13,21 +15,25 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
     private readonly IServicesRepository _servicesRepository;
     private readonly IHttpContentResolver _httpContentResolver;
     private readonly IServiceModelsResolver _modelsResolver;
+    private readonly ITaxesRepository _taxesRepository;
 
     public CreateServiceCommandHandler(
         IServicesRepository servicesRepository,
         IHttpContentResolver httpContentResolver,
-        IServiceModelsResolver modelsResolver)
+        IServiceModelsResolver modelsResolver,
+        ITaxesRepository taxesRepository
+    )
     {
         _servicesRepository = servicesRepository;
         _httpContentResolver = httpContentResolver;
         _modelsResolver = modelsResolver;
+        _taxesRepository = taxesRepository;
     }
 
     public async Task<IActionResult> Handle(CreateServiceCommand command, CancellationToken cancellationToken)
     {
         var serviceRequest = await _httpContentResolver.GetPayloadAsync<CreateServiceRequest>(command.Request);
-        var tax = await GetTaxAsync(productRequest.TaxId);
+        var tax = await GetTaxAsync(serviceRequest.TaxId);
 
         var serviceDao = _modelsResolver.GetDaoFromRequest(
             serviceRequest,
@@ -48,9 +54,7 @@ public class CreateServiceCommandHandler : IRequestHandler<CreateServiceCommand,
         {
             return await _taxesRepository.GetByTaxCategoryAsync(TaxCategory.Service);
         }
-        else
-        {
-            return await _taxesRepository.GetAsync(Guid.Parse(taxId));
-        }
+
+        return await _taxesRepository.GetAsync(Guid.Parse(taxId));
     }
 }

@@ -5,6 +5,7 @@ using Looms.PoS.Application.Models.Requests.Discount;
 using Looms.PoS.Application.Models.Responses;
 using Looms.PoS.Application.Models.Responses.Discount;
 using Looms.PoS.Domain.Daos;
+using Looms.PoS.Domain.Enums;
 
 namespace Looms.PoS.Application.Mappings.ModelsResolvers;
 

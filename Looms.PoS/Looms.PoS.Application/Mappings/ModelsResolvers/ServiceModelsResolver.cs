@@ -16,36 +16,37 @@ public class ServiceModelsResolver : IServiceModelsResolver
     }
 
     public ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest)
-        => _mapper.Map<ServiceDao>(createServiceRequest);
+    {
+        return _mapper.Map<ServiceDao>(createServiceRequest);
+    }
+
+    public ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest, Guid businessId)
+    {
+        return _mapper.Map<ServiceDao>(createServiceRequest) with { BusinessId = businessId };
+    }
 
     public ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest, Guid businessId, TaxDao tax)
     {
-        return _mapper.Map<ServiceDao>(createServiceRequest) with {
-            BusinessId = businessId,
-            Tax = tax,
-            TaxId = tax.Id
-        };
+        return _mapper.Map<ServiceDao>(createServiceRequest) with { BusinessId = businessId, Tax = tax, TaxId = tax.Id };
     }
 
     public ServiceDao GetDaoFromDaoAndRequest(ServiceDao originalDao, UpdateServiceRequest updateServiceRequest)
     {
-        return _mapper.Map<ServiceDao>(updateServiceRequest) with
-        {
-            Id = originalDao.Id
-        };
+        return _mapper.Map<ServiceDao>(updateServiceRequest) with { Id = originalDao.Id };
     }
 
     public ServiceDao GetDeletedDao(ServiceDao originalDao)
     {
-        return originalDao with
-        {
-            IsDeleted = true
-        };
+        return originalDao with { IsDeleted = true };
     }
 
     public ServiceResponse GetResponseFromDao(ServiceDao serviceDao)
-        => _mapper.Map<ServiceResponse>(serviceDao);
+    {
+        return _mapper.Map<ServiceResponse>(serviceDao);
+    }
 
     public IEnumerable<ServiceResponse> GetResponseFromDao(IEnumerable<ServiceDao> serviceDao)
-        => _mapper.Map<IEnumerable<ServiceResponse>>(serviceDao);
+    {
+        return _mapper.Map<IEnumerable<ServiceResponse>>(serviceDao);
+    }
 }
