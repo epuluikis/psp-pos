@@ -21,7 +21,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Looms.PoS.Application\Looms.PoS.Application.csproj"/>
         <ProjectReference Include="..\Looms.PoS.Domain\Looms.PoS.Domain.csproj"/>
-        <ProjectReference Include="..\Looms.PoS.Persistance\Looms.PoS.Persistance.csproj"/>
+        <ProjectReference Include="..\Looms.PoS.Persistence\Looms.PoS.Persistence.csproj" />
     </ItemGroup>
 
 </Project>

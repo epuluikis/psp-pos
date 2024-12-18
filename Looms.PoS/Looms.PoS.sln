@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looms.PoS.Application", "Lo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looms.PoS.Domain", "Looms.PoS.Domain\Looms.PoS.Domain.csproj", "{F9899A55-6933-493A-AF8D-C4A97629F347}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looms.PoS.Persistance", "Looms.PoS.Persistance\Looms.PoS.Persistance.csproj", "{FDB98666-BC3B-4EB7-97CB-025743EAAFEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looms.PoS.Persistence", "Looms.PoS.Persistence\Looms.PoS.Persistence.csproj", "{FDB98666-BC3B-4EB7-97CB-025743EAAFEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 using Looms.PoS.Application;
 using Looms.PoS.Application.Options;
-using Looms.PoS.Persistance;
+using Looms.PoS.Persistence;
 using Looms.PoS.Swagger.Filters;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +55,7 @@ public class Program
         });
 
         builder.Services.AddApplicationLayer();
-        builder.Services.AddPersistanceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        builder.Services.AddPersistenceLayer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
         var app = builder.Build();
 
