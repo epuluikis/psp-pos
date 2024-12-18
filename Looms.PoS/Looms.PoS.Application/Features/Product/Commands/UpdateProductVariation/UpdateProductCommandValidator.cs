@@ -16,7 +16,7 @@ public class UpdateProductVariationCommandValidator : AbstractValidator<UpdatePr
         RuleFor(x => x.Id)
             .Cascade(CascadeMode.Stop)
             .MustBeValidGuid()
-            .CustomAsync(async (id, _, cancellationToken) => await productVariationRepository.GetAsync(Guid.Parse(id)));
+            .CustomAsync(async (id, _, cancellationToken) => await productVariationRepository.GetAsync(Guid.Parse(id!)));
 
         RuleFor(x => x.Request)
             .CustomAsync(async (request, context, cancellationToken) =>
