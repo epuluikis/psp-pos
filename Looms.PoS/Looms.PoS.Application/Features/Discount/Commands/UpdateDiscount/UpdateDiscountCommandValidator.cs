@@ -28,7 +28,7 @@ public class UpdateDiscountCommandValidator : AbstractValidator<UpdateDiscountCo
         RuleFor(x => x)
             .CustomAsync(async (command, context, _) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateDiscountCommand>(command.Request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateDiscountRequest>(command.Request);
                 var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
 
                 await Task.WhenAll(validationResults);

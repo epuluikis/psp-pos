@@ -16,11 +16,18 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
         RuleFor(x => x.TaxId!)
             .MustBeValidGuid()
             .CustomAsync(async (taxId, context, cancellationToken) 
-                => await taxesRepository.GetAsyncByIdAndBusinessId(
+            {
+                var tax = await taxesRepository.GetAsyncByIdAndBusinessId(
                     Guid.Parse(taxId!),
                     Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
-                )
-            )
+                );
+
+                if(tax.TaxCategory is not TaxCategory.Product)
+                {
+                    context.AddFailure("Provided tax should be for product.");
+                }
+                return tax;
+            })
             .When(x => x.TaxId is not null);
 
         RuleFor(x => x.Price)
