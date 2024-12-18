@@ -38,7 +38,7 @@ public class PermissionService : IPermissionService
     {
         if (isInsufficient)
         {
-            throw new LoomsUnauthorizedException("Insufficient permissions");
+            throw new LoomsForbiddenException("Insufficient permissions");
         }
     }
 }

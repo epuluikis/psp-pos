@@ -53,6 +53,7 @@ public static class ServiceExtensions
     private static void RegisterExceptionHandling(this IServiceCollection services)
     {
         services.AddExceptionHandler<UnauthorizedExceptionHandler>();
+        services.AddExceptionHandler<ForbiddenExceptionHandler>();
         services.AddExceptionHandler<BadRequestExceptionHandler>();
         services.AddExceptionHandler<NotFoundExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
