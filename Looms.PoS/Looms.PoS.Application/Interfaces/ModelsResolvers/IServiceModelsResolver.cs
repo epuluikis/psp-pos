@@ -8,6 +8,7 @@ public interface IServiceModelsResolver
 {
     ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest);
     ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest, Guid businessId);
+    ServiceDao GetDaoFromRequest(CreateServiceRequest createServiceRequest, Guid businessId, TaxDao tax);
     ServiceDao GetDaoFromDaoAndRequest(ServiceDao originalDao, UpdateServiceRequest updateServiceRequest);
     ServiceDao GetDeletedDao(ServiceDao originalDao);
     ServiceResponse GetResponseFromDao(ServiceDao serviceDao);
