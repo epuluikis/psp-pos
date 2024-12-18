@@ -14,10 +14,8 @@ namespace Looms.PoS.Application.Features.OrderItem.Commands.CreateOrderItem;
 public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsCommand, IActionResult>
 {
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly IOrderModelsResolver _orderModelsResolver;
     private readonly IOrderItemModelsResolver _orderItemModelsResolver;
     private readonly IOrderItemsRepository _orderItemsRepository;
-    private readonly IOrdersRepository _ordersRepository;
     private readonly IProductsRepository _productsRepository;
     private readonly IProductVariationRepository _variationsRepository;
     private readonly IServicesRepository _servicesRepository;
@@ -27,8 +25,6 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         IHttpContentResolver httpContentResolver,
         IOrderItemsRepository orderItemsRepository,
         IOrderItemModelsResolver orderItemModelsResolver,
-        IOrderModelsResolver orderModelsResolver,
-        IOrdersRepository ordersRepository,
         IProductsRepository productsRepository,
         IProductVariationRepository variationsRepository,
         IProductService productService,
@@ -40,8 +36,6 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
         _httpContentResolver = httpContentResolver;
         _orderItemsRepository = orderItemsRepository;
         _orderItemModelsResolver = orderItemModelsResolver;
-        _orderModelsResolver = orderModelsResolver;
-        _ordersRepository = ordersRepository;
         _productsRepository = productsRepository;
         _variationsRepository = variationsRepository;
         _servicesRepository = servicesRepository;
@@ -70,8 +64,7 @@ public record CreateOrderItemsCommandHandler : IRequestHandler<CreateOrderItemsC
             transactionScope.Complete();
         }
 
-        var orderDao = await _ordersRepository.GetAsync(orderId);
-        var response = _orderModelsResolver.GetResponseFromDao(orderDao);
+        var response = _orderItemModelsResolver.GetResponseFromDao(orderItemDao);
 
         return new OkObjectResult(response);
     }

@@ -1,9 +1,7 @@
 using Looms.PoS.Application.Interfaces;
 using Looms.PoS.Application.Interfaces.ModelsResolvers;
 using Looms.PoS.Application.Interfaces.Services;
-using Looms.PoS.Application.Models.Requests;
 using Looms.PoS.Application.Models.Requests.OrderItem;
-using Looms.PoS.Domain.Daos;
 using Looms.PoS.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +12,8 @@ namespace Looms.PoS.Application.Features.OrderItem.Commands.UpdateOrderItem;
 public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemCommand, IActionResult>
 {
     private readonly IHttpContentResolver _httpContentResolver;
-    private readonly IOrderModelsResolver _orderModelsResolver;
     private readonly IOrderItemModelsResolver _orderItemModelsResolver;
     private readonly IOrderItemsRepository _orderItemsRepository;
-    private readonly IOrdersRepository _ordersRepository;
     private readonly IProductsRepository _productsRepository;
     private readonly IProductVariationRepository _variationsRepository;
     private readonly IServicesRepository _servicesRepository;
@@ -27,8 +23,6 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
         IHttpContentResolver httpContentResolver,
         IOrderItemsRepository orderItemsRepository,
         IOrderItemModelsResolver orderItemModelsResolver,
-        IOrderModelsResolver orderModelsResolver,
-        IOrdersRepository ordersRepository,
         IProductsRepository productsRepository,
         IProductVariationRepository variationsRepository,
         IProductService productService,
@@ -40,8 +34,6 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
         _httpContentResolver = httpContentResolver;
         _orderItemsRepository = orderItemsRepository;
         _orderItemModelsResolver = orderItemModelsResolver;
-        _orderModelsResolver = orderModelsResolver;
-        _ordersRepository = ordersRepository;
         _productsRepository = productsRepository;
         _variationsRepository = variationsRepository;
         _servicesRepository = servicesRepository;
@@ -73,8 +65,7 @@ public class UpdateOrderItemCommandHandler : IRequestHandler<UpdateOrderItemComm
             transactionScope.Complete();
         }
 
-        var orderDao = await _ordersRepository.GetAsync(orderItemDao.OrderId);
-        var response = _orderModelsResolver.GetResponseFromDao(orderDao);
+        var response = _orderItemModelsResolver.GetResponseFromDao(orderItemDao);
 
         return new OkObjectResult(response);
     }
