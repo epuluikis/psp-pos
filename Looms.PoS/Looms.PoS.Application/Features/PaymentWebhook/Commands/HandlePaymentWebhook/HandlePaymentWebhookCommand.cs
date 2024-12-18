@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Looms.PoS.Application.Features.PaymentWebhook.Commands.HandlePaymentWebhook;
 
-public record HandlePaymentWebhookCommand : LoomsHttpRequest, IRequest<IActionResult>
+public record HandlePaymentWebhookCommand : WebhookRequest, IRequest<IActionResult>
 {
     public string PaymentProviderId { get; init; }
 

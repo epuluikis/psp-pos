@@ -18,12 +18,12 @@ public class HttpContextBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
 
     public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (request is not AuthRequest)
+        if (request is not AuthRequest && request is not WebhookRequest)
         {
             StoreTokenData(request.Request);
         }
 
-        if (request is not GlobalLoomsHttpRequest)
+        if (request is not GlobalLoomsHttpRequest && request is not WebhookRequest)
         {
             StoreHeaderData(request.Request);
         }

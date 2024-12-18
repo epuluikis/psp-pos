@@ -10,6 +10,7 @@ using Looms.PoS.Application.Services;
 using Looms.PoS.Application.Services.Notification;
 using Looms.PoS.Application.Services.PaymentHandler;
 using Looms.PoS.Application.Services.PaymentProvider;
+using Looms.PoS.Application.Services.RefundHandler;
 using Looms.PoS.Application.Utilities;
 using Looms.PoS.Application.Utilities.Behaviours;
 using MediatR;
@@ -86,6 +87,11 @@ public static class ServiceExtensions
         services.AddScoped<IPaymentHandlerService, CreditCardPaymentHandlerService>();
         services.AddScoped<IPaymentHandlerService, GiftCardPaymentHandlerService>();
         services.AddScoped<IPaymentHandlerServiceFactory, PaymentHandlerServiceFactory>();
+
+        services.AddScoped<IRefundHandlerService, CashRefundHandlerService>();
+        services.AddScoped<IRefundHandlerService, CreditCardRefundHandlerService>();
+        services.AddScoped<IRefundHandlerService, GiftCardRefundHandlerService>();
+        services.AddScoped<IRefundHandlerServiceFactory, RefundHandlerServiceFactory>();
 
         services.AddScoped<IPaymentProviderService, StripePaymentProviderService>();
         services.AddScoped<IPaymentProviderServiceFactory, PaymentProviderServiceFactory>();

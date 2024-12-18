@@ -14,7 +14,7 @@ namespace Looms.PoS.Application.Services.PaymentProvider;
 
 public class StripePaymentProviderService : IPaymentProviderService
 {
-    private readonly string[] _supportedWebhookEventTypes =
+    private readonly string[] _paymentWebhookEventTypes =
     [
         EventTypes.PaymentIntentCanceled,
         EventTypes.PaymentIntentPaymentFailed,
@@ -23,18 +23,39 @@ public class StripePaymentProviderService : IPaymentProviderService
         EventTypes.PaymentIntentSucceeded
     ];
 
+    private readonly string[] _refundWebhookEventTypes =
+    [
+        EventTypes.RefundFailed,
+        EventTypes.RefundUpdated
+    ];
+
     private readonly IPaymentModelsResolver _paymentModelsResolver;
     private readonly IPaymentsRepository _paymentRepository;
+    private readonly IRefundModelsResolver _refundModelsResolver;
+    private readonly IOrdersRepository _ordersRepository;
+    private readonly IOrderModelsResolver _orderModelsResolver;
+    private readonly IOrderService _orderService;
+    private readonly IRefundsRepository _refundsRepository;
 
     public PaymentProviderType Type => PaymentProviderType.Stripe;
 
     public StripePaymentProviderService(
         IPaymentModelsResolver paymentModelResolver,
-        IPaymentsRepository paymentsRepository
+        IPaymentsRepository paymentsRepository,
+        IRefundModelsResolver refundModelsResolver,
+        IOrdersRepository ordersRepository,
+        IOrderModelsResolver orderModelsResolver,
+        IOrderService orderService,
+        IRefundsRepository refundsRepository
     )
     {
         _paymentModelsResolver = paymentModelResolver;
         _paymentRepository = paymentsRepository;
+        _refundModelsResolver = refundModelsResolver;
+        _ordersRepository = ordersRepository;
+        _orderModelsResolver = orderModelsResolver;
+        _orderService = orderService;
+        _refundsRepository = refundsRepository;
     }
 
     public async Task<bool> Validate(string externalId, string apiSecret)
@@ -80,17 +101,33 @@ public class StripePaymentProviderService : IPaymentProviderService
         return UpdatePaymentDao(paymentDao, reader);
     }
 
+    public async Task<RefundDao> HandleRefund(RefundDao refundDao, PaymentDao paymentDao, PaymentProviderDao paymentProviderDao)
+    {
+        var refund = await CreateRefund(refundDao, paymentDao, paymentProviderDao);
+
+        return UpdateRefundDao(refundDao, refund);
+    }
+
     public async Task HandleWebhook(HttpRequest request, PaymentProviderDao paymentProviderDao)
     {
         var json = await new StreamReader(request.Body).ReadToEndAsync();
         var stripeEvent = EventUtility.ConstructEvent(json, request.Headers["Stripe-Signature"], paymentProviderDao.WebhookSecret);
 
-        if (!_supportedWebhookEventTypes.Any(stripeEvent.Type.Contains))
+        if (_paymentWebhookEventTypes.Any(stripeEvent.Type.Contains))
         {
+            await HandlePaymentWebhook(paymentProviderDao, (PaymentIntent)stripeEvent.Data.Object);
+
             return;
         }
 
-        var paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
+        if (_refundWebhookEventTypes.Any(stripeEvent.Type.Contains))
+        {
+            await HandleRefundWebhook(paymentProviderDao, (Refund)stripeEvent.Data.Object);
+        }
+    }
+
+    private async Task HandlePaymentWebhook(PaymentProviderDao paymentProviderDao, PaymentIntent paymentIntent)
+    {
         var paymentDao = await _paymentRepository.GetAsyncByExternalId(paymentIntent.Id);
 
         if (paymentDao.PaymentTerminal!.PaymentProviderId != paymentProviderDao.Id)
@@ -101,6 +138,36 @@ public class StripePaymentProviderService : IPaymentProviderService
         paymentDao = UpdatePaymentDao(paymentDao, paymentIntent);
 
         await _paymentRepository.UpdateAsync(paymentDao);
+
+        if (paymentDao.Status is not PaymentStatus.Succeeded)
+        {
+            return;
+        }
+
+        var orderDao = await _ordersRepository.GetAsync(paymentDao.OrderId);
+        var payableAmount = _orderService.CalculatePayableAmount(orderDao);
+
+        if (payableAmount is not 0)
+        {
+            return;
+        }
+
+        orderDao = _orderModelsResolver.GetDaoFromDaoAndStatus(orderDao, OrderStatus.Paid);
+        await _ordersRepository.UpdateAsync(orderDao);
+    }
+
+    private async Task HandleRefundWebhook(PaymentProviderDao paymentProviderDao, Refund refund)
+    {
+        var refundDao = await _refundsRepository.GetAsyncByExternalId(refund.Id);
+
+        if (refundDao.Payment.PaymentTerminal!.PaymentProviderId != paymentProviderDao.Id)
+        {
+            throw new LoomsBadRequestException("Mismatched payment provider");
+        }
+
+        refundDao = UpdateRefundDao(refundDao, refund);
+
+        await _refundsRepository.UpdateAsync(refundDao);
     }
 
     private async Task<PaymentIntent> CreatePaymentIntent(PaymentDao paymentDao, PaymentProviderDao paymentProviderDao)
@@ -125,6 +192,15 @@ public class StripePaymentProviderService : IPaymentProviderService
         var service = new ReaderService();
 
         return await service.ProcessPaymentIntentAsync(paymentTerminalDao.ExternalId, options, GetRequestOptions(paymentProviderDao));
+    }
+
+    private async Task<Refund> CreateRefund(RefundDao refundDao, PaymentDao paymentDao, PaymentProviderDao paymentProviderDao)
+    {
+        var options = new RefundCreateOptions { PaymentIntent = paymentDao.ExternalId, Amount = (long)(refundDao.Amount * 100) };
+
+        var service = new Stripe.RefundService();
+
+        return await service.CreateAsync(options, GetRequestOptions(paymentProviderDao));
     }
 
     private PaymentDao UpdatePaymentDao(PaymentDao paymentDao, Reader reader)
@@ -155,6 +231,21 @@ public class StripePaymentProviderService : IPaymentProviderService
         paymentDao = _paymentModelsResolver.GetDaoFromDaoAndStatus(paymentDao, status);
 
         return _paymentModelsResolver.GetDaoFromDaoAndExternalId(paymentDao, paymentIntent.Id);
+    }
+
+    private RefundDao UpdateRefundDao(RefundDao refundDao, Refund refund)
+    {
+        var status = refund.Status switch
+        {
+            "pending" or "requires_action" => RefundStatus.Pending,
+            "failed" or "canceled" => RefundStatus.Rejected,
+            "succeeded" => RefundStatus.Completed,
+            _ => throw new Exception($"Unknown refund status: {refund.Status}")
+        };
+
+        refundDao = _refundModelsResolver.GetDaoFromDaoAndStatus(refundDao, status);
+
+        return _refundModelsResolver.GetDaoFromDaoAndExternalId(refundDao, refund.Id);
     }
 
     private RequestOptions GetRequestOptions(string externalId, string apiSecret)

@@ -19,10 +19,10 @@ public class CreatePaymentRequestValidator : AbstractValidator<CreatePaymentRequ
     {
         RuleFor(x => x.OrderId)
             .MustBeValidGuid()
-            .CustomAsync(async (productId, context, _) =>
+            .CustomAsync(async (orderId, context, _) =>
                 {
                     var orderDao = await ordersRepository.GetAsyncByIdAndBusinessId(
-                        Guid.Parse(productId!),
+                        Guid.Parse(orderId!),
                         Guid.Parse((string)context.RootContextData[HeaderConstants.BusinessIdHeader])
                     );
 
@@ -51,7 +51,7 @@ public class CreatePaymentRequestValidator : AbstractValidator<CreatePaymentRequ
 
                     if (amount > orderService.CalculatePayableAmount(orderDao))
                     {
-                        context.AddFailure("Amount is higher than order payable amount.");
+                        context.AddFailure($"Amount is higher than order payable amount.");
                     }
                 }
             );

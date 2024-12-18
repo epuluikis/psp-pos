@@ -9,6 +9,7 @@ public interface IPaymentsRepository
     Task<IEnumerable<PaymentDao>> GetAllAsyncByBusinessId(Guid businessId);
     Task<PaymentDao> GetAsync(Guid id);
     Task<PaymentDao> GetAsyncByIdAndBusinessId(Guid id, Guid businessId);
+    Task<PaymentDao> GetAsyncByIdAndOrderIdAndBusinessId(Guid id, Guid orderId, Guid businessId);
     Task<PaymentDao> GetAsyncByExternalId(string externalId);
     Task<PaymentDao> UpdateAsync(PaymentDao paymentDao);
 }

@@ -16,13 +16,15 @@ public record RefundDao
 
     public string RefundReason { get; init; } = string.Empty;
 
-    public RefundStatus RefundStatus { get; init; } = RefundStatus.Pending;
+    public RefundStatus Status { get; init; } = RefundStatus.Pending;
 
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
     public DateTime? ProcessedAt { get; init; }
 
     public Guid UserId { get; init; }
+
+    public string? ExternalId { get; init; }
 
 
     public virtual OrderDao Order { get; init; } = null!;

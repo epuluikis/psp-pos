@@ -58,6 +58,19 @@ public class PaymentsRepository : IPaymentsRepository
         return paymentDao;
     }
 
+    public async Task<PaymentDao> GetAsyncByIdAndOrderIdAndBusinessId(Guid id, Guid orderId, Guid businessId)
+    {
+        var paymentDao = await _context.Payments
+                                       .FirstOrDefaultAsync(x => x.Id == id && x.Order.BusinessId == businessId && x.OrderId == orderId);
+
+        if (paymentDao is null || paymentDao.IsDeleted)
+        {
+            throw new LoomsNotFoundException("Payment not found");
+        }
+
+        return paymentDao;
+    }
+
     public async Task<PaymentDao> GetAsyncByExternalId(string externalId)
     {
         var paymentDao = await _context.Payments.Where(x => x.ExternalId == externalId).FirstOrDefaultAsync();
