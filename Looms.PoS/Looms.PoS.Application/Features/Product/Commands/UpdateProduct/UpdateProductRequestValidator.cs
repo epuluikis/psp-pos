@@ -13,7 +13,7 @@ public class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequ
         RuleFor(x => x.Price)
             .PrecisionScale(10, 2, false)
             .GreaterThanOrEqualTo(0);
-        
+
         RuleFor(x => x.QuantityInStock)
             .GreaterThanOrEqualTo(0);
 

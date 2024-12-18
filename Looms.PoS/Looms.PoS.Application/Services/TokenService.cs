@@ -27,7 +27,7 @@ public class TokenService : ITokenService
     public LoginResponse CreateToken(UserDao userDao)
     {
         var expires = DateTime.UtcNow.AddHours(TokenConstants.TokenDurationInHours);
-        var userRole = userDao.Role;
+        var tokenDataDto = new TokenDataDto(userDao.Id.ToString(), userDao.Role, userDao.BusinessId.ToString());
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
@@ -35,9 +35,9 @@ public class TokenService : ITokenService
         {
             Subject = new ClaimsIdentity(
             [
-                new Claim(TokenConstants.UserIdClaim, userDao.Id.ToString()),
-                new Claim(TokenConstants.UserRoleClaim, userRole.ToString()),
-                new Claim(TokenConstants.BusinessIdClaim, userDao.BusinessId.ToString()),
+                new Claim(TokenConstants.UserIdClaim, tokenDataDto.UserId),
+                new Claim(TokenConstants.UserRoleClaim, tokenDataDto.UserRole.ToString()),
+                new Claim(TokenConstants.BusinessIdClaim, tokenDataDto.BusinessId),
             ]),
             Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -46,7 +46,7 @@ public class TokenService : ITokenService
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-        return _authModelsResolver.GetResponse(tokenHandler.WriteToken(token), expires, userRole, userDao.BusinessId);
+        return _authModelsResolver.GetResponse(tokenHandler.WriteToken(token), expires, tokenDataDto);
     }
 
     public TokenDataDto GetTokenData(string token)
