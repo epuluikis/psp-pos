@@ -27,7 +27,7 @@ public class UpdateReservationCommandValidator : AbstractValidator<UpdateReserva
         RuleFor(x => x)
             .CustomAsync(async (command, context, _) =>
             {
-                var body = await httpContentResolver.GetPayloadAsync<UpdateReservationCommand>(command.Request);
+                var body = await httpContentResolver.GetPayloadAsync<UpdateReservationRequest>(command.Request);
                 var validationResults = validators.Select(x => x.ValidateAsync(context.CloneForChildValidator(body)));
                 
                 await Task.WhenAll(validationResults);
